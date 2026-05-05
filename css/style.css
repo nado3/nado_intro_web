@@ -1,0 +1,51 @@
+.hidden {
+    display : none;
+}
+
+img {
+    position:absolute;
+    width:100%;
+    height:100%;
+    left: 0px;
+    top: 0px;
+    right:0px;
+    bottom:0px;
+    z-index: -1;
+    opacity:80%;
+    object-fit: cover;
+    };
+
+
+div {
+  border: solid 3px;
+  padding: 1em;
+  max-width: 75%;
+}
+.container {
+  display: grid;
+  place-items: center;
+  height: 8em;
+}
+
+#greeting {
+    font-size: 50px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#clock {
+    font-size: 50px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.todo {
+  width: 350px;
+  height: 150px;
+  margin: 25px;
+  padding: 25px;
+  border: 5px solid black;
+  background-color: randomColor;
+}
+#quote, #weather, #happy {
+  backdrop-filter: blur(10px);
+}
