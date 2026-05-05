@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>이용 방법 — 나도</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    :root {
+      --black: #111;
+      --white: #fafbfc;
+      --cream: #f0f4f8;
+      --accent: #4A90E2;
+      --accent-light: #E3F2FD;
+      --gray: #888;
+      --dark-gray: #444;
+      --border: rgba(74, 144, 226, 0.15);
+    }
+ 
+    html { scroll-behavior: smooth; }
+ 
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--white);
+      color: var(--black);
+      overflow-x: hidden;
+    }
+ 
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 3rem;
+      background: rgba(250, 251, 252, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Noto Serif KR', serif;
+      font-weight: 900;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      color: var(--black);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: var(--dark-gray);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta {
+      background: var(--accent);
+      color: var(--white) !important;
+      padding: 0.55rem 1.4rem;
+      border-radius: 2rem;
+      font-size: 0.85rem !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: #3a7bc8 !important; }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding: 10rem 5rem 5rem;
+      background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+      text-align: center;
+    }
+    .page-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+      color: var(--black);
+    }
+    .page-title em { font-style: normal; color: var(--accent); }
+    .page-subtitle {
+      font-size: 1.1rem;
+      color: var(--dark-gray);
+      font-weight: 300;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* CONTENT SECTION */
+    .content-section {
+      padding: 5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* STEPS */
+    .steps-container {
+      margin-bottom: 5rem;
+    }
+    .step-item {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 3rem;
+      margin-bottom: 4rem;
+      align-items: start;
+    }
+    .step-number {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Serif KR', serif;
+      font-size: 2.5rem;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .step-content {
+      padding-top: 1rem;
+    }
+    .step-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--black);
+    }
+    .step-desc {
+      font-size: 1.05rem;
+      color: var(--dark-gray);
+      line-height: 1.8;
+      font-weight: 300;
+      margin-bottom: 1.5rem;
+    }
+    .step-details {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+    .step-details-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.8rem;
+      color: var(--accent);
+    }
+    .step-details-list {
+      list-style: none;
+      padding: 0;
+    }
+    .step-details-list li {
+      font-size: 0.9rem;
+      color: var(--dark-gray);
+      line-height: 1.7;
+      padding-left: 1.5rem;
+      position: relative;
+      margin-bottom: 0.5rem;
+    }
+    .step-details-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* INFO BOXES */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 5rem;
+    }
+    .info-box {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 2.5rem;
+    }
+    .info-box.highlight {
+      background: var(--accent);
+      color: var(--white);
+      border-color: var(--accent);
+    }
+    .info-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .info-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .info-text {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+    .info-box.highlight .info-text {
+      color: rgba(255,255,255,0.9);
+    }
+    .info-box:not(.highlight) .info-text {
+      color: var(--dark-gray);
+    }
+
+    /* FAQ */
+    .faq-section {
+      background: var(--cream);
+      border-radius: 2rem;
+      padding: 3rem;
+      margin-bottom: 5rem;
+    }
+    .faq-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 2rem;
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 3rem;
+      color: var(--black);
+    }
+    .faq-item {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.5rem 2rem;
+      margin-bottom: 1rem;
+    }
+    .faq-question {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 0.8rem;
+      color: var(--black);
+    }
+    .faq-answer {
+      font-size: 0.9rem;
+      color: var(--dark-gray);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* CTA SECTION */
+    .cta-section {
+      background: var(--accent);
+      color: var(--white);
+      text-align: center;
+      padding: 5rem 3rem;
+      border-radius: 2rem;
+      margin: 4rem 0;
+    }
+    .cta-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+    }
+    .cta-text {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 2rem;
+    }
+    .btn-primary {
+      background: var(--white);
+      color: var(--accent);
+      padding: 1rem 2.5rem;
+      border-radius: 3rem;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: none;
+      cursor: pointer;
+      font-family: 'Noto Sans KR', sans-serif;
+      display: inline-block;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255,255,255,0.3);
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--black);
+      padding: 3rem 5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-logo {
+      font-family: 'Noto Serif KR', serif;
+      font-weight: 900;
+      font-size: 1.3rem;
+      color: var(--white);
+    }
+    .footer-logo span { color: var(--accent); }
+    .footer-text {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ANIMATIONS */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* MOBILE */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .page-header { padding: 8rem 1.5rem 4rem; }
+      .content-section { padding: 3rem 1.5rem; }
+      .step-item { grid-template-columns: 1fr; gap: 1.5rem; }
+      .step-number { width: 80px; height: 80px; font-size: 2rem; margin: 0 auto; }
+      .info-grid { grid-template-columns: 1fr; }
+      .faq-section { padding: 2rem 1.5rem; }
+      .cta-section { margin: 3rem 0; padding: 4rem 2rem; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">나<span>도</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">홈</a></li>
+    <li><a href="teachers.html">선생님 소개</a></li>
+    <li><a href="how.html">이용 방법</a></li>
+    <li><a href="index.html#why">왜 나도인가</a></li>
+    <li><a href="index.html#cta" class="nav-cta">시작하기</a></li>
+  </ul>
+</nav>
+
+<!-- PAGE HEADER -->
+<section class="page-header">
+  <h1 class="page-title"><em>세 단계</em>면 충분합니다</h1>
+  <p class="page-subtitle">나도와 함께 영어 회화를 시작하는 방법을 자세히 알아보세요.</p>
+</section>
+
+<!-- CONTENT -->
+<section class="content-section">
+  
+  <!-- STEPS -->
+  <div class="steps-container">
+    <div class="step-item fade-in">
+      <div class="step-number">01</div>
+      <div class="step-content">
+        <h2 class="step-title">정보 입력 및 신청</h2>
+        <p class="step-desc">
+          간단한 정보를 입력하면 자동으로 최적의 선생님을 매칭해드립니다. 
+          영어 수준, 학습 목표, 관심 분야 등을 알려주세요.
+        </p>
+        <div class="step-details">
+          <div class="step-details-title">입력하실 정보</div>
+          <ul class="step-details-list">
+            <li>이름, 연락처, 나이대</li>
+            <li>현재 영어 수준 (초급 / 중급 / 고급)</li>
+            <li>학습 목표 (일상회화 / 비즈니스 / 여행 / 시험 등)</li>
+            <li>관심 분야 및 특별 요청사항</li>
+            <li>선호하는 수업 시간대</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-item fade-in">
+      <div class="step-number">02</div>
+      <div class="step-content">
+        <h2 class="step-title">선생님 자동 매칭</h2>
+        <p class="step-desc">
+          입력하신 정보를 바탕으로 나도의 매칭 시스템이 가장 적합한 IGC 대학생 선생님을 찾아드립니다. 
+          매칭 완료 후 선생님과 직접 연락하여 첫 수업 일정을 조율합니다.
+        </p>
+        <div class="step-details">
+          <div class="step-details-title">매칭 기준</div>
+          <ul class="step-details-list">
+            <li>학습자의 수준과 목표에 맞는 전문성</li>
+            <li>선생님의 전공 및 관심 분야</li>
+            <li>수업 가능 시간대 일치 여부</li>
+            <li>학습 스타일 및 성향 매칭</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-item fade-in">
+      <div class="step-number">03</div>
+      <div class="step-content">
+        <h2 class="step-title">IGC 캠퍼스에서 수업 시작</h2>
+        <p class="step-desc">
+          IGC 캠퍼스 내 지정된 장소에서 선생님과 만나 50분간 1:1 영어 회화 수업을 진행합니다. 
+          편안한 분위기에서 자연스럽게 영어로 대화하며 실력을 키워보세요.
+        </p>
+        <div class="step-details">
+          <div class="step-details-title">수업 진행 방식</div>
+          <ul class="step-details-list">
+            <li>50분 1:1 맞춤 수업</li>
+            <li>IGC 캠퍼스 내 쾌적한 학습 공간</li>
+            <li>프리토킹 + 맞춤형 학습 자료</li>
+            <li>실생활 영어 표현 중심 학습</li>
+            <li>수업 후 피드백 및 복습 자료 제공</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFO BOXES -->
+  <div class="info-grid">
+    <div class="info-box fade-in">
+      <div class="info-icon">📍</div>
+      <h3 class="info-title">수업 장소</h3>
+      <p class="info-text">
+        <strong>IGC (Incheon Global Campus)</strong><br>
+        인천 송도 국제도시 내 위치<br>
+        캠퍼스 내 쾌적한 학습 공간에서 진행<br>
+        주차 및 대중교통 이용 편리
+      </p>
+    </div>
+
+    <div class="info-box fade-in">
+      <div class="info-icon">⏰</div>
+      <h3 class="info-title">수업 시간</h3>
+      <p class="info-text">
+        <strong>1회 50분</strong><br>
+        평일 오후 / 저녁 시간대<br>
+        주말 오전 / 오후 시간대<br>
+        선생님과 협의하여 유연하게 조율 가능
+      </p>
+    </div>
+
+    <div class="info-box highlight fade-in">
+      <div class="info-icon">💰</div>
+      <h3 class="info-title">수업료</h3>
+      <p class="info-text">
+        <strong>월 140,000원</strong><br>
+        (월 4회 기준, 1회 50분)<br>
+        등록비 및 추가 비용 없음<br>
+        합리적이고 투명한 가격
+      </p>
+    </div>
+
+    <div class="info-box fade-in">
+      <div class="info-icon">🎯</div>
+      <h3 class="info-title">대상</h3>
+      <p class="info-text">
+        <strong>전 연령 환영</strong><br>
+        초등학생부터 시니어까지<br>
+        초급부터 고급까지 모든 수준<br>
+        영어로 말하고 싶은 모든 분
+      </p>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section fade-in">
+    <h2 class="faq-title">자주 묻는 질문</h2>
+    
+    <div class="faq-item">
+      <div class="faq-question">Q. 영어 초보자도 가능한가요?</div>
+      <div class="faq-answer">
+        네, 물론입니다! 나도는 모든 수준의 학습자를 환영합니다. 초보자 분들을 위한 전문 선생님도 준비되어 있으며, 
+        천천히 기초부터 차근차근 배울 수 있습니다.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">Q. 수업 일정은 어떻게 정하나요?</div>
+      <div class="faq-answer">
+        매칭된 선생님과 직접 소통하여 서로 편한 시간에 수업을 진행할 수 있습니다. 
+        평일 저녁이나 주말 등 유연하게 조율 가능합니다.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">Q. 선생님을 바꿀 수 있나요?</div>
+      <div class="faq-answer">
+        네, 가능합니다. 학습 스타일이 맞지 않거나 다른 선생님과 수업을 원하시면 언제든 변경 요청하실 수 있습니다.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">Q. 수업 교재는 따로 구매해야 하나요?</div>
+      <div class="faq-answer">
+        기본적으로 프리토킹 중심으로 진행되며, 필요시 선생님이 맞춤 자료를 제공합니다. 
+        별도 교재 구매는 필요하지 않습니다.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">Q. 한 달에 몇 번 수업하나요?</div>
+      <div class="faq-answer">
+        기본적으로 월 4회(주 1회) 수업이 기준이며, 원하시면 횟수를 늘리거나 줄일 수 있습니다. 
+        자세한 사항은 신청 시 상담해드립니다.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">Q. 결제 방법은 어떻게 되나요?</div>
+      <div class="faq-answer">
+        계좌이체, 카드 결제 모두 가능합니다. 매월 초 또는 수업 시작 전 결제하시면 됩니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section fade-in">
+    <h2 class="cta-title">지금 바로 시작하세요</h2>
+    <p class="cta-text">간단한 정보 입력만으로 최적의 선생님을 만날 수 있습니다.</p>
+    <a href="index.html#cta" class="btn-primary">신청하기</a>
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">나<span>도</span></div>
+  <div class="footer-text">진짜 영어는 만나서 합니다. © 2025 나도</div>
+</footer>
+
+<script>
+  // Fade-in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

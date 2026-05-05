@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>선생님 소개 — 나도</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    :root {
+      --black: #111;
+      --white: #fafbfc;
+      --cream: #f0f4f8;
+      --accent: #4A90E2;
+      --accent-light: #E3F2FD;
+      --gray: #888;
+      --dark-gray: #444;
+      --border: rgba(74, 144, 226, 0.15);
+    }
+ 
+    html { scroll-behavior: smooth; }
+ 
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--white);
+      color: var(--black);
+      overflow-x: hidden;
+    }
+ 
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 3rem;
+      background: rgba(250, 251, 252, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Noto Serif KR', serif;
+      font-weight: 900;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      color: var(--black);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: var(--dark-gray);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta {
+      background: var(--accent);
+      color: var(--white) !important;
+      padding: 0.55rem 1.4rem;
+      border-radius: 2rem;
+      font-size: 0.85rem !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: #3a7bc8 !important; }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding: 10rem 5rem 5rem;
+      background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+      text-align: center;
+    }
+    .page-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+      color: var(--black);
+    }
+    .page-title em { font-style: normal; color: var(--accent); }
+    .page-subtitle {
+      font-size: 1.1rem;
+      color: var(--dark-gray);
+      font-weight: 300;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* TEACHERS SECTION */
+    .teachers-section {
+      padding: 5rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .section-intro {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    .section-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .section-desc {
+      font-size: 1.05rem;
+      color: var(--dark-gray);
+      line-height: 1.8;
+      font-weight: 300;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* TEACHER GRID */
+    .teachers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+    .teacher-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 2.5rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .teacher-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 50px rgba(74, 144, 226, 0.15);
+    }
+    .teacher-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      border: 3px solid var(--accent);
+    }
+    .teacher-name {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--black);
+    }
+    .teacher-major {
+      font-size: 0.9rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .teacher-bio {
+      font-size: 0.9rem;
+      color: var(--dark-gray);
+      line-height: 1.7;
+      font-weight: 300;
+      margin-bottom: 1.5rem;
+    }
+    .teacher-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .tag {
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 0.75rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 1rem;
+      font-weight: 700;
+    }
+
+    /* INFO BOX */
+    .info-box {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 2.5rem;
+      max-width: 800px;
+      margin: 0 auto 4rem;
+    }
+    .info-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--black);
+    }
+    .info-text {
+      font-size: 0.95rem;
+      color: var(--dark-gray);
+      line-height: 1.8;
+      font-weight: 300;
+    }
+    .info-text strong {
+      color: var(--black);
+      font-weight: 700;
+    }
+
+    /* CTA SECTION */
+    .cta-section {
+      background: var(--accent);
+      color: var(--white);
+      text-align: center;
+      padding: 5rem 3rem;
+      border-radius: 2rem;
+      margin: 4rem 5rem;
+    }
+    .cta-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+    }
+    .cta-text {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 2rem;
+    }
+    .btn-primary {
+      background: var(--white);
+      color: var(--accent);
+      padding: 1rem 2.5rem;
+      border-radius: 3rem;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: none;
+      cursor: pointer;
+      font-family: 'Noto Sans KR', sans-serif;
+      display: inline-block;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255,255,255,0.3);
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--black);
+      padding: 3rem 5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-logo {
+      font-family: 'Noto Serif KR', serif;
+      font-weight: 900;
+      font-size: 1.3rem;
+      color: var(--white);
+    }
+    .footer-logo span { color: var(--accent); }
+    .footer-text {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ANIMATIONS */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* MOBILE */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .page-header { padding: 8rem 1.5rem 4rem; }
+      .teachers-section { padding: 3rem 1.5rem; }
+      .teachers-grid { grid-template-columns: 1fr; }
+      .cta-section { margin: 3rem 1.5rem; padding: 4rem 2rem; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">나<span>도</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">홈</a></li>
+    <li><a href="teachers.html">선생님 소개</a></li>
+    <li><a href="how.html">이용 방법</a></li>
+    <li><a href="index.html#why">왜 나도인가</a></li>
+    <li><a href="index.html#cta" class="nav-cta">시작하기</a></li>
+  </ul>
+</nav>
+
+<!-- PAGE HEADER -->
+<section class="page-header">
+  <h1 class="page-title">우리 <em>선생님</em>을 소개합니다</h1>
+  <p class="page-subtitle">IGC 소속 미국 대학생들이 여러분의 영어 회화 파트너가 됩니다.</p>
+</section>
+
+<!-- TEACHERS SECTION -->
+<section class="teachers-section">
+  <div class="section-intro">
+    <div class="section-label">IGC 대학생 선생님</div>
+    <p class="section-desc">
+      Incheon Global Campus에서 공부하는 미국 대학생들이 직접 여러분과 만나 영어로 대화합니다.<br>
+      각자의 전공과 관심사를 살려 자연스럽고 실용적인 영어를 배울 수 있습니다.
+    </p>
+  </div>
+
+  <div class="info-box fade-in">
+    <div class="info-title">💡 맞춤형 자동 매칭 시스템</div>
+    <div class="info-text">
+      <strong>나도</strong>는 여러분의 수준, 목표, 관심사를 분석하여 최적의 선생님을 자동으로 매칭해드립니다.<br><br>
+      아래 프로필은 예시이며, 실제 매칭은 신청 후 자동으로 이루어집니다.
+    </div>
+  </div>
+
+  <div class="teachers-grid">
+    <!-- Teacher 1 -->
+    <div class="teacher-card fade-in">
+      <div class="teacher-avatar">👨</div>
+      <div class="teacher-name">Michael Johnson</div>
+      <div class="teacher-major">경영학 전공 · IGC 재학</div>
+      <div class="teacher-bio">
+        안녕하세요! 저는 비즈니스와 일상 회화를 전문으로 가르칩니다. 편안한 분위기에서 자연스럽게 영어 실력을 키워보세요.
+      </div>
+      <div class="teacher-tags">
+        <span class="tag">비즈니스</span>
+        <span class="tag">일상회화</span>
+        <span class="tag">초급환영</span>
+      </div>
+    </div>
+
+    <!-- Teacher 2 -->
+    <div class="teacher-card fade-in">
+      <div class="teacher-avatar">👩</div>
+      <div class="teacher-name">Sarah Williams</div>
+      <div class="teacher-major">국제관계학 전공 · IGC 재학</div>
+      <div class="teacher-bio">
+        여행과 문화에 관심이 많습니다. 실제로 사용하는 생생한 표현들을 함께 배워가요. 초보자도 환영합니다!
+      </div>
+      <div class="teacher-tags">
+        <span class="tag">여행영어</span>
+        <span class="tag">문화교류</span>
+        <span class="tag">프리토킹</span>
+      </div>
+    </div>
+
+    <!-- Teacher 3 -->
+    <div class="teacher-card fade-in">
+      <div class="teacher-avatar">👨</div>
+      <div class="teacher-name">David Chen</div>
+      <div class="teacher-major">컴퓨터공학 전공 · IGC 재학</div>
+      <div class="teacher-bio">
+        기술 분야 영어와 일상 회화를 가르칩니다. IT 업계에서 쓰이는 실무 영어 표현도 함께 배울 수 있어요.
+      </div>
+      <div class="teacher-tags">
+        <span class="tag">IT영어</span>
+        <span class="tag">실무회화</span>
+        <span class="tag">중급이상</span>
+      </div>
+    </div>
+
+    <!-- Teacher 4 -->
+    <div class="teacher-card fade-in">
+      <div class="teacher-avatar">👩</div>
+      <div class="teacher-name">Emily Rodriguez</div>
+      <div class="teacher-major">심리학 전공 · IGC 재학</div>
+      <div class="teacher-bio">
+        학생들의 말하기 자신감을 키워주는 것을 좋아합니다. 천천히, 편안하게 영어와 친해져 보세요.
+      </div>
+      <div class="teacher-tags">
+        <span class="tag">초급특화</span>
+        <span class="tag">발음교정</span>
+        <span class="tag">자신감UP</span>
+      </div>
+    </div>
+
+    <!-- Teacher 5 -->
+    <div class="teacher-card fade-in">
+      <div class="teacher-avatar">👨</div>
+      <div class="teacher-name">James Park</div>
+      <div class="teacher-major">경제학 전공 · IGC 재학</div>
+      <div class="teacher-bio">
+        비즈니스 영어와 면접 준비를 도와드립니다. 실전에서 바로 쓸 수 있는 표현들을 중심으로 수업합니다.
+      </div>
+      <div class="teacher-tags">
+        <span class="tag">면접준비</span>
+        <span class="tag">비즈니스</span>
+        <span class="tag">프레젠테이션</span>
+      </div>
+    </div>
+
+    <!-- Teacher 6 -->
+    <div class="teacher-card fade-in">
+      <div class="teacher-avatar">👩</div>
+      <div class="teacher-name">Jessica Lee</div>
+      <div class="teacher-major">미디어학 전공 · IGC 재학</div>
+      <div class="teacher-bio">
+        영화, 드라마, 음악을 통해 영어를 배우는 것을 좋아합니다. 재미있게 영어와 친해져요!
+      </div>
+      <div class="teacher-tags">
+        <span class="tag">미디어영어</span>
+        <span class="tag">팝컬처</span>
+        <span class="tag">재미있게</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box fade-in">
+    <div class="info-title">📋 선생님 매칭 프로세스</div>
+    <div class="info-text">
+      1. <strong>신청서 작성</strong> - 간단한 정보와 목표를 입력합니다<br>
+      2. <strong>자동 매칭</strong> - 시스템이 최적의 선생님을 찾아드립니다<br>
+      3. <strong>일정 조율</strong> - 선생님과 연락하여 첫 수업 일정을 잡습니다<br>
+      4. <strong>수업 시작</strong> - IGC 캠퍼스에서 만나 영어 회화를 시작합니다
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section fade-in">
+  <h2 class="cta-title">나도와 함께 시작하세요</h2>
+  <p class="cta-text">지금 신청하면 자동으로 최적의 선생님을 매칭해드립니다.</p>
+  <a href="index.html#cta" class="btn-primary">지금 시작하기</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">나<span>도</span></div>
+  <div class="footer-text">진짜 영어는 만나서 합니다. © 2025 나도</div>
+</footer>
+
+<script>
+  // Fade-in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
