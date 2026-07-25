@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>나도 — 신청하기</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --accent:#4A90E2;
+    --accent-deep:#2E6DC2;
+    --accent-light:#E3F2FD;
+    --navy:#16324F;
+    --ink:#111;
+    --gray:#8B95A1;
+    --line:#E9EEF3;
+    --bg:#F5F8FB;
+    --white:#fff;
+  }
+  html,body{height:100%;}
+  body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden;}
+
+  /* TOP BAR */
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--white);border-bottom:1px solid var(--line);}
+  .topbar-inner{max-width:640px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:1rem 1.2rem;}
+  .icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;color:var(--ink);font-size:1.3rem;border-radius:50%;transition:background .15s;}
+  .icon-btn:hover{background:var(--bg);}
+  .topbar-title{font-weight:800;font-size:1rem;}
+  .progress-track{height:5px;background:var(--line);}
+  .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .35s ease;}
+  .progress-pct{position:absolute;right:1.2rem;top:0.85rem;font-size:.8rem;font-weight:800;color:var(--accent);}
+
+  /* MAIN */
+  main{max-width:640px;margin:0 auto;padding:5.2rem 1.2rem 7rem;min-height:100vh;}
+
+  .history{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.4rem;}
+  .history-item{align-self:flex-end;max-width:80%;text-align:right;}
+  .history-bubble{display:inline-block;background:var(--navy);color:#fff;padding:.7rem 1.1rem;border-radius:1.2rem 1.2rem .3rem 1.2rem;font-size:.88rem;font-weight:600;}
+  .history-edit{display:block;font-size:.74rem;color:var(--gray);margin-top:.3rem;text-decoration:underline;cursor:pointer;background:none;border:none;}
+
+  .qcard{background:var(--white);border:1px solid var(--line);border-radius:1.6rem;padding:2rem 1.6rem;box-shadow:0 12px 32px rgba(22,50,79,0.06);opacity:0;transform:translateY(14px);animation:qin .4s ease forwards;}
+  @keyframes qin{to{opacity:1;transform:translateY(0);}}
+  .qtitle{font-size:1.28rem;font-weight:800;line-height:1.45;margin-bottom:.4rem;letter-spacing:-0.01em;}
+  .qsub{font-size:.85rem;color:var(--gray);margin-bottom:1.4rem;}
+  .qtitle + .qsub{margin-top:-.2rem;}
+
+  .opt-list{display:flex;flex-direction:column;gap:.7rem;}
+  .opt{display:flex;align-items:center;gap:.8rem;border:1.5px solid var(--line);border-radius:1rem;padding:1rem 1.1rem;cursor:pointer;transition:border-color .15s, background .15s;background:var(--white);}
+  .opt:hover{border-color:#c9dcf3;}
+  .opt.selected{border-color:var(--accent);background:var(--accent-light);}
+  .opt-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;position:relative;}
+  .opt.multi .opt-dot{border-radius:6px;}
+  .opt.selected .opt-dot{border-color:var(--accent);background:var(--accent);}
+  .opt.selected .opt-dot::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.72rem;font-weight:900;}
+  .opt-label{font-size:.98rem;font-weight:600;}
+
+  textarea, input[type=text], input[type=tel]{
+    width:100%;font-family:'Pretendard',sans-serif;font-size:.98rem;padding:1rem 1.1rem;
+    border:1.5px solid var(--line);border-radius:1rem;background:var(--bg);color:var(--ink);outline:none;
+    transition:border-color .15s, background .15s;
+  }
+  textarea:focus, input:focus{border-color:var(--accent);background:var(--white);}
+  textarea{min-height:110px;resize:vertical;line-height:1.6;}
+  .field-label{font-size:.82rem;font-weight:700;color:var(--gray);margin:1rem 0 .5rem;}
+  .field-label:first-child{margin-top:0;}
+  .quick-fill{display:inline-block;margin-top:.8rem;font-size:.8rem;color:var(--accent-deep);background:var(--accent-light);padding:.5rem .9rem;border-radius:1rem;border:none;cursor:pointer;font-weight:700;}
+
+  /* BOTTOM BAR */
+  .bottombar{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--line);padding:1rem 1.2rem;z-index:50;}
+  .bottombar-inner{max-width:640px;margin:0 auto;display:flex;gap:.7rem;}
+  .btn-skip{flex:0 0 auto;background:var(--white);border:1.5px solid var(--line);color:var(--gray);padding:1rem 1.3rem;border-radius:1rem;font-weight:700;font-size:.95rem;cursor:pointer;font-family:'Pretendard',sans-serif;}
+  .btn-next{flex:1;background:var(--line);color:#fff;border:none;padding:1rem;border-radius:1rem;font-weight:800;font-size:1rem;cursor:not-allowed;transition:background .2s;font-family:'Pretendard',sans-serif;}
+  .btn-next.active{background:var(--accent);cursor:pointer;}
+  .btn-next.active:hover{background:var(--accent-deep);}
+
+  /* SUCCESS */
+  .success-wrap{display:none;max-width:520px;margin:0 auto;padding:7rem 1.4rem 4rem;text-align:center;}
+  .success-badge{width:76px;height:76px;border-radius:50%;background:var(--accent-light);color:var(--accent-deep);display:flex;align-items:center;justify-content:center;font-size:2.2rem;margin:0 auto 1.4rem;}
+  .success-title{font-size:1.5rem;font-weight:900;margin-bottom:.7rem;letter-spacing:-0.01em;}
+  .success-text{font-size:.95rem;color:var(--gray);line-height:1.7;margin-bottom:2rem;}
+  .trust-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:2rem;}
+  .trust-item{background:var(--white);border:1px solid var(--line);border-radius:1rem;padding:1.1rem .5rem;}
+  .trust-num{font-size:1.15rem;font-weight:900;color:var(--navy);}
+  .trust-label{font-size:.72rem;color:var(--gray);margin-top:.2rem;}
+  .summary-box{text-align:left;background:var(--white);border:1px solid var(--line);border-radius:1.2rem;padding:1.4rem 1.5rem;font-size:.88rem;line-height:2;color:var(--ink);margin-bottom:1.6rem;}
+  .summary-box strong{color:var(--accent-deep);}
+  .btn-home{display:inline-block;background:var(--accent);color:#fff;padding:1rem 2.2rem;border-radius:3rem;font-weight:800;text-decoration:none;font-size:.98rem;}
+
+  @media (max-width:480px){
+    .qcard{padding:1.6rem 1.2rem;border-radius:1.3rem;}
+    .qtitle{font-size:1.12rem;}
+    .trust-row{gap:.5rem;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <button class="icon-btn" id="backBtn" aria-label="이전">←</button>
+    <div class="topbar-title">나도 신청</div>
+    <a class="icon-btn" href="index-final.html" aria-label="닫기">✕</a>
+  </div>
+  <div class="progress-track" style="position:relative;">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</div>
+
+<main id="formMain">
+  <div class="history" id="history"></div>
+  <div id="qcardWrap"></div>
+</main>
+
+<div class="bottombar" id="bottombar">
+  <div class="bottombar-inner">
+    <button class="btn-skip" id="skipBtn" style="display:none;">건너뛰기</button>
+    <button class="btn-next" id="nextBtn">다음</button>
+  </div>
+</div>
+
+<div class="success-wrap" id="successWrap">
+  <div class="success-badge">🎉</div>
+  <div class="success-title">신청이 접수됐어요!</div>
+  <p class="success-text">담당자가 확인 후 24시간 내 연락드려요.<br>인천 송도에서 만날 미국 대학생 선생님을 찾아드릴게요.</p>
+  <div class="trust-row">
+    <div class="trust-item"><div class="trust-num">100%</div><div class="trust-label">학적 인증</div></div>
+    <div class="trust-item"><div class="trust-num">50분</div><div class="trust-label">1:1 수업</div></div>
+    <div class="trust-item"><div class="trust-num">송도</div><div class="trust-label">오프라인</div></div>
+  </div>
+  <div class="summary-box" id="summaryBox"></div>
+  <a class="btn-home" href="index-final.html">홈으로 돌아가기</a>
+</div>
+
+<script>
+const steps = [
+  {
+    key: 'ageGroup', type: 'single', required: true,
+    title: '나이대가 어떻게 되시나요?',
+    options: ['초등학생','중고등학생','20대','30대','40대','50대 이상']
+  },
+  {
+    key: 'level', type: 'single', required: true,
+    title: '현재 영어 수준은 어느 정도인가요?',
+    sub: '가장 가까운 걸로 골라주세요.',
+    options: ['초급 (기초 단어·문장)','중급 (일상 대화 가능)','고급 (자유로운 회화)']
+  },
+  {
+    key: 'goals', type: 'multi', required: true,
+    title: '어떤 목표로 영어를 배우고 싶으신가요?',
+    sub: '중복 선택 가능해요.',
+    options: ['일상회화','비즈니스','여행영어','시험/면접 준비','발음교정']
+  },
+  {
+    key: 'timeSlot', type: 'single', required: true,
+    title: '선호하는 수업 시간대는 언제인가요?',
+    options: ['평일 오후','평일 저녁','주말 오전','주말 오후']
+  },
+  {
+    key: 'place', type: 'multi', required: true,
+    title: '송도에서 어떻게 진행하고 싶으신가요?',
+    sub: '중복 선택 가능해요.',
+    options: ['카페에서 만나고 싶어요','스터디룸을 원해요','선생님과 협의할게요','어떤 방식이든 상관없어요']
+  },
+  {
+    key: 'notes', type: 'text', required: false,
+    title: '추가로 전달하고 싶은 내용이 있으신가요?',
+    sub: '선택 사항이에요.',
+    placeholder: '예: 발표 준비 때문에 비즈니스 표현 위주로 배우고 싶어요',
+    quickFill: '선생님과 상담 시 논의할게요'
+  },
+  {
+    key: 'contact', type: 'contact', required: true,
+    title: '마지막이에요! 연락처를 남겨주세요',
+    sub: '매칭 결과를 이 번호로 안내드려요.'
+  }
+];
+
+let current = 0;
+const answers = {};
+const historyEl = document.getElementById('history');
+const qcardWrap = document.getElementById('qcardWrap');
+const progressFill = document.getElementById('progressFill');
+const nextBtn = document.getElementById('nextBtn');
+const skipBtn = document.getElementById('skipBtn');
+const backBtn = document.getElementById('backBtn');
+
+function updateProgress(){
+  const pct = Math.round((current / steps.length) * 100);
+  progressFill.style.width = pct + '%';
+}
+
+function labelFor(step, value){
+  if (step.type === 'multi') return Array.isArray(value) && value.length ? value.join(', ') : '';
+  if (step.type === 'contact') return value && value.name ? `${value.name} · ${value.phone || ''}` : '';
+  return value || '';
+}
+
+function renderHistory(){
+  historyEl.innerHTML = '';
+  for (let i = 0; i < current; i++){
+    const step = steps[i];
+    const val = answers[step.key];
+    const text = labelFor(step, val);
+    if (!text) continue;
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML = `<div class="history-bubble">${text}</div><button class="history-edit" data-idx="${i}">수정</button>`;
+    historyEl.appendChild(item);
+  }
+  historyEl.querySelectorAll('.history-edit').forEach(btn => {
+    btn.addEventListener('click', () => { current = parseInt(btn.dataset.idx); renderStep(); });
+  });
+}
+
+function checkValid(step){
+  const v = answers[step.key];
+  if (!step.required) return true;
+  if (step.type === 'single') return !!v;
+  if (step.type === 'multi') return Array.isArray(v) && v.length > 0;
+  if (step.type === 'text') return true;
+  if (step.type === 'contact') return v && v.name && v.name.trim() && v.phone && v.phone.trim();
+  return false;
+}
+
+function setNextState(step){
+  const valid = checkValid(step);
+  nextBtn.classList.toggle('active', valid);
+  nextBtn.disabled = !valid;
+  nextBtn.textContent = current === steps.length - 1 ? '제출하기' : '다음';
+  skipBtn.style.display = step.required ? 'none' : 'block';
+}
+
+function renderStep(){
+  if (current >= steps.length){ showSuccess(); return; }
+  const step = steps[current];
+  updateProgress();
+  renderHistory();
+  backBtn.style.visibility = current === 0 ? 'hidden' : 'visible';
+
+  let inner = `<div class="qcard"><div class="qtitle">${step.title}</div>`;
+  if (step.sub) inner += `<div class="qsub">${step.sub}</div>`;
+
+  if (step.type === 'single' || step.type === 'multi'){
+    inner += `<div class="opt-list">`;
+    const selected = answers[step.key] || (step.type === 'multi' ? [] : null);
+    step.options.forEach(opt => {
+      const isSel = step.type === 'multi' ? selected.includes(opt) : selected === opt;
+      inner += `<div class="opt ${step.type==='multi'?'multi':''} ${isSel?'selected':''}" data-value="${opt}"><div class="opt-dot"></div><div class="opt-label">${opt}</div></div>`;
+    });
+    inner += `</div>`;
+  } else if (step.type === 'text'){
+    const val = answers[step.key] || '';
+    inner += `<textarea id="textInput" placeholder="${step.placeholder||''}">${val}</textarea>`;
+    if (step.quickFill) inner += `<button class="quick-fill" id="quickFillBtn">"${step.quickFill}"</button>`;
+  } else if (step.type === 'contact'){
+    const v = answers[step.key] || {name:'', phone:''};
+    inner += `
+      <div class="field-label">이름</div>
+      <input type="text" id="nameInput" placeholder="홍길동" value="${v.name}">
+      <div class="field-label">연락처</div>
+      <input type="tel" id="phoneInput" placeholder="010-0000-0000" value="${v.phone}">
+    `;
+  }
+  inner += `</div>`;
+  qcardWrap.innerHTML = inner;
+
+  if (step.type === 'single' || step.type === 'multi'){
+    qcardWrap.querySelectorAll('.opt').forEach(el => {
+      el.addEventListener('click', () => {
+        const val = el.dataset.value;
+        if (step.type === 'single'){
+          answers[step.key] = val;
+          qcardWrap.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+          el.classList.add('selected');
+        } else {
+          const arr = answers[step.key] || [];
+          const idx = arr.indexOf(val);
+          if (idx > -1) arr.splice(idx,1); else arr.push(val);
+          answers[step.key] = arr;
+          el.classList.toggle('selected');
+        }
+        setNextState(step);
+      });
+    });
+  } else if (step.type === 'text'){
+    const ta = document.getElementById('textInput');
+    ta.addEventListener('input', () => { answers[step.key] = ta.value; });
+    const qf = document.getElementById('quickFillBtn');
+    if (qf) qf.addEventListener('click', () => { ta.value = step.quickFill; answers[step.key] = step.quickFill; });
+  } else if (step.type === 'contact'){
+    const nameInput = document.getElementById('nameInput');
+    const phoneInput = document.getElementById('phoneInput');
+    const sync = () => { answers[step.key] = { name: nameInput.value, phone: phoneInput.value }; setNextState(step); };
+    nameInput.addEventListener('input', sync);
+    phoneInput.addEventListener('input', sync);
+  }
+
+  setNextState(step);
+}
+
+nextBtn.addEventListener('click', () => {
+  const step = steps[current];
+  if (!checkValid(step)) return;
+  current++;
+  renderStep();
+});
+
+skipBtn.addEventListener('click', () => {
+  current++;
+  renderStep();
+});
+
+backBtn.addEventListener('click', () => {
+  if (current > 0){ current--; renderStep(); }
+});
+
+function showSuccess(){
+  document.getElementById('formMain').style.display = 'none';
+  document.getElementById('bottombar').style.display = 'none';
+  document.querySelector('.topbar').style.display = 'none';
+  const wrap = document.getElementById('successWrap');
+  wrap.style.display = 'block';
+
+  const a = answers;
+  document.getElementById('summaryBox').innerHTML = `
+    <strong>나이대</strong> · ${a.ageGroup || '-'}<br>
+    <strong>영어 수준</strong> · ${a.level || '-'}<br>
+    <strong>학습 목표</strong> · ${(a.goals||[]).join(', ') || '-'}<br>
+    <strong>희망 시간대</strong> · ${a.timeSlot || '-'}<br>
+    <strong>진행 방식</strong> · ${(a.place||[]).join(', ') || '-'}<br>
+    <strong>연락처</strong> · ${a.contact ? a.contact.name + ' · ' + a.contact.phone : '-'}
+  `;
+
+  /* TODO: 실제 저장 연동 지점
+     fetch('YOUR_ENDPOINT', { method:'POST', body: JSON.stringify(a) }); */
+  console.log('신청 데이터:', a);
+}
+
+renderStep();
+</script>
+
+</body>
+</html>
