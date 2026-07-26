@@ -315,6 +315,32 @@ backBtn.addEventListener('click', () => {
   if (current > 0){ current--; renderStep(); }
 });
 
+async function submitToJotform(a) {
+  const FORM_ID = '262064236851052';
+  const API_KEY = '32abecc4b70bf065c8adf25c9b02b7cb';   
+
+    const params = new URLSearchParams();
+  params.append('submission[3]', a.contact.name);                    // 이름
+  params.append('submission[4][full]', a.contact.phone);             // 연락처 — 저장 안 되면 'submission[4]'로 바꿔서 재시도
+  params.append('submission[5]', a.ageGroup);                        // 나이대
+  params.append('submission[7]', a.level);                           // 영어 수준
+  (a.goals || []).forEach(g => params.append('submission[8][]', g)); // 학습 목표 (다중)
+  params.append('submission[27]', (a.place || [])[0] || '');         // 진행방식 — 드롭다운이라 1개만 전달
+  params.append(
+    'submission[28]',
+    `${a.notes || ''} (희망 시간대: ${a.timeSlot || '-'})`            // 문의사항 + 희망시간대 임시 병합
+  );
+
+  try {
+    await fetch(`https://api.jotform.com/form/${FORM_ID}/submissions?apiKey=${API_KEY}`, {
+      method: 'POST',
+      body: params
+    });
+  } catch (err) {
+    console.error('Jotform 제출 실패:', err);
+  }
+}
+ 
 function showSuccess(){
   document.getElementById('formMain').style.display = 'none';
   document.getElementById('bottombar').style.display = 'none';
@@ -332,8 +358,8 @@ function showSuccess(){
     <strong>연락처</strong> · ${a.contact ? a.contact.name + ' · ' + a.contact.phone : '-'}
   `;
 
-  /* TODO: 실제 저장 연동 지점
-     fetch('YOUR_ENDPOINT', { method:'POST', body: JSON.stringify(a) }); */
+  /TODO: 실제 저장 연동 지점
+       submitToJotform(a);
   console.log('신청 데이터:', a);
 }
 
