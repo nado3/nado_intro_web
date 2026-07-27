@@ -66,6 +66,14 @@
   .field-label:first-child{margin-top:0;}
   .quick-fill{display:inline-block;margin-top:.8rem;font-size:.8rem;color:var(--accent-deep);background:var(--accent-light);padding:.5rem .9rem;border-radius:1rem;border:none;cursor:pointer;font-weight:700;}
 
+  .grid-wrap{max-height:420px;overflow-y:auto;overflow-x:auto;border:1px solid var(--line);border-radius:1rem;-webkit-overflow-scrolling:touch;}
+  .time-grid{border-collapse:collapse;margin:0 auto;user-select:none;-webkit-user-select:none;}
+  .time-grid thead th{position:sticky;top:0;background:var(--white);z-index:2;font-size:.72rem;font-weight:800;color:var(--gray);padding:.5rem .2rem;border-bottom:1px solid var(--line);text-align:center;}
+  .time-grid thead th:first-child{left:0;z-index:3;}
+  .hour-label{position:sticky;left:0;background:var(--white);font-size:.68rem;color:var(--gray);font-weight:700;padding:0 .5rem;white-space:nowrap;border-right:1px solid var(--line);text-align:right;z-index:1;}
+  .grid-cell{width:34px;height:30px;border:1px solid var(--line);background:var(--bg);cursor:pointer;touch-action:pan-y;}
+  .grid-cell.selected{background:var(--accent);}
+
   .consent-box{margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--line);}
   .consent-row{display:flex;align-items:flex-start;gap:.6rem;font-size:.9rem;font-weight:600;cursor:pointer;}
   .consent-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;margin-top:.15rem;}
@@ -160,9 +168,9 @@ const steps = [
     options: ['일상회화','비즈니스','여행영어','시험/면접 준비','발음교정']
   },
   {
-    key: 'timeSlot', type: 'single', required: true,
-    title: '선호하는 수업 시간대는 언제인가요?',
-    options: ['평일 오후','평일 저녁','주말 오전','주말 오후']
+    key: 'schedule', type: 'gridtime', required: true,
+    title: '가능한 시간대를 선택해주세요',
+    sub: 'PC에서는 드래그로, 모바일에서는 하나씩 눌러서 선택할 수 있어요.'
   },
   {
     key: 'place', type: 'multi', required: true,
@@ -192,6 +200,8 @@ const progressFill = document.getElementById('progressFill');
 const nextBtn = document.getElementById('nextBtn');
 const skipBtn = document.getElementById('skipBtn');
 const backBtn = document.getElementById('backBtn');
+const dragState = { isDragging: false, mode: true };
+document.addEventListener('mouseup', () => { dragState.isDragging = false; });
 
 function updateProgress(){
   const pct = Math.round((current / steps.length) * 100);
@@ -200,10 +210,11 @@ function updateProgress(){
 
 function labelFor(step, value){
   if (step.type === 'multi') return Array.isArray(value) && value.length ? value.join(', ') : '';
+  if (step.type === 'gridtime') return Array.isArray(value) && value.length ? `${value.length}개 시간대 선택` : '';
   if (step.type === 'contact') return value && value.name ? `${value.name} · ${value.phone || ''}` : '';
   return value || '';
 }
-
+ 
 function renderHistory(){
   historyEl.innerHTML = '';
   for (let i = 0; i < current; i++){
@@ -226,10 +237,8 @@ function checkValid(step){
   if (!step.required) return true;
   if (step.type === 'single') return !!v;
   if (step.type === 'multi') return Array.isArray(v) && v.length > 0;
+  if (step.type === 'gridtime') return Array.isArray(v) && v.length > 0;
   if (step.type === 'text') return true;
-  if (step.type === 'contact') return v && v.name && v.name.trim() && v.phone && v.phone.trim() && v.consent === true;
-  return false;
-}
 
 function setNextState(step){
   const valid = checkValid(step);
@@ -257,6 +266,33 @@ function renderStep(){
       inner += `<div class="opt ${step.type==='multi'?'multi':''} ${isSel?'selected':''}" data-value="${opt}"><div class="opt-dot"></div><div class="opt-label">${opt}</div></div>`;
     });
     inner += `</div>`;
+  } else if (step.type === 'gridtime'){
+    const days = ['월','화','수','목','금','토','일'];
+    const hours = ['9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','24:00'];
+    const selected = new Set(answers[step.key] || []);
+    inner += `<div class="grid-wrap"><table class="time-grid" id="timeGrid"><thead><tr><th></th>`;
+    days.forEach(d => { inner += `<th>${d}</th>`; });
+    inner += `</tr></thead><tbody>`;
+    hours.forEach(h => {
+      inner += `<tr><td class="hour-label">${h}</td>`;
+      days.forEach(d => {
+        const cellKey = `${d} ${h}`;
+        const isSel = selected.has(cellKey);
+        inner += `<td class="grid-cell ${isSel ? 'selected' : ''}" data-key="${cellKey}"></td>`;
+      });
+      inner += `</tr>`;
+    });
+    inner += `</tbody></table></div>`;
+    inner += `
+      <div class="field-label" style="margin-top:1rem;">표에 없는 시간이 있다면 선택해주세요 (선택)</div>
+      <div style="display:flex;gap:.6rem;">
+        <select id="noteDay" style="flex:1;">
+          <option value="">요일</option>
+          <option>월요일</option><option>화요일</option><option>수요일</option><option>목요일</option><option>금요일</option><option>토요일</option><option>일요일</option>
+        </select>
+        <select id="noteHour" style="flex:1;"><option value="">시간</option></select>
+      </div>
+    `;
   } else if (step.type === 'text'){
     const val = answers[step.key] || '';
     inner += `<textarea id="textInput" placeholder="${step.placeholder||''}">${val}</textarea>`;
@@ -307,6 +343,47 @@ function renderStep(){
         setNextState(step);
       });
     });
+  } else if (step.type === 'gridtime'){
+    const selectedSet = new Set(answers[step.key] || []);
+    const applyCell = (cell, shouldSelect) => {
+      const key = cell.dataset.key;
+      if (shouldSelect) { selectedSet.add(key); cell.classList.add('selected'); }
+      else { selectedSet.delete(key); cell.classList.remove('selected'); }
+      answers[step.key] = Array.from(selectedSet);
+      setNextState(step);
+    };
+    qcardWrap.querySelectorAll('.grid-cell').forEach(cell => {
+      cell.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        dragState.isDragging = true;
+        dragState.mode = !selectedSet.has(cell.dataset.key);
+        applyCell(cell, dragState.mode);
+      });
+      cell.addEventListener('mouseenter', () => {
+        if (dragState.isDragging) applyCell(cell, dragState.mode);
+      });
+      cell.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        applyCell(cell, !selectedSet.has(cell.dataset.key));
+      });
+    });
+    const noteDay = document.getElementById('noteDay');
+    const noteHour = document.getElementById('noteHour');
+    for (let h = 0; h < 24; h++) {
+      const opt = document.createElement('option');
+      opt.value = String(h).padStart(2,'0') + ':00';
+      opt.textContent = h + '시';
+      noteHour.appendChild(opt);
+    }
+    if (answers.scheduleNoteDay) noteDay.value = answers.scheduleNoteDay;
+    if (answers.scheduleNoteHour) noteHour.value = answers.scheduleNoteHour;
+    const syncNote = () => {
+      answers.scheduleNoteDay = noteDay.value;
+      answers.scheduleNoteHour = noteHour.value;
+      answers.scheduleNote = (noteDay.value && noteHour.value) ? `${noteDay.value} ${noteHour.value}` : '';
+    };
+    noteDay.addEventListener('change', syncNote);
+    noteHour.addEventListener('change', syncNote);
   } else if (step.type === 'text'){
     const ta = document.getElementById('textInput');
     ta.addEventListener('input', () => { answers[step.key] = ta.value; });
@@ -366,7 +443,7 @@ async function submitToJotform(a) {
   params.append('submission[27]', (a.place || [])[0] || '');         // 진행방식 — 드롭다운이라 1개만 전달
   params.append(
     'submission[28]',
-    `${a.notes || ''} (희망 시간대: ${a.timeSlot || '-'})`            // 문의사항 + 희망시간대 임시 병합
+    `${a.notes || ''} (희망 시간대: ${(a.schedule||[]).join(', ') || '-'}${a.scheduleNote ? ' / 기타: ' + a.scheduleNote : ''})`  // 문의사항 + 희망시간대 임시 병합
   );
 
   try {
@@ -391,8 +468,7 @@ function showSuccess(){
     <strong>나이대</strong> · ${a.ageGroup || '-'}<br>
     <strong>영어 수준</strong> · ${a.level || '-'}<br>
     <strong>학습 목표</strong> · ${(a.goals||[]).join(', ') || '-'}<br>
-    <strong>희망 시간대</strong> · ${a.timeSlot || '-'}<br>
-    <strong>진행 방식</strong> · ${(a.place||[]).join(', ') || '-'}<br>
+    <strong>희망 시간대</strong> · ${(a.schedule||[]).join(', ') || '-'}${a.scheduleNote ? ' / 기타: ' + a.scheduleNote : ''}<br>    <strong>진행 방식</strong> · ${(a.place||[]).join(', ') || '-'}<br>
     <strong>연락처</strong> · ${a.contact ? a.contact.name + ' · ' + a.contact.phone : '-'}
   `;
 
