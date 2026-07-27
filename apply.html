@@ -66,6 +66,14 @@
   .field-label:first-child{margin-top:0;}
   .quick-fill{display:inline-block;margin-top:.8rem;font-size:.8rem;color:var(--accent-deep);background:var(--accent-light);padding:.5rem .9rem;border-radius:1rem;border:none;cursor:pointer;font-weight:700;}
 
+  .consent-box{margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--line);}
+  .consent-row{display:flex;align-items:flex-start;gap:.6rem;font-size:.9rem;font-weight:600;cursor:pointer;}
+  .consent-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;margin-top:.15rem;}
+  .required-mark{color:var(--accent-deep);font-weight:700;}
+  .consent-toggle{background:none;border:none;font-size:.78rem;color:var(--gray);text-decoration:underline;cursor:pointer;margin-top:.5rem;padding:0;font-family:'Pretendard',sans-serif;}
+  .consent-detail{margin-top:.6rem;background:var(--bg);border-radius:.8rem;padding:.9rem 1rem;font-size:.78rem;color:var(--gray);line-height:1.8;}
+  .consent-detail strong{color:var(--ink);}
+ 
   /* BOTTOM BAR */
   .bottombar{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--line);padding:1rem 1.2rem;z-index:50;}
   .bottombar-inner{max-width:640px;margin:0 auto;display:flex;gap:.7rem;}
@@ -219,7 +227,7 @@ function checkValid(step){
   if (step.type === 'single') return !!v;
   if (step.type === 'multi') return Array.isArray(v) && v.length > 0;
   if (step.type === 'text') return true;
-  if (step.type === 'contact') return v && v.name && v.name.trim() && v.phone && v.phone.trim();
+  if (step.type === 'contact') return v && v.name && v.name.trim() && v.phone && v.phone.trim() && v.consent === true;
   return false;
 }
 
@@ -254,14 +262,29 @@ function renderStep(){
     inner += `<textarea id="textInput" placeholder="${step.placeholder||''}">${val}</textarea>`;
     if (step.quickFill) inner += `<button class="quick-fill" id="quickFillBtn">"${step.quickFill}"</button>`;
   } else if (step.type === 'contact'){
-    const v = answers[step.key] || {name:'', phone:''};
+    const v = answers[step.key] || {name:'', phone:'', consent:false};
     inner += `
       <div class="field-label">이름</div>
       <input type="text" id="nameInput" placeholder="홍길동" value="${v.name}">
       <div class="field-label">연락처</div>
       <input type="tel" id="phoneInput" placeholder="010-0000-0000" value="${v.phone}">
+
+      <div class="consent-box">
+        <label class="consent-row">
+          <input type="checkbox" id="consentCheck" ${v.consent ? 'checked' : ''}>
+          <span>개인정보 수집·이용에 동의합니다 <span class="required-mark">(필수)</span></span>
+        </label>
+        <button type="button" class="consent-toggle" id="consentToggle">자세히 보기</button>
+        <div class="consent-detail" id="consentDetail" style="display:none;">
+          <strong>수집 항목</strong> 이름, 연락처, 영어 수준, 학습 목표, 희망 시간대, 진행 방식, 문의사항<br>
+          <strong>수집 목적</strong> 선생님 매칭 및 상담을 위한 연락<br>
+          <strong>보유 기간</strong> 매칭 완료 후 6개월, 이후 파기<br>
+          동의를 거부하실 수 있으며, 다만 동의하지 않으실 경우 매칭 서비스 신청이 어렵습니다.
+        </div>
+      </div>
     `;
   }
+ 
   inner += `</div>`;
   qcardWrap.innerHTML = inner;
 
@@ -291,9 +314,23 @@ function renderStep(){
   } else if (step.type === 'contact'){
     const nameInput = document.getElementById('nameInput');
     const phoneInput = document.getElementById('phoneInput');
-    const sync = () => { answers[step.key] = { name: nameInput.value, phone: phoneInput.value }; setNextState(step); };
+    const consentCheck = document.getElementById('consentCheck');
+    const consentToggle = document.getElementById('consentToggle');
+    const consentDetail = document.getElementById('consentDetail');
+    const sync = () => {
+      answers[step.key] = {
+        name: nameInput.value,
+        phone: phoneInput.value,
+        consent: consentCheck.checked
+      };
+      setNextState(step);
+    };
     nameInput.addEventListener('input', sync);
     phoneInput.addEventListener('input', sync);
+    consentCheck.addEventListener('change', sync);
+    consentToggle.addEventListener('click', () => {
+      consentDetail.style.display = consentDetail.style.display === 'none' ? 'block' : 'none';
+    });
   }
 
   setNextState(step);
