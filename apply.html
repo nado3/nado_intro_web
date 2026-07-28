@@ -67,7 +67,7 @@
   .tier-more-arrow{display:inline-block;transition:transform .2s;font-size:.7rem;}
   .tier-more-toggle.open .tier-more-arrow{transform:rotate(180deg);}
   .tier-more{max-height:0;overflow:hidden;transition:max-height .25s ease, margin-top .25s ease;font-size:.82rem;color:var(--ink);line-height:1.6;background:var(--bg);border-radius:.7rem;}
-  .tier-more.open{max-height:220px;margin-top:.6rem;padding:.8rem .9rem;}
+  .tier-more-caption{margin-top:.5rem;font-size:.72rem;color:var(--gray);line-height:1.5;}
   .surcharge-note{margin-top:1rem;border-top:1px solid var(--line);padding-top:1rem;}
   .surcharge-toggle{background:none;border:none;padding:0;font-size:.82rem;color:var(--gray);font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.3rem;font-family:'Pretendard',sans-serif;}
   .surcharge-toggle.open .tier-more-arrow{transform:rotate(180deg);}
@@ -362,8 +362,10 @@ function renderStep(){
               <div class="tier-opt-price">₩${opt.price.toLocaleString()}</div>
             </div>
             <div class="tier-opt-desc">${opt.desc}</div>
-            <button type="button" class="tier-more-toggle" data-idx="${idx}">자세히 보기 <span class="tier-more-arrow">▾</span></button>
-            <div class="tier-more" id="tierMore${idx}">${opt.more}</div>
+            <div class="tier-more ${isSel?'open':''}" id="tierMore${idx}">
+              ${opt.more}
+              ${opt.moreCaption ? `<div class="tier-more-caption">${opt.moreCaption}</div>` : ''}
+            </div>
           </div>`;
       });
       inner += `</div>`;
