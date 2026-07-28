@@ -624,17 +624,19 @@ async function submitToJotform(a) {
   const API_KEY = '32abecc4b70bf065c8adf25c9b02b7cb';
 
   const params = new URLSearchParams();
-  params.append('submission[3]', a.contact.name);                    // 이름
-  params.append('submission[4][full]', a.contact.phone);             // 연락처 — 저장 안 되면 'submission[4]'로 바꿔서 재시도
-  params.append('submission[5]', a.ageGroup);                        // 나이대
-  params.append('submission[7]', a.level);                           // 영어 수준
-  (a.goals || []).forEach(g => params.append('submission[8][]', g)); // 학습 목표 (다중)
-  params.append('submission[27]', (a.place || [])[0] || '');         // 진행방식 — 드롭다운이라 1개만 전달
+  params.append('submission[3]', a.contact.name);                     // 이름
+  params.append('submission[4][full]', a.contact.phone);              // 연락처
+  params.append('submission[5]', a.ageGroup);                         // 나이대
+  params.append('submission[7]', a.level);                            // 영어 수준
+  (a.goals || []).forEach(g => params.append('submission[8][]', g));  // 학습 목표 (다중)
+  (a.place || []).forEach(p => params.append('submission[29][]', p)); // 진행방식 (다중)
+  params.append('submission[30]', a.tier || '');                      // 선택 플랜
+  params.append('submission[31]', a.payment ? '완료' : '');           // 결제확인
   params.append(
-    'submission[28]',
-    `${a.notes || ''} (플랜: ${a.tier || '-'} / 희망 시간대: ${(a.schedule||[]).join(', ') || '-'}${(a.scheduleNotes&&a.scheduleNotes.length) ? ' / 기타: ' + a.scheduleNotes.join(', ') : ''} / 결제안내확인: ${a.payment ? '완료' : '미확인'})`
-    // 문의사항 + 플랜 + 희망시간대 + 결제확인 임시 병합 — TODO: Jotform에 "선택 플랜" 전용 필드 만드시면 qid 알려주세요, 따로 매핑해드립니다
-  );
+    'submission[32]',
+    `${(a.schedule||[]).join(', ') || '-'}${(a.scheduleNotes&&a.scheduleNotes.length) ? ' / 기타: ' + a.scheduleNotes.join(', ') : ''}`
+  );                                                                  // 희망시간대
+  params.append('submission[28]', a.notes || '');                     // 문의사항
 
   try {
     await fetch(`https://api.jotform.com/form/${FORM_ID}/submissions?apiKey=${API_KEY}`, {
@@ -644,6 +646,7 @@ async function submitToJotform(a) {
   } catch (err) {
     console.error('Jotform 제출 실패:', err);
   }
+}
 }
 
 function showSuccess(){
