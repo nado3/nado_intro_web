@@ -179,7 +179,7 @@
   <p class="success-text">입금 확인 후 24시간 이내 카카오톡으로 연락드려요.<br>인천 송도에서 만날 선생님을 찾아드릴게요.</p>
   <div class="trust-row">
     <div class="trust-item"><div class="trust-num">100%</div><div class="trust-label">학적 인증</div></div>
-    <div class="trust-item"><div class="trust-num">50분</div><div class="trust-label">1:1 수업</div></div>
+    <div class="trust-item"><div class="trust-num">1시간</div><div class="trust-label">1:1 수업</div></div>
     <div class="trust-item"><div class="trust-num">송도</div><div class="trust-label">오프라인</div></div>
   </div>
   <div class="summary-box" id="summaryBox"></div>
@@ -315,8 +315,7 @@ function checkValid(step){
   if (step.type === 'multi') return Array.isArray(v) && v.length > 0;
   if (step.type === 'gridtime') return Array.isArray(v) && v.length > 0;
   if (step.type === 'text') return true;
-  if (step.type === 'contact') return v && v.name && v.name.trim() && v.phone && v.phone.trim() && v.consent === true;
-  if (step.type === 'payment') return v === true;
+  if (step.type === 'contact') return v && v.name && v.name.trim() && v.phoneValid && v.consent === true;  if (step.type === 'payment') return v === true;
   return false;
 }
 
@@ -579,13 +578,16 @@ function renderStep(){
     const consentToggle = document.getElementById('consentToggle');
     const consentDetail = document.getElementById('consentDetail');
     const sync = () => {
-      answers[step.key] = {
-        name: nameInput.value,
-        phone: phoneInput.value,
-        consent: consentCheck.checked
-      };
-      setNextState(step);
+    const phoneValid = /^01[0-9]-?\d{3,4}-?\d{4}$/.test(phoneInput.value.replace(/\s/g, ''));
+    phoneInput.style.borderColor = (phoneInput.value && !phoneValid) ? '#E85C5C' : '';
+    answers[step.key] = {
+      name: nameInput.value,
+      phone: phoneInput.value,
+      phoneValid,
+      consent: consentCheck.checked
     };
+    setNextState(step);
+  };
     nameInput.addEventListener('input', sync);
     phoneInput.addEventListener('input', sync);
     consentCheck.addEventListener('change', sync);
