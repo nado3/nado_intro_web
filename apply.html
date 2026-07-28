@@ -29,7 +29,6 @@
   .topbar-title{font-weight:800;font-size:1rem;}
   .progress-track{height:5px;background:var(--line);}
   .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .35s ease;}
-  .progress-pct{position:absolute;right:1.2rem;top:0.85rem;font-size:.8rem;font-weight:800;color:var(--accent);}
 
   /* MAIN */
   main{max-width:640px;margin:0 auto;padding:5.2rem 1.2rem 7rem;min-height:100vh;}
@@ -55,10 +54,23 @@
   .opt.selected .opt-dot::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.72rem;font-weight:900;}
   .opt-label{font-size:.98rem;font-weight:600;}
 
+  /* TIER CARDS */
+  .tier-opt{border:1.5px solid var(--line);border-radius:1.1rem;padding:1.1rem 1.2rem;cursor:pointer;transition:border-color .15s, background .15s;position:relative;background:var(--white);}
+  .tier-opt.selected{border-color:var(--accent);background:var(--accent-light);}
+  .tier-opt-badge{position:absolute;top:-10px;right:1.1rem;background:var(--accent);color:#fff;font-size:.66rem;font-weight:800;padding:.22rem .6rem;border-radius:1rem;}
+  .tier-opt-top{display:flex;justify-content:space-between;align-items:center;}
+  .tier-opt-name{font-weight:800;font-size:1.02rem;}
+  .tier-opt-price{font-weight:800;color:var(--accent-deep);font-size:.95rem;}
+  .tier-opt-desc{font-size:.82rem;color:var(--gray);margin-top:.35rem;line-height:1.5;}
+
   textarea, input[type=text], input[type=tel]{
     width:100%;font-family:'Pretendard',sans-serif;font-size:.98rem;padding:1rem 1.1rem;
     border:1.5px solid var(--line);border-radius:1rem;background:var(--bg);color:var(--ink);outline:none;
     transition:border-color .15s, background .15s;
+  }
+  select{
+    font-family:'Pretendard',sans-serif;font-size:.92rem;padding:.85rem .9rem;
+    border:1.5px solid var(--line);border-radius:.9rem;background:var(--bg);color:var(--ink);outline:none;
   }
   textarea:focus, input:focus{border-color:var(--accent);background:var(--white);}
   textarea{min-height:110px;resize:vertical;line-height:1.6;}
@@ -74,6 +86,18 @@
   .grid-cell{width:34px;height:30px;border:1px solid var(--line);background:var(--bg);cursor:pointer;touch-action:pan-y;}
   .grid-cell.selected{background:var(--accent);}
 
+  .note-chip{display:inline-flex;align-items:center;gap:.4rem;background:var(--accent-light);color:var(--accent-deep);font-size:.78rem;font-weight:700;padding:.4rem .5rem .4rem .8rem;border-radius:1rem;}
+  .note-chip button{background:none;border:none;color:var(--accent-deep);font-size:.9rem;cursor:pointer;line-height:1;padding:0 .2rem;}
+  .note-add-row{display:flex;gap:.5rem;}
+  .note-add-btn{flex-shrink:0;width:44px;border:1.5px solid var(--line);border-radius:.9rem;background:var(--bg);color:var(--accent-deep);font-size:1.2rem;font-weight:800;cursor:pointer;}
+
+  /* PAYMENT */
+  .pay-box{background:var(--bg);border-radius:1rem;padding:1.1rem 1.3rem;margin-bottom:1rem;}
+  .pay-row{display:flex;justify-content:space-between;gap:1rem;font-size:.92rem;padding:.55rem 0;border-bottom:1px solid var(--line);}
+  .pay-row:last-child{border-bottom:none;}
+  .pay-row span:first-child{color:var(--gray);}
+  .pay-row strong{color:var(--ink);text-align:right;}
+
   .consent-box{margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--line);}
   .consent-row{display:flex;align-items:flex-start;gap:.6rem;font-size:.9rem;font-weight:600;cursor:pointer;}
   .consent-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;margin-top:.15rem;}
@@ -81,7 +105,7 @@
   .consent-toggle{background:none;border:none;font-size:.78rem;color:var(--gray);text-decoration:underline;cursor:pointer;margin-top:.5rem;padding:0;font-family:'Pretendard',sans-serif;}
   .consent-detail{margin-top:.6rem;background:var(--bg);border-radius:.8rem;padding:.9rem 1rem;font-size:.78rem;color:var(--gray);line-height:1.8;}
   .consent-detail strong{color:var(--ink);}
- 
+
   /* BOTTOM BAR */
   .bottombar{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--line);padding:1rem 1.2rem;z-index:50;}
   .bottombar-inner{max-width:640px;margin:0 auto;display:flex;gap:.7rem;}
@@ -138,7 +162,7 @@
 <div class="success-wrap" id="successWrap">
   <div class="success-badge">🎉</div>
   <div class="success-title">매칭 준비 완료!</div>
-  <p class="success-text">담당자가 확인 후 24시간 내 연락드려요.<br>인천 송도에서 만날 선생님을 찾아드릴게요.</p>
+  <p class="success-text">입금 확인 후 24시간 이내 카카오톡으로 연락드려요.<br>인천 송도에서 만날 선생님을 찾아드릴게요.</p>
   <div class="trust-row">
     <div class="trust-item"><div class="trust-num">100%</div><div class="trust-label">학적 인증</div></div>
     <div class="trust-item"><div class="trust-num">50분</div><div class="trust-label">1:1 수업</div></div>
@@ -149,7 +173,24 @@
 </div>
 
 <script>
+const TIER_PRICES = { '이코노미': 140000, '스탠다드': 180000, '프리미엄': 220000 };
+const BANK_INFO = {
+  bank: '[은행명 입력]',
+  account: '[계좌번호 입력]',
+  holder: '[예금주 입력]'
+};
+
 const steps = [
+  {
+    key: 'tier', type: 'tier', required: true,
+    title: '어떤 요금제를 원하시나요?',
+    sub: '모두 월 4회, 1회 50분 기준이에요.',
+    options: [
+      { name: '이코노미', price: 140000, desc: '학적 인증 완료 선생님과 부담 없이 시작' },
+      { name: '스탠다드', price: 180000, desc: '해외 대학·글로벌 캠퍼스 경험 선생님', badge: 'Most Popular' },
+      { name: '프리미엄', price: 220000, desc: '원어민급 실력, 전문 분야 맞춤 수업' }
+    ]
+  },
   {
     key: 'ageGroup', type: 'single', required: true,
     title: '나이대가 어떻게 되시나요?',
@@ -189,6 +230,11 @@ const steps = [
     key: 'contact', type: 'contact', required: true,
     title: '마지막이에요! 연락처를 남겨주세요',
     sub: '매칭 결과를 이 번호로 안내드려요.'
+  },
+  {
+    key: 'payment', type: 'payment', required: true,
+    title: '결제 안내',
+    sub: '아래 계좌로 입금해주시면 확인 후 진행됩니다.'
   }
 ];
 
@@ -212,9 +258,10 @@ function labelFor(step, value){
   if (step.type === 'multi') return Array.isArray(value) && value.length ? value.join(', ') : '';
   if (step.type === 'gridtime') return Array.isArray(value) && value.length ? `${value.length}개 시간대 선택` : '';
   if (step.type === 'contact') return value && value.name ? `${value.name} · ${value.phone || ''}` : '';
+  if (step.type === 'payment') return value === true ? '확인 완료' : '';
   return value || '';
 }
- 
+
 function renderHistory(){
   historyEl.innerHTML = '';
   for (let i = 0; i < current; i++){
@@ -236,10 +283,12 @@ function checkValid(step){
   const v = answers[step.key];
   if (!step.required) return true;
   if (step.type === 'single') return !!v;
+  if (step.type === 'tier') return !!v;
   if (step.type === 'multi') return Array.isArray(v) && v.length > 0;
   if (step.type === 'gridtime') return Array.isArray(v) && v.length > 0;
   if (step.type === 'text') return true;
   if (step.type === 'contact') return v && v.name && v.name.trim() && v.phone && v.phone.trim() && v.consent === true;
+  if (step.type === 'payment') return v === true;
   return false;
 }
 
@@ -249,6 +298,19 @@ function setNextState(step){
   nextBtn.disabled = !valid;
   nextBtn.textContent = current === steps.length - 1 ? '제출하기' : '다음';
   skipBtn.style.display = step.required ? 'none' : 'block';
+}
+
+function renderNoteChips(){
+  const wrap = document.getElementById('noteChips');
+  if (!wrap) return;
+  const list = answers.scheduleNotes || [];
+  wrap.innerHTML = list.map((t, i) => `<span class="note-chip">${t}<button type="button" data-i="${i}">✕</button></span>`).join('');
+  wrap.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      answers.scheduleNotes.splice(parseInt(btn.dataset.i), 1);
+      renderNoteChips();
+    });
+  });
 }
 
 function renderStep(){
@@ -261,7 +323,22 @@ function renderStep(){
   let inner = `<div class="qcard"><div class="qtitle">${step.title}</div>`;
   if (step.sub) inner += `<div class="qsub">${step.sub}</div>`;
 
-  if (step.type === 'single' || step.type === 'multi'){
+  if (step.type === 'tier'){
+    inner += `<div class="opt-list">`;
+    step.options.forEach(opt => {
+      const isSel = answers.tier === opt.name;
+      inner += `
+        <div class="tier-opt ${isSel?'selected':''}" data-value="${opt.name}">
+          ${opt.badge ? `<div class="tier-opt-badge">${opt.badge}</div>` : ''}
+          <div class="tier-opt-top">
+            <div class="tier-opt-name">${opt.name}</div>
+            <div class="tier-opt-price">₩${opt.price.toLocaleString()}</div>
+          </div>
+          <div class="tier-opt-desc">${opt.desc}</div>
+        </div>`;
+    });
+    inner += `</div>`;
+  } else if (step.type === 'single' || step.type === 'multi'){
     inner += `<div class="opt-list">`;
     const selected = answers[step.key] || (step.type === 'multi' ? [] : null);
     step.options.forEach(opt => {
@@ -287,13 +364,15 @@ function renderStep(){
     });
     inner += `</tbody></table></div>`;
     inner += `
-      <div class="field-label" style="margin-top:1rem;">표에 없는 시간이 있다면 선택해주세요 (선택)</div>
-      <div style="display:flex;gap:.6rem;">
+      <div class="field-label" style="margin-top:1rem;">표에 없는 시간이 있다면 추가해주세요 (선택)</div>
+      <div id="noteChips" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.6rem;"></div>
+      <div class="note-add-row">
         <select id="noteDay" style="flex:1;">
           <option value="">요일</option>
           <option>월요일</option><option>화요일</option><option>수요일</option><option>목요일</option><option>금요일</option><option>토요일</option><option>일요일</option>
         </select>
         <select id="noteHour" style="flex:1;"><option value="">시간</option></select>
+        <button type="button" class="note-add-btn" id="addNoteBtn">+</button>
       </div>
     `;
   } else if (step.type === 'text'){
@@ -323,12 +402,40 @@ function renderStep(){
         </div>
       </div>
     `;
+  } else if (step.type === 'payment'){
+    const tierName = answers.tier || '-';
+    const price = TIER_PRICES[answers.tier] || 0;
+    inner += `
+      <div class="pay-box">
+        <div class="pay-row"><span>선택 요금제</span><strong>${tierName}</strong></div>
+        <div class="pay-row"><span>결제 금액</span><strong>₩${price.toLocaleString()}</strong></div>
+        <div class="pay-row"><span>입금 은행</span><strong>${BANK_INFO.bank}</strong></div>
+        <div class="pay-row"><span>계좌번호</span><strong>${BANK_INFO.account}</strong></div>
+        <div class="pay-row"><span>예금주</span><strong>${BANK_INFO.holder}</strong></div>
+      </div>
+      <div class="qsub" style="margin-top:-.4rem;">입금자명은 <strong style="color:var(--ink);">신청자 성함과 동일하게</strong> 입금해주세요. 매칭 완료 후 24시간 이내 입금해주시면 됩니다.</div>
+      <div class="consent-box">
+        <label class="consent-row">
+          <input type="checkbox" id="paymentAckCheck" ${answers.payment ? 'checked' : ''}>
+          <span>위 결제 안내를 확인했습니다 <span class="required-mark">(필수)</span></span>
+        </label>
+      </div>
+    `;
   }
- 
+
   inner += `</div>`;
   qcardWrap.innerHTML = inner;
 
-  if (step.type === 'single' || step.type === 'multi'){
+  if (step.type === 'tier'){
+    qcardWrap.querySelectorAll('.tier-opt').forEach(el => {
+      el.addEventListener('click', () => {
+        answers.tier = el.dataset.value;
+        qcardWrap.querySelectorAll('.tier-opt').forEach(o => o.classList.remove('selected'));
+        el.classList.add('selected');
+        setNextState(step);
+      });
+    });
+  } else if (step.type === 'single' || step.type === 'multi'){
     qcardWrap.querySelectorAll('.opt').forEach(el => {
       el.addEventListener('click', () => {
         const val = el.dataset.value;
@@ -370,23 +477,25 @@ function renderStep(){
         applyCell(cell, !selectedSet.has(cell.dataset.key));
       });
     });
+
     const noteDay = document.getElementById('noteDay');
     const noteHour = document.getElementById('noteHour');
     for (let h = 0; h < 24; h++) {
       const opt = document.createElement('option');
-      opt.value = String(h).padStart(2,'0') + ':00';
+      opt.value = h + '시';
       opt.textContent = h + '시';
       noteHour.appendChild(opt);
     }
-    if (answers.scheduleNoteDay) noteDay.value = answers.scheduleNoteDay;
-    if (answers.scheduleNoteHour) noteHour.value = answers.scheduleNoteHour;
-    const syncNote = () => {
-      answers.scheduleNoteDay = noteDay.value;
-      answers.scheduleNoteHour = noteHour.value;
-      answers.scheduleNote = (noteDay.value && noteHour.value) ? `${noteDay.value} ${noteHour.value}` : '';
-    };
-    noteDay.addEventListener('change', syncNote);
-    noteHour.addEventListener('change', syncNote);
+    if (!answers.scheduleNotes) answers.scheduleNotes = [];
+    renderNoteChips();
+    document.getElementById('addNoteBtn').addEventListener('click', () => {
+      if (noteDay.value && noteHour.value) {
+        answers.scheduleNotes.push(`${noteDay.value} ${noteHour.value}`);
+        noteDay.value = '';
+        noteHour.value = '';
+        renderNoteChips();
+      }
+    });
   } else if (step.type === 'text'){
     const ta = document.getElementById('textInput');
     ta.addEventListener('input', () => { answers[step.key] = ta.value; });
@@ -412,6 +521,12 @@ function renderStep(){
     consentToggle.addEventListener('click', () => {
       consentDetail.style.display = consentDetail.style.display === 'none' ? 'block' : 'none';
     });
+  } else if (step.type === 'payment'){
+    const ack = document.getElementById('paymentAckCheck');
+    ack.addEventListener('change', () => {
+      answers.payment = ack.checked;
+      setNextState(step);
+    });
   }
 
   setNextState(step);
@@ -435,9 +550,9 @@ backBtn.addEventListener('click', () => {
 
 async function submitToJotform(a) {
   const FORM_ID = '262064236851052';
-  const API_KEY = '32abecc4b70bf065c8adf25c9b02b7cb';   
+  const API_KEY = '32abecc4b70bf065c8adf25c9b02b7cb';
 
-    const params = new URLSearchParams();
+  const params = new URLSearchParams();
   params.append('submission[3]', a.contact.name);                    // 이름
   params.append('submission[4][full]', a.contact.phone);             // 연락처 — 저장 안 되면 'submission[4]'로 바꿔서 재시도
   params.append('submission[5]', a.ageGroup);                        // 나이대
@@ -446,7 +561,8 @@ async function submitToJotform(a) {
   params.append('submission[27]', (a.place || [])[0] || '');         // 진행방식 — 드롭다운이라 1개만 전달
   params.append(
     'submission[28]',
-    `${a.notes || ''} (희망 시간대: ${(a.schedule||[]).join(', ') || '-'}${a.scheduleNote ? ' / 기타: ' + a.scheduleNote : ''})`  // 문의사항 + 희망시간대 임시 병합
+    `${a.notes || ''} (요금제: ${a.tier || '-'} / 희망 시간대: ${(a.schedule||[]).join(', ') || '-'}${(a.scheduleNotes&&a.scheduleNotes.length) ? ' / 기타: ' + a.scheduleNotes.join(', ') : ''} / 결제안내확인: ${a.payment ? '완료' : '미확인'})`
+    // 문의사항 + 요금제 + 희망시간대 + 결제확인 임시 병합 — TODO: Jotform에 "선택 요금제" 전용 필드 만드시면 qid 알려주세요, 따로 매핑해드립니다
   );
 
   try {
@@ -458,7 +574,7 @@ async function submitToJotform(a) {
     console.error('Jotform 제출 실패:', err);
   }
 }
- 
+
 function showSuccess(){
   document.getElementById('formMain').style.display = 'none';
   document.getElementById('bottombar').style.display = 'none';
@@ -468,14 +584,15 @@ function showSuccess(){
 
   const a = answers;
   document.getElementById('summaryBox').innerHTML = `
+    <strong>선택 요금제</strong> · ${a.tier || '-'} (₩${(TIER_PRICES[a.tier]||0).toLocaleString()})<br>
     <strong>나이대</strong> · ${a.ageGroup || '-'}<br>
     <strong>영어 수준</strong> · ${a.level || '-'}<br>
     <strong>학습 목표</strong> · ${(a.goals||[]).join(', ') || '-'}<br>
-    <strong>희망 시간대</strong> · ${(a.schedule||[]).join(', ') || '-'}${a.scheduleNote ? ' / 기타: ' + a.scheduleNote : ''}<br>    <strong>진행 방식</strong> · ${(a.place||[]).join(', ') || '-'}<br>
+    <strong>희망 시간대</strong> · ${(a.schedule||[]).join(', ') || '-'}${(a.scheduleNotes&&a.scheduleNotes.length) ? ' / 기타: ' + a.scheduleNotes.join(', ') : ''}<br>
+    <strong>진행 방식</strong> · ${(a.place||[]).join(', ') || '-'}<br>
     <strong>연락처</strong> · ${a.contact ? a.contact.name + ' · ' + a.contact.phone : '-'}
   `;
 
-  //TODO: 실제 저장 연동 지점
   submitToJotform(a);
   console.log('신청 데이터:', a);
 }
