@@ -239,6 +239,9 @@ function checkValid(step){
   if (step.type === 'multi') return Array.isArray(v) && v.length > 0;
   if (step.type === 'gridtime') return Array.isArray(v) && v.length > 0;
   if (step.type === 'text') return true;
+  if (step.type === 'contact') return v && v.name && v.name.trim() && v.phone && v.phone.trim() && v.consent === true;
+  return false;
+}
 
 function setNextState(step){
   const valid = checkValid(step);
