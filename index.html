@@ -40,6 +40,8 @@
     .nav-links a:hover { color: var(--accent); }
     .nav-cta { background: var(--accent); color: var(--white) !important; padding: 0.55rem 1.4rem; border-radius: 2rem; font-size: 0.85rem !important; transition: background 0.2s !important; }
     .nav-cta:hover { background: var(--accent-deep) !important; }
+    .nav-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--black); padding: 0; }
+    
 
     /* HERO */
     .hero { background: linear-gradient(135deg, #F5F8FE 0%, #E3F2FD 55%, #D3E7FB 100%); padding: 11rem 3rem 6rem; }
@@ -62,7 +64,7 @@
     .hero-micro { font-size: 0.8rem; color: var(--gray); margin-top: 1rem; }
 
     .hero-right { position: relative; display: flex; align-items: center; justify-content: center; }
-    .hero-visual { position: relative; width: 380px; height: 460px; }
+    .hero-visual { position: relative; width: 380px; height: 460px; max-width: 100%; }
     .hero-card { position: absolute; background: var(--white); border-radius: 1.5rem; padding: 1.5rem; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(74, 144, 226, 0.15); }
     .hero-card.card-main { width: 260px; top: 46%; left: 48%; transform: translate(-50%, -50%); z-index: 2; animation: float 4s ease-in-out infinite; }
     .hero-card.card-small-1 { width: 150px; top: 2%; right: 0%; transform: rotate(6deg); font-size: 0.8rem; z-index: 1; animation: floatSmall1 4s ease-in-out infinite 1s; }
@@ -212,10 +214,23 @@
     @media (max-width: 900px) {
       nav { padding: 1rem 1.5rem; }
       .nav-links { display: none; }
+      .nav-toggle { display: block; }
+      .nav-links.mobile-open {
+        display: flex !important;
+        position: absolute;
+        top: 100%; left: 0; right: 0;
+        flex-direction: column;
+        background: var(--white);
+        padding: 1.5rem;
+        gap: 1.2rem;
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      }
       .hero { padding: 8rem 1.5rem 3rem; }
       .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
       .hero-left { padding: 0; }
       .hero-right { min-height: 320px; }
+      .hero-visual { width: 100%; max-width: 320px; height: 400px; }
       section { padding: 4rem 1.5rem; }
       .stats-strip { grid-template-columns: repeat(2, 1fr); padding: 3rem 1.5rem 0; }
       .verify-grid, .teach-grid, .steps-grid, .tier-grid { grid-template-columns: 1fr; }
@@ -237,7 +252,8 @@
 <!-- NAV -->
 <nav>
   <a class="nav-logo" href="index.html">나<span>도</span></a>
-  <ul class="nav-links">
+  <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기">☰</button>
+  <ul class="nav-links" id="navLinks">
   <li><a href="index.html">홈</a></li>
   <li><a href="how.html">이용 방법</a></li>
   <li><a href="#why">왜 나도인가</a></li>
@@ -502,6 +518,14 @@
 </footer>
 
 <script>
+  const navToggle = document.getElementById('navToggle');
+  if (navToggle) {
+    navToggle.addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('mobile-open');
+      navToggle.textContent = document.getElementById('navLinks').classList.contains('mobile-open') ? '✕' : '☰';
+    });
+  }
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1 });
