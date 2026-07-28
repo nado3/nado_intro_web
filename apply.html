@@ -349,22 +349,30 @@ function renderStep(){
   if (step.sub) inner += `<div class="qsub">${step.sub}</div>`;
 
   if (step.type === 'tier'){
-    inner += `<div class="opt-list">`;
-    step.options.forEach(opt => {
-      const isSel = answers.tier === opt.name;
+      inner += `<div class="opt-list">`;
+      step.options.forEach((opt, idx) => {
+        const isSel = answers.tier === opt.name;
+        inner += `
+          <div class="tier-opt ${isSel?'selected':''}" data-value="${opt.name}">
+            ${opt.badge ? `<div class="tier-opt-badge">${opt.badge}</div>` : ''}
+            <div class="tier-opt-top">
+              <div class="tier-opt-name">${opt.name}</div>
+              <div class="tier-opt-price">₩${opt.price.toLocaleString()}</div>
+            </div>
+            <div class="tier-opt-desc">${opt.desc}</div>
+            <button type="button" class="tier-more-toggle" data-idx="${idx}">자세히 보기 <span class="tier-more-arrow">▾</span></button>
+            <div class="tier-more" id="tierMore${idx}">${opt.more}</div>
+          </div>`;
+      });
+      inner += `</div>`;
       inner += `
-        <div class="tier-opt ${isSel?'selected':''}" data-value="${opt.name}">
-          ${opt.badge ? `<div class="tier-opt-badge">${opt.badge}</div>` : ''}
-          <div class="tier-opt-top">
-            <div class="tier-opt-name">${opt.name}</div>
-            <div class="tier-opt-price">₩${opt.price.toLocaleString()}</div>
-          </div>
-          <div class="tier-opt-desc">${opt.desc}</div>
+        <div class="surcharge-note">
+          <button type="button" class="surcharge-toggle" id="surchargeToggle">ⓘ 초등학생 미만이신가요? <span class="tier-more-arrow">▾</span></button>
+          <div class="surcharge-body" id="surchargeBody">모든 요금제 공통으로, 초등학생 미만 학습자는 추가금 20,000원이 붙습니다. 결제 안내 단계에서 최종 금액에 함께 안내해드려요.</div>
         </div>`;
-    });
-    inner += `</div>`;
-  } else if (step.type === 'single' || step.type === 'multi'){
-    inner += `<div class="opt-list">`;
+    } else if (step.type === 'single' || step.type === 'multi'){
+      inner += `<div class="opt-list">`;
+ 
     const selected = answers[step.key] || (step.type === 'multi' ? [] : null);
     step.options.forEach(opt => {
       const isSel = step.type === 'multi' ? selected.includes(opt) : selected === opt;
@@ -452,29 +460,46 @@ function renderStep(){
   qcardWrap.innerHTML = inner;
 
   if (step.type === 'tier'){
-    inner += `<div class="opt-list">`;
-    step.options.forEach((opt, idx) => {
-      const isSel = answers.tier === opt.name;
-      inner += `
-        <div class="tier-opt ${isSel?'selected':''}" data-value="${opt.name}">
-          ${opt.badge ? `<div class="tier-opt-badge">${opt.badge}</div>` : ''}
-          <div class="tier-opt-top">
-            <div class="tier-opt-name">${opt.name}</div>
-            <div class="tier-opt-price">₩${opt.price.toLocaleString()}</div>
-          </div>
-          <div class="tier-opt-desc">${opt.desc}</div>
-          <button type="button" class="tier-more-toggle" data-idx="${idx}">자세히 보기 <span class="tier-more-arrow">▾</span></button>
-          <div class="tier-more" id="tierMore${idx}">${opt.more}</div>
-        </div>`;
+    qcardWrap.querySelectorAll('.tier-opt').forEach(el => {
+      el.addEventListener('click', () => {
+        answers.tier = el.dataset.value;
+        qcardWrap.querySelectorAll('.tier-opt').forEach(o => o.classList.remove('selected'));
+        el.classList.add('selected');
+        setNextState(step);
+      });
     });
-    inner += `</div>`;
-    inner += `
-      <div class="surcharge-note">
-        <button type="button" class="surcharge-toggle" id="surchargeToggle">ⓘ 초등학생 미만이신가요? <span class="tier-more-arrow">▾</span></button>
-        <div class="surcharge-body" id="surchargeBody">모든 요금제 공통으로, 초등학생 미만 학습자는 추가금 20,000원이 붙습니다. 결제 안내 단계에서 최종 금액에 함께 안내해드려요.</div>
-      </div>`;
+    qcardWrap.querySelectorAll('.tier-more-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = btn.dataset.idx;
+        const body = document.getElementById('tierMore' + idx);
+        const open = body.classList.toggle('open');
+        btn.classList.toggle('open', open);
+      });
+    });
+    const surchargeToggle = document.getElementById('surchargeToggle');
+    if (surchargeToggle) {
+      surchargeToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const body = document.getElementById('surchargeBody');
+        const open = body.classList.toggle('open');
+        surchargeToggle.classList.toggle('open', open);
+      });
+    }
+    qcardWrap.querySelectorAll('.tip-trigger').forEach(tip => {
+      tip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const existing = tip.querySelector('.tip-bubble');
+        qcardWrap.querySelectorAll('.tip-bubble').forEach(b => b.remove());
+        if (!existing) {
+          const bubble = document.createElement('span');
+          bubble.className = 'tip-bubble';
+          bubble.textContent = tip.dataset.tip;
+          tip.appendChild(bubble);
+        }
+      });
+    });
   } else if (step.type === 'single' || step.type === 'multi'){
-   
     qcardWrap.querySelectorAll('.opt').forEach(el => {
       el.addEventListener('click', () => {
         const val = el.dataset.value;
