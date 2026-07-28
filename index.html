@@ -68,10 +68,10 @@
     .hero-micro { font-size: 0.8rem; color: var(--gray); margin-top: 1rem; }
 
     .hero-right { position: relative; display: flex; align-items: center; justify-content: center; }
-    .hero-visual { position: relative; width: 380px; height: 460px; max-width: 100%; }
+    .hero-visual { position: relative; width: 380px; height: 480px; max-width: 100%; }
     .hero-card { position: absolute; background: var(--white); border-radius: 1.5rem; padding: 1.5rem; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(74, 144, 226, 0.15); }
     .hero-card.card-main { width: 260px; top: 46%; left: 48%; transform: translate(-50%, -50%); z-index: 2; animation: float 4s ease-in-out infinite; }
-    .hero-card.card-small-1 { width: 150px; top: 2%; right: 0%; transform: rotate(6deg); font-size: 0.8rem; z-index: 1; animation: floatSmall1 4s ease-in-out infinite 1s; }
+    .hero-card.card-small-1 { width: 140px; top: -4%; right: -4%; transform: rotate(6deg); font-size: 0.8rem; z-index: 1; animation: floatSmall1 4s ease-in-out infinite 1s; }
     .hero-card.card-small-2 { width: 160px; bottom: 2%; left: 0%; transform: rotate(-4deg); font-size: 0.8rem; z-index: 1; animation: floatSmall2 4s ease-in-out infinite 2s; }
     @keyframes float { 0%, 100% { transform: translate(-50%, -50%) translateY(0); } 50% { transform: translate(-50%, -50%) translateY(-12px); } }
     @keyframes floatSmall1 { 0%, 100% { transform: rotate(6deg) translateY(0); } 50% { transform: rotate(6deg) translateY(-8px); } }
@@ -131,11 +131,11 @@
     
     /* FEATURES */
     .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; max-width: 1200px; margin: 0 auto; }
-    .feature-card { background: var(--cream); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2.5rem 2rem; transition: transform 0.3s, box-shadow 0.3s; text-align: center; }
+    .feature-card { background: var(--cream); border: 1px solid var(--border); border-radius: 1.4rem; padding: 1.7rem 1.4rem; transition: transform 0.3s, box-shadow 0.3s; text-align: center; }
     .feature-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(74, 144, 226, 0.15); }
-    .feature-icon { font-size: 3rem; margin-bottom: 1.5rem; }
-    .feature-title { font-family: 'Pretendard', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.7rem; }
-    .feature-desc { font-size: 0.9rem; color: var(--dark-gray); line-height: 1.7; font-weight: 300; }
+    .feature-icon { font-size: 2.4rem; margin-bottom: 0.9rem; }
+    .feature-title { font-family: 'Pretendard', sans-serif; font-weight: 800; font-size: 1.25rem; margin-bottom: 0.6rem; }
+    .feature-desc { font-size: 1rem; color: var(--dark-gray); line-height: 1.6; font-weight: 400; }
 
     /* TEACHERS TOP3 */
     .teachers-section { background: var(--cream); }
@@ -149,7 +149,7 @@
 
     /* HOW */
     .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1100px; margin: 0 auto; }
-    .step { padding: 2.5rem; border: 1px solid var(--border); border-radius: 1.5rem; transition: box-shadow 0.3s, transform 0.3s; background: var(--white); }
+    .step { padding: 2.5rem; border: 1px solid var(--border); border-radius: 1.5rem; transition: box-shadow 0.3s, transform 0.3s; background: var(--white); text-align: center; }
     .step:hover { box-shadow: 0 16px 40px rgba(74, 144, 226, 0.12); transform: translateY(-4px); }
     .step-num { font-family: 'Pretendard', sans-serif; font-size: 3.5rem; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 1.2rem; }
     .step-title { font-family: 'Pretendard', sans-serif; font-weight: 800; font-size: 1.15rem; margin-bottom: 0.6rem; }
@@ -311,8 +311,8 @@
           <span class="tag gray">송도</span>
         </div>
         <div class="card-stat">
-          <span class="card-stat-num">50분</span>
-          <span class="card-stat-label">1:1 맞춤 수업</span>
+          <span class="card-stat-num">1시간</span>
+          <span class="card-stat-label">스피킹 50분 + 피드백 10분</span>
         </div>
       </div>
       <div class="hero-card card-small-2">
@@ -332,8 +332,8 @@
     <div class="stat-label">선생님 학적 인증 완료</div>
   </div>
   <div class="stat-card">
-    <div class="stat-num">50<em>분</em></div>
-    <div class="stat-label">1:1 집중 오프라인 수업</div>
+    <div class="stat-num">1<em>시간</em></div>
+    <div class="stat-label">스피킹 50분 + 피드백 10분</div>
   </div>
   <div class="stat-card">
     <div class="stat-num">1:1</div>
@@ -415,7 +415,7 @@
     <div class="step fade-in">
       <div class="step-num">03</div>
       <div class="step-title">수업 시작</div>
-      <div class="step-desc">인천 송도 내에서 50분간 1:1 영어 회화 수업을 진행합니다.</div>
+      <div class="step-desc">인천 송도 내에서 1시간(스피킹 50분 + 피드백 10분) 동안 1:1 영어 회화 수업을 진행합니다.</div>
     </div>
   </div>
   <div style="text-align: center; margin-top: 3rem;">
@@ -462,41 +462,41 @@
 <!-- PRICE -->
 <section class="price-section">
   <div class="section-label" style="justify-content: center;"><span>수업료</span></div>
-  <h2 class="section-title">내게 맞는 <em>맞춤 수업!</em></h2>
-  <p class="section-sub" style="color:rgba(255,255,255,0.7);">모두 월 4회, 1회 50분 기준입니다. 선생님 검증 수준에 따라 세 가지로 나눴어요.</p>
+  <h2 class="section-title">원하는 가격에 <em>맞춤 수업!</em></h2>
+  <p class="section-sub" style="color:rgba(255,255,255,0.7);">모두 월 4회, 1회 1시간(스피킹 50분 + 피드백 10분) 기준입니다. 선생님 검증 수준에 따라 세 가지로 나뉩니다.</p>
   <div class="tier-grid fade-in">
     <div class="tier-card">
-      <div class="tier-name">Standard</div>
+      <div class="tier-name">이코노미</div>
       <div class="tier-price">₩140,000</div>
       <div class="tier-period">한 달 · 4회</div>
       <div class="tier-desc">영어 회화 실력이 검증된 선생님과 편하게 시작해보세요.</div>
       <ul class="tier-features">
         <li>학적 인증 완료 선생님</li>
-        <li>50분 1:1 맞춤 수업</li>
+        <li>1시간 1:1 맞춤 수업 (스피킹 50분 + 피드백 10분)</li>
         <li>인천 송도 오프라인 진행</li>
       </ul>
       <a class="tier-cta" href="apply.html">신청하기</a>
     </div>
     <div class="tier-card popular">
       <div class="tier-badge">Most Popular</div>
-      <div class="tier-name">Plus</div>
+      <div class="tier-name">스탠다드</div>
       <div class="tier-price">₩180,000</div>
       <div class="tier-period">한 달 · 4회</div>
       <div class="tier-desc">해외 대학·글로벌 캠퍼스 경험이 있는 선생님과 수업합니다.</div>
       <ul class="tier-features">
-        <li>Standard의 모든 혜택</li>
+        <li>이코노미의 모든 혜택</li>
         <li>해외 대학 재학·교환 경험 선생님</li>
         <li>비즈니스·시험 대비 등 목적별 매칭</li>
       </ul>
       <a class="tier-cta" href="apply.html">신청하기</a>
     </div>
     <div class="tier-card">
-      <div class="tier-name">Premium</div>
+      <div class="tier-name">프리미엄</div>
       <div class="tier-price">₩220,000</div>
       <div class="tier-period">한 달 · 4회</div>
       <div class="tier-desc">원어민급 실력과 특정 분야 전문성을 갖춘 선생님을 만나보세요.</div>
       <ul class="tier-features">
-        <li>Plus의 모든 혜택</li>
+        <li>스탠다드의 모든 혜택</li>
         <li>장기 해외 거주·원어민급 선생님</li>
         <li>전문 분야(면접·발표 등) 맞춤 수업</li>
       </ul>
