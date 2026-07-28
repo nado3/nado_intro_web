@@ -183,32 +183,30 @@
       border-radius: 1rem;
       font-weight: 700;
     }
-    .teacher-card.more-placeholder {
+    .more-placeholder {
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      cursor: default;
-      -webkit-mask-image: linear-gradient(to bottom, black 15%, transparent 95%);
-      mask-image: linear-gradient(to bottom, black 15%, transparent 95%);
+      min-height: 260px;
     }
-    .teacher-card.more-placeholder:hover {
+    .more-placeholder:hover {
       transform: none;
       box-shadow: none;
     }
     .more-dots {
-      font-size: 2.2rem;
-      letter-spacing: 0.4rem;
-      color: var(--gray);
-      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;
     }
-    .more-text {
-      font-size: 0.9rem;
-      color: var(--gray);
-      font-weight: 300;
-      line-height: 1.6;
+    .more-dots span {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
     }
+    .more-dots span:nth-child(1) { opacity: 1; }
+    .more-dots span:nth-child(2) { opacity: 0.5; }
+    .more-dots span:nth-child(3) { opacity: 0.15; }
 
     /* INFO BOX */
     .info-box {
@@ -412,9 +410,8 @@
     </div>
 
   <!-- More teachers placeholder -->
-  <div class="teacher-card more-placeholder fade-in">
-    <div class="more-dots">· · ·</div>
-    <div class="more-text">더 많은 선생님이<br>여러분을 기다리고 있어요</div>
+  <div class="more-placeholder fade-in">
+    <div class="more-dots"><span></span><span></span><span></span></div>
   </div>
 
   <div class="info-box fade-in">
