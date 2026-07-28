@@ -183,6 +183,32 @@
       border-radius: 1rem;
       font-weight: 700;
     }
+    .teacher-card.more-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: default;
+      -webkit-mask-image: linear-gradient(to bottom, black 15%, transparent 95%);
+      mask-image: linear-gradient(to bottom, black 15%, transparent 95%);
+    }
+    .teacher-card.more-placeholder:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    .more-dots {
+      font-size: 2.2rem;
+      letter-spacing: 0.4rem;
+      color: var(--gray);
+      margin-bottom: 1rem;
+    }
+    .more-text {
+      font-size: 0.9rem;
+      color: var(--gray);
+      font-weight: 300;
+      line-height: 1.6;
+    }
 
     /* INFO BOX */
     .info-box {
@@ -385,50 +411,10 @@
       </div>
     </div>
 
-    <!-- Teacher 4 -->
-    <div class="teacher-card fade-in">
-      <div class="teacher-avatar">👩</div>
-      <div class="teacher-name">Emily Rodriguez</div>
-      <div class="teacher-major">심리학 전공 · IGC 재학</div>
-      <div class="teacher-bio">
-        학생들의 말하기 자신감을 키워주는 것을 좋아합니다. 천천히, 편안하게 영어와 친해져 보세요.
-      </div>
-      <div class="teacher-tags">
-        <span class="tag">초급특화</span>
-        <span class="tag">발음교정</span>
-        <span class="tag">자신감UP</span>
-      </div>
-    </div>
-
-    <!-- Teacher 5 -->
-    <div class="teacher-card fade-in">
-      <div class="teacher-avatar">👨</div>
-      <div class="teacher-name">James Park</div>
-      <div class="teacher-major">경제학 전공 · IGC 재학</div>
-      <div class="teacher-bio">
-        비즈니스 영어와 면접 준비를 도와드립니다. 실전에서 바로 쓸 수 있는 표현들을 중심으로 수업합니다.
-      </div>
-      <div class="teacher-tags">
-        <span class="tag">면접준비</span>
-        <span class="tag">비즈니스</span>
-        <span class="tag">프레젠테이션</span>
-      </div>
-    </div>
-
-    <!-- Teacher 6 -->
-    <div class="teacher-card fade-in">
-      <div class="teacher-avatar">👩</div>
-      <div class="teacher-name">Jessica Lee</div>
-      <div class="teacher-major">미디어학 전공 · IGC 재학</div>
-      <div class="teacher-bio">
-        영화, 드라마, 음악을 통해 영어를 배우는 것을 좋아합니다. 재미있게 영어와 친해져요!
-      </div>
-      <div class="teacher-tags">
-        <span class="tag">미디어영어</span>
-        <span class="tag">팝컬처</span>
-        <span class="tag">재미있게</span>
-      </div>
-    </div>
+  <!-- More teachers placeholder -->
+  <div class="teacher-card more-placeholder fade-in">
+    <div class="more-dots">· · ·</div>
+    <div class="more-text">더 많은 선생님이<br>여러분을 기다리고 있어요</div>
   </div>
 
   <div class="info-box fade-in">
