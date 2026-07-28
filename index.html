@@ -38,15 +38,13 @@
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
-    .nav-logo { font-family: 'Pretendard', sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--black); text-decoration: none; }
-    .nav-logo span { color: var(--accent); }
+    .nav-logo { font-family: 'Pretendard', sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--black); text-decoration: none; position: relative; z-index: 101; }    .nav-logo span { color: var(--accent); }
     .nav-links { display: flex; gap: 2rem; list-style: none; }
     .nav-links a { font-size: 0.85rem; color: var(--dark-gray); text-decoration: none; letter-spacing: 0.03em; transition: color 0.2s; }
     .nav-links a:hover { color: var(--accent); }
     .nav-cta { background: var(--accent); color: var(--white) !important; padding: 0.55rem 1.4rem; border-radius: 2rem; font-size: 0.85rem !important; transition: background 0.2s !important; }
     .nav-cta:hover { background: var(--accent-deep) !important; }
-    .nav-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--black); padding: 0; }
-    
+    .nav-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--black); padding: 0; position: relative; z-index: 101; }    
 
     /* HERO */
     .hero { background: linear-gradient(135deg, #F5F8FE 0%, #E3F2FD 55%, #D3E7FB 100%); padding: 11rem 3rem 6rem; }
