@@ -550,9 +550,10 @@
       <div class="faq-question">Q. 결제 방법은 어떻게 되나요?</div>
       <div class="faq-answer">
         현재는 계좌이체만 가능합니다 (카드 결제 준비중). 나도를 통한 결제는 선생님과 매칭되는 <strong style="font-weight:900;">첫 달 한 번만</strong> 진행되며, 매칭완료 전까지 입금해주시면 됩니다
+      </div>
     </div>
   </div>
-
+  
   <!-- CTA -->
   <div class="cta-section fade-in">
     <h2 class="cta-title">지금 바로 시작하세요</h2>
@@ -581,6 +582,14 @@
   ChannelIO('boot', {
     "pluginKey": "a8a877cc-e5b0-4c17-ab30-64f7f52317e3"
   });
+</script>
+
+<script>
+  // Fade-in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 </script>
 
 </body>
