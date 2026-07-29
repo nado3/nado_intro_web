@@ -576,19 +576,11 @@
 </footer>
 
 <script>
-  const navToggle = document.getElementById('navToggle');
-  if (navToggle) {
-    navToggle.addEventListener('click', () => {
-      document.getElementById('navLinks').classList.toggle('mobile-open');
-      navToggle.textContent = document.getElementById('navLinks').classList.contains('mobile-open') ? '✕' : '☰';
-    });
-  }
+  (function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];if(x.parentNode){x.parentNode.insertBefore(s,x);}}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
 
-  // Fade-in on scroll
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  ChannelIO('boot', {
+    "pluginKey": "a8a877cc-e5b0-4c17-ab30-64f7f52317e3"
+  });
 </script>
 
 </body>
