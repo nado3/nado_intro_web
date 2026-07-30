@@ -61,7 +61,8 @@
   .opt-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;position:relative;}
   .opt.multi .opt-dot{border-radius:6px;}
   .opt.selected .opt-dot{border-color:var(--accent);background:var(--accent);}
-  .opt.selected .opt-dot::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.72rem;font-weight:900;}
+  .opt-rank-badge{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;color:var(--gray);transition:all .15s;}
+  .opt.rank.selected .opt-rank-badge{border-color:var(--accent);background:var(--accent);color:#fff;}
   .opt-label{font-size:.98rem;font-weight:600;}
 
   /* TIER CARDS */
@@ -250,11 +251,13 @@ const steps = [
     title: '가능한 시간대를 선택해주세요',
     sub: 'PC에서는 드래그로, 모바일에서는 하나씩 눌러서 선택할 수 있어요.'
   },
+   {
+    key: 'startDate', type: 'date', required: true,
+    title: '언제부터 수업을 시작하고 싶으신가요?',
+    sub: '희망하시는 첫 수업 날짜를 선택해주세요.'
+  },
   {
-    key: 'place', type: 'multi', required: true,
-    title: '송도에서 어떻게 진행하고 싶으신가요?',
-    sub: '중복 선택 가능해요.',
-    options: ['카페에서 만나고 싶어요','스터디룸을 원해요','선생님과 협의할게요','어떤 방식이든 상관없어요']
+    key: 'place', type: 'rank', required: true
   },
   {
     key: 'notes', type: 'text', required: false,
@@ -293,6 +296,7 @@ function updateProgress(){
 
 function labelFor(step, value){
   if (step.type === 'multi') return Array.isArray(value) && value.length ? value.join(', ') : '';
+  if (step.type === 'rank') return Array.isArray(value) && value.length ? value.map((v,i)=>`${i+1}.${v}`).join(', ') : '';
   if (step.type === 'gridtime') return Array.isArray(value) && value.length ? `${value.length}개 시간대 선택` : '';
   if (step.type === 'contact') return value && value.name ? `${value.name} · ${value.phone || ''}` : '';
   if (step.type === 'payment') return value === true ? '확인 완료' : '';
@@ -322,6 +326,8 @@ function checkValid(step){
   if (step.type === 'single') return !!v;
   if (step.type === 'tier') return !!v;
   if (step.type === 'multi') return Array.isArray(v) && v.length > 0;
+  if (step.type === 'rank') return Array.isArray(v) && v.length > 0;
+  if (step.type === 'date') return !!v;
   if (step.type === 'gridtime') return Array.isArray(v) && v.length > 0;
   if (step.type === 'text') return true;
   if (step.type === 'contact') return v && v.name && v.name.trim() && v.phoneValid && v.consent === true;  if (step.type === 'payment') return v === true;
@@ -356,8 +362,21 @@ function renderStep(){
   renderHistory();
   backBtn.style.visibility = current === 0 ? 'hidden' : 'visible';
 
-  let inner = `<div class="qcard"><div class="qtitle">${step.title}</div>`;
-  if (step.sub) inner += `<div class="qsub">${step.sub}</div>`;
+  let title = step.title;
+  let sub = step.sub;
+  const isEconomy = answers.tier === '이코노미';
+  const RANK_OPTIONS = isEconomy
+    ? ['IGC나눔카페', '송도 트리플스트리트']
+    : ['카페에서 만나고 싶어요', '선생님과 협의할게요', '어떤 방식이든 상관없어요', '집'];
+  if (step.type === 'rank') {
+    title = isEconomy ? '이코노미는 정해진 두 곳 중에서 진행돼요' : '송도에서 어떻게 진행하고 싶으신가요?';
+    sub = isEconomy
+      ? '어디가 편하세요?<br>선택하신 곳을 우선 배치해드리지만, 선생님 일정에 따라 조율될 수 있어요.'
+      : '중복 선택 가능해요.<br>선택하신 방식을 우선 배치해드리지만, 선생님 일정에 따라 조율될 수 있어요.';
+  }
+
+  let inner = `<div class="qcard"><div class="qtitle">${title}</div>`;
+  if (sub) inner += `<div class="qsub">${sub}</div>`;
 
   if (step.type === 'tier'){
       inner += `<div class="opt-list">`;
@@ -383,6 +402,19 @@ function renderStep(){
           <button type="button" class="surcharge-toggle" id="surchargeToggle">ⓘ 초등학생 이하이신가요? <span class="tier-more-arrow">▾</span></button>
           <div class="surcharge-body" id="surchargeBody">모든 플랜 공통으로, 초등학생 이하 학습자는 추가금 20,000원이 붙습니다. 결제 안내 단계에서 최종 금액에 함께 안내해드려요.</div>
         </div>`;
+    } else if (step.type === 'date'){
+      const val = answers[step.key] || '';
+      const today = new Date().toISOString().split('T')[0];
+      inner += `<input type="date" id="dateInput" min="${today}" value="${val}">`;
+    } else if (step.type === 'rank'){
+      inner += `<div class="opt-list">`;
+      const selected = answers[step.key] || [];
+      RANK_OPTIONS.forEach(opt => {
+        const rankIdx = selected.indexOf(opt);
+        const isSel = rankIdx > -1;
+        inner += `<div class="opt rank ${isSel?'selected':''}" data-value="${opt}"><div class="opt-rank-badge">${isSel ? (rankIdx+1) : ''}</div><div class="opt-label">${opt}</div></div>`;
+      });
+      inner += `</div>`;
     } else if (step.type === 'single' || step.type === 'multi'){
       inner += `<div class="opt-list">`;
  
@@ -394,8 +426,7 @@ function renderStep(){
     inner += `</div>`;
   } else if (step.type === 'gridtime'){
     const days = ['월','화','수','목','금','토','일'];
-    const hours = ['9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','24:00'];
-    const selected = new Set(answers[step.key] || []);
+    const hours = ['9:00','9:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30','22:00','22:30','23:00','23:30','24:00'];    const selected = new Set(answers[step.key] || []);
     inner += `<div class="grid-wrap"><table class="time-grid" id="timeGrid"><thead><tr><th></th>`;
     days.forEach(d => { inner += `<th>${d}</th>`; });
     inner += `</tr></thead><tbody>`;
@@ -475,6 +506,9 @@ function renderStep(){
   if (step.type === 'tier'){
     qcardWrap.querySelectorAll('.tier-opt').forEach(el => {
       el.addEventListener('click', () => {
+        if (answers.tier !== el.dataset.value) {
+          answers.place = [];   // 요금제가 바뀌면 장소 선택 초기화
+        }
         answers.tier = el.dataset.value;
         qcardWrap.querySelectorAll('.tier-opt').forEach(o => o.classList.remove('selected'));
         el.classList.add('selected');
@@ -512,6 +546,29 @@ function renderStep(){
           bubble.textContent = tip.dataset.tip;
           tip.appendChild(bubble);
         }
+      });
+    });
+    } else if (step.type === 'date'){
+    const dateInput = document.getElementById('dateInput');
+    dateInput.addEventListener('input', () => {
+      answers[step.key] = dateInput.value;
+      setNextState(step);
+    });
+  } else if (step.type === 'rank'){
+    qcardWrap.querySelectorAll('.opt').forEach(el => {
+      el.addEventListener('click', () => {
+        const val = el.dataset.value;
+        const arr = answers[step.key] || [];
+        const idx = arr.indexOf(val);
+        if (idx > -1) { arr.splice(idx, 1); } else { arr.push(val); }
+        answers[step.key] = arr;
+        qcardWrap.querySelectorAll('.opt').forEach(o => {
+          const rIdx = arr.indexOf(o.dataset.value);
+          const sel = rIdx > -1;
+          o.classList.toggle('selected', sel);
+          o.querySelector('.opt-rank-badge').textContent = sel ? (rIdx + 1) : '';
+        });
+        setNextState(step);
       });
     });
   } else if (step.type === 'single' || step.type === 'multi'){
@@ -647,8 +704,12 @@ async function submitToJotform(a) {
     'submission[32]',
     `${(a.schedule||[]).join(', ') || '-'}${(a.scheduleNotes&&a.scheduleNotes.length) ? ' / 기타: ' + a.scheduleNotes.join(', ') : ''}`
   );                                                                  // 희망시간대
-  params.append('submission[28]', a.notes || '');                     // 문의사항
-
+  params.append(
+      'submission[33]',
+      (a.place || []).map((p,i)=>`${i+1}순위: ${p}`).join(' / ')
+    );                                                                  // 진행방식 순위 — TODO: 실제 새 필드 qid로 바꿔주세요
+    params.append('submission[34]', a.startDate || '');                 // 희망 시작일 — TODO: 실제 새 필드 qid로 바꿔주세요
+    params.append('submission[28]', a.notes || '');                     // 문의사항
   try {
     await fetch(`https://api.jotform.com/form/${FORM_ID}/submissions?apiKey=${API_KEY}`, {
       method: 'POST',
@@ -673,7 +734,8 @@ function showSuccess(){
     <strong>영어 수준</strong> · ${a.level || '-'}<br>
     <strong>학습 목표</strong> · ${(a.goals||[]).join(', ') || '-'}<br>
     <strong>희망 시간대</strong> · ${(a.schedule||[]).join(', ') || '-'}${(a.scheduleNotes&&a.scheduleNotes.length) ? ' / 기타: ' + a.scheduleNotes.join(', ') : ''}<br>
-    <strong>진행 방식</strong> · ${(a.place||[]).join(', ') || '-'}<br>
+    <strong>희망 시작일</strong> · ${a.startDate || '-'}<br>
+    <strong>진행 방식</strong> · ${(a.place||[]).length ? (a.place||[]).map((p,i)=>`${i+1}.${p}`).join(', ') : '-'}<br>    
     <strong>연락처</strong> · ${a.contact ? a.contact.name + ' · ' + a.contact.phone : '-'}
   `;
 
