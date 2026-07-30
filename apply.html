@@ -213,17 +213,17 @@ const steps = [
       {
         name: '이코노미', price: 140000,
         desc: '학적 인증 완료 대학생 선생님과 부담 없이 시작',
-        more: '· 학적 인증 완료 대학생 선생님<br>· 중/고등학생 추천 <br>· IGC · 송도 트리플스트리트'
+        more: '· 학적 인증 완료 대학생 선생님 <br>· IGC인천글로벌캠퍼스 카페 · 송도 트리플스트리트 카페 <br>· 학생 추천'
       },
       {
         name: '스탠다드', price: 180000, badge: 'Most Popular',
-        desc: '해외 대학·글로벌 캠퍼스 경험 선생님',
-        more: '· 원하는 시간 우선 배치<br>· 해외 대학·글로벌 캠퍼스 경험 선생님<br>· 직장인·주부 추천<br>· 원하는 곳 어디서든'
+        desc: '해외 대학 + 영어회화 교육 경험이 많은 선생님',
+        more: '· 원하는 시간 우선 배치 · 송도 원하는 곳 어디서든<br>· 해외 대학 + 영어회화 교육 경험이 많은 선생님<br>· 학적 인증 완료 대학생 선생님<br>· 1시간 수업 (스피킹 50분 + 피드백 10분)<br>· 직장인추천'
       },
       {
         name: '프리미엄', price: 220000,
-        desc: '원어민급 실력, 전문 분야 맞춤 수업',
-        more: '· 원하는 시간 우선 배치<br>· 나도 커리큘럼 이수한 최우수 선생님❓ 3명 중 선택<br>· 목적 있고 급한 분 추천<br>· 원하는 곳 어디서든',
+        desc: '나도 최우수 선생님 3명 중 선택',
+        more: '· 원하는 시간 우선 배치 · 원하는 곳 어디서든<br>· 해외 대학 + 영어회화 교육 경험이 많은 선생님<br>· 학적 인증 완료 대학생 선생님<br>· 나도 최우수 선생님? 3명 중 선택<br>· 1시간 수업 (스피킹 50분 + 피드백 10분)<br>· 뚜렷한 목적이 있고 영어 회화 실력 상승이 급한 분께 추천',
         moreCaption: '최우수 선생님이란? 나도 매칭 실적과 학생 후기를 기준으로 선정된 상위 선생님을 의미해요.'
       }
     ]
@@ -366,8 +366,8 @@ function renderStep(){
   let sub = step.sub;
   const isEconomy = answers.tier === '이코노미';
   const RANK_OPTIONS = isEconomy
-    ? ['IGC나눔카페', '송도 트리플스트리트']
-    : ['카페에서 만나고 싶어요', '선생님과 협의할게요', '어떤 방식이든 상관없어요', '집'];
+    ? ['IGC인천글로벌캠퍼스 카페에서 만나고 싶어요', '송도 트리플스트리트 카페에서 만나고 싶어요']
+    : ['IGC인천글로벌캠퍼스 카페에서 만나고 싶어요', '송도 트리플스트리트 카페에서 만나고 싶어요', '집에서 하고 싶어요.', '선생님과 협의할게요', '어떤 방식이든 상관없어요'];
   if (step.type === 'rank') {
     title = isEconomy ? '이코노미는 정해진 두 곳 중에서 진행돼요' : '송도에서 어떻게 진행하고 싶으신가요?';
     sub = isEconomy
@@ -707,8 +707,8 @@ async function submitToJotform(a) {
   params.append(
       'submission[33]',
       (a.place || []).map((p,i)=>`${i+1}순위: ${p}`).join(' / ')
-    );                                                                  // 진행방식 순위 — TODO: 실제 새 필드 qid로 바꿔주세요
-    params.append('submission[34]', a.startDate || '');                 // 희망 시작일 — TODO: 실제 새 필드 qid로 바꿔주세요
+    );                                                                  // 진행방식 순위 
+    params.append('submission[34]', a.startDate || '');                 // 희망 시작일 
     params.append('submission[28]', a.notes || '');                     // 문의사항
   try {
     await fetch(`https://api.jotform.com/form/${FORM_ID}/submissions?apiKey=${API_KEY}`, {
