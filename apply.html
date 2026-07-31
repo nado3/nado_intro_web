@@ -463,12 +463,12 @@ function renderStep(){
       + '<div class="field-label" style="margin-top:1rem;">표는 정각 시간만 보여드려요. 30분 단위(예: 9시 30분)로 가능하시면 아래에서 추가해주세요.<br>가능하신 30분 단위 시간을 전부 골라서 알려주시면 매칭에 더 도움이 돼요.</div>'
       + '<div id="noteChips" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.6rem;"></div>'
       + '<div class="note-add-row">'
+      + '<select id="notePosition" style="flex:0 0 76px;"><option value="">순위</option></select>'
       + '<select id="noteDay" style="flex:1;">'
       + '<option value="">요일</option>'
       + '<option>월요일</option><option>화요일</option><option>수요일</option><option>목요일</option><option>금요일</option><option>토요일</option><option>일요일</option>'
       + '</select>'
       + '<select id="noteHour" style="flex:1;"><option value="">30분 단위 시간</option></select>'
-      + '<select id="notePosition" style="flex:0 0 76px;"><option value="">순위</option></select>'
       + '<button type="button" class="note-add-btn" id="addNoteBtn">+</button>'
       + '</div>';
   } else if (step.type === 'text'){
@@ -621,7 +621,7 @@ function renderStep(){
       const posSelect = document.getElementById('notePosition');
       if (posSelect) {
         const n = selectedArr.length;
-        posSelect.innerHTML = '<option value="">순위 (안 고르면 맨 뒤)</option>';
+        posSelect.innerHTML = '<option value="">(미선택 시 맨 뒤)</option>';
         for (let p = 1; p <= n + 1; p++) {
           const o = document.createElement('option');
           o.value = p;
