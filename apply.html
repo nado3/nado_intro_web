@@ -444,8 +444,8 @@ function renderStep(){
     inner += '</div>';
   } else if (step.type === 'gridtime'){
     const days = ['월','화','수','목','금','토','일'];
-    const hours = ['9:00','9:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30','22:00','22:30','23:00','23:30','24:00'];
-    const selected = new Set(answers[step.key] || []);
+    const hours = ['9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','24:00'];
+    const selectedArr = answers[step.key] || [];
     inner += '<div class="grid-wrap"><table class="time-grid" id="timeGrid"><thead><tr><th></th>';
     days.forEach(d => { inner += '<th>' + d + '</th>'; });
     inner += '</tr></thead><tbody>';
@@ -453,21 +453,22 @@ function renderStep(){
       inner += '<tr><td class="hour-label">' + h + '</td>';
       days.forEach(d => {
         const cellKey = d + ' ' + h;
-        const isSel = selected.has(cellKey);
-        inner += '<td class="grid-cell ' + (isSel ? 'selected' : '') + '" data-key="' + cellKey + '"></td>';
+        const rankIdx = selectedArr.indexOf(cellKey);
+        const isSel = rankIdx > -1;
+        inner += '<td class="grid-cell ' + (isSel ? 'selected' : '') + '" data-key="' + cellKey + '">' + (isSel ? (rankIdx+1) : '') + '</td>';
       });
       inner += '</tr>';
     });
     inner += '</tbody></table></div>';
     inner += ''
-      + '<div class="field-label" style="margin-top:1rem;">표에 없는 시간이 있다면 추가해주세요 (선택)</div>'
+      + '<div class="field-label" style="margin-top:1rem;">표는 정각 시간만 보여드려요. 30분 단위(예: 9시 30분)로 가능하시면 아래에서 추가해주세요.<br>가능하신 30분 단위 시간을 전부 골라서 알려주시면 매칭에 더 도움이 돼요.</div>'
       + '<div id="noteChips" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.6rem;"></div>'
       + '<div class="note-add-row">'
       + '<select id="noteDay" style="flex:1;">'
       + '<option value="">요일</option>'
       + '<option>월요일</option><option>화요일</option><option>수요일</option><option>목요일</option><option>금요일</option><option>토요일</option><option>일요일</option>'
       + '</select>'
-      + '<select id="noteHour" style="flex:1;"><option value="">시간</option></select>'
+      + '<select id="noteHour" style="flex:1;"><option value="">30분 단위 시간</option></select>'
       + '<button type="button" class="note-add-btn" id="addNoteBtn">+</button>'
       + '</div>';
   } else if (step.type === 'text'){
@@ -645,10 +646,10 @@ function renderStep(){
 
     const noteDay = document.getElementById('noteDay');
     const noteHour = document.getElementById('noteHour');
-    for (let h = 0; h < 24; h++) {
+    for (let h = 9; h <= 23; h++) {
       const opt = document.createElement('option');
-      opt.value = h + '시';
-      opt.textContent = h + '시';
+      opt.value = h + ':30';
+      opt.textContent = h + ':30';
       noteHour.appendChild(opt);
     }
     syncAll();
