@@ -73,9 +73,7 @@
   .tier-opt-name{font-weight:800;font-size:1.02rem;}
   .tier-opt-price{font-weight:800;color:var(--accent-deep);font-size:.95rem;}
   .tier-opt-desc{font-size:.82rem;color:var(--gray);margin-top:.35rem;line-height:1.5;}
-  .tier-more-toggle{margin-top:.7rem;background:none;border:none;padding:0;font-size:.78rem;color:var(--accent-deep);font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.25rem;font-family:'Pretendard',sans-serif;}
   .tier-more-arrow{display:inline-block;transition:transform .2s;font-size:.7rem;}
-  .tier-more-toggle.open .tier-more-arrow{transform:rotate(180deg);}
   .tier-more{max-height:0;overflow:hidden;transition:max-height .25s ease, margin-top .25s ease;font-size:.82rem;color:var(--ink);line-height:1.6;background:var(--bg);border-radius:.7rem;}
   .tier-more.open{max-height:260px;margin-top:.6rem;padding:.8rem .9rem;}
   .tier-more-caption{margin-top:.5rem;font-size:.72rem;color:var(--gray);line-height:1.5;}
@@ -84,28 +82,28 @@
   .surcharge-toggle.open .tier-more-arrow{transform:rotate(180deg);}
   .surcharge-body{max-height:0;overflow:hidden;transition:max-height .25s ease, margin-top .25s ease;font-size:.8rem;color:var(--gray);line-height:1.6;}
   .surcharge-body.open{max-height:150px;margin-top:.6rem;}
-  // 파란 원 ? 만들기
-  .tip-icon{  
+  /* 파란 원 ? 만들기 */
+  .tip-icon{
      position: relative;
      display:inline-flex;
      justify-content:center;
      align-items:center;
- 
+
      width:18px;
      height:18px;
- 
+
      border-radius:50%;
      background:#4A90E2;
      color:white;
- 
+
      font-size:11px;
      font-weight:700;
- 
+
      cursor:help;
      margin-left:4px;
  }
- // 말풍선
- .tip-bubble{ 
+ /* 말풍선 */
+ .tip-bubble{
    display:none; position:absolute; bottom:28px; left:50%; transform:translateX(-50%);
    background:var(--navy);color:#fff;font-size:.8rem;font-weight:500;line-height:1.6;
    padding:.75rem .9rem;border-radius:.6rem;width:240px;white-space:normal;z-index:20;
@@ -255,16 +253,11 @@ const steps = [
       {
         name: '프리미엄', price: 220000,
         desc: '나도 최우수 선생님 3명 중 선택',
-        more: `· 원하는 시간 우선 배치 · 원하는 곳 어디서든<br>· 해외 대학 + 영어회화 교육 경험이 많은 선생님<br>· 학적 인증 완료 대학생 선생님<br>· 나도 최우수 선생님<span class="tip-icon"> ? <span class="tip-bubble">
-         최우수 선생님은 학생 만족도,
-         수업 지속률, 피드백 평가 등을
-         종합하여 선정된 상위 선생님입니다.
-         </span>
-         </span>3명 중 선택<br>· 1시간 수업 (스피킹 50분 + 피드백 10분)<br>· 뚜렷한 목적이 있고 영어 회화 실력 상승이 급한 분께 추천`,
+        more: '· 원하는 시간 우선 배치 · 원하는 곳 어디서든<br>· 해외 대학 + 영어회화 교육 경험이 많은 선생님<br>· 학적 인증 완료 대학생 선생님<br>· 나도 최우수 선생님<span class="tip-icon">?<span class="tip-bubble">최우수 선생님은 학생 만족도, 수업 지속률, 피드백 평가 등을 종합하여 선정된 상위 선생님입니다.</span></span> 3명 중 선택<br>· 1시간 수업 (스피킹 50분 + 피드백 10분)<br>· 뚜렷한 목적이 있고 영어 회화 실력 상승이 급한 분께 추천'
       }
     ]
   },
- 
+
   {
     key: 'ageGroup', type: 'single', required: true,
     title: '나이대가 어떻게 되시나요?',
@@ -332,9 +325,9 @@ function updateProgress(){
 
 function labelFor(step, value){
   if (step.type === 'multi') return Array.isArray(value) && value.length ? value.join(', ') : '';
-  if (step.type === 'rank') return Array.isArray(value) && value.length ? value.map((v,i)=>`${i+1}.${v}`).join(', ') : '';
-  if (step.type === 'gridtime') return Array.isArray(value) && value.length ? `${value.length}개 시간대 선택` : '';
-  if (step.type === 'contact') return value && value.name ? `${value.name} · ${value.phone || ''}` : '';
+  if (step.type === 'rank') return Array.isArray(value) && value.length ? value.map((v,i)=>(i+1)+'.'+v).join(', ') : '';
+  if (step.type === 'gridtime') return Array.isArray(value) && value.length ? value.length + '개 시간대 선택' : '';
+  if (step.type === 'contact') return value && value.name ? value.name + ' · ' + (value.phone || '') : '';
   if (step.type === 'payment') return value === true ? '확인 완료' : '';
   return value || '';
 }
@@ -348,7 +341,7 @@ function renderHistory(){
     if (!text) continue;
     const item = document.createElement('div');
     item.className = 'history-item';
-    item.innerHTML = `<div class="history-bubble">${text}</div><button class="history-edit" data-idx="${i}">수정</button>`;
+    item.innerHTML = '<div class="history-bubble">' + text + '</div><button class="history-edit" data-idx="' + i + '">수정</button>';
     historyEl.appendChild(item);
   }
   historyEl.querySelectorAll('.history-edit').forEach(btn => {
@@ -366,7 +359,8 @@ function checkValid(step){
   if (step.type === 'date') return !!v;
   if (step.type === 'gridtime') return Array.isArray(v) && v.length > 0;
   if (step.type === 'text') return true;
-  if (step.type === 'contact') return v && v.name && v.name.trim() && v.phoneValid && v.consent === true;  if (step.type === 'payment') return v === true;
+  if (step.type === 'contact') return v && v.name && v.name.trim() && v.phoneValid && v.consent === true;
+  if (step.type === 'payment') return v === true;
   return false;
 }
 
@@ -382,7 +376,7 @@ function renderNoteChips(){
   const wrap = document.getElementById('noteChips');
   if (!wrap) return;
   const list = answers.scheduleNotes || [];
-  wrap.innerHTML = list.map((t, i) => `<span class="note-chip">${t}<button type="button" data-i="${i}">✕</button></span>`).join('');
+  wrap.innerHTML = list.map((t, i) => '<span class="note-chip">' + t + '<button type="button" data-i="' + i + '">✕</button></span>').join('');
   wrap.querySelectorAll('button').forEach(btn => {
     btn.addEventListener('click', () => {
       answers.scheduleNotes.splice(parseInt(btn.dataset.i), 1);
@@ -411,132 +405,129 @@ function renderStep(){
       : '중복 선택 가능해요.<br>선택하신 방식을 우선 배치해드리지만, 선생님 일정에 따라 조율될 수 있어요.';
   }
 
-  let inner = `<div class="qcard"><div class="qtitle">${title}</div>`;
-  if (sub) inner += `<div class="qsub">${sub}</div>`;
+  let inner = '<div class="qcard"><div class="qtitle">' + title + '</div>';
+  if (sub) inner += '<div class="qsub">' + sub + '</div>';
 
   if (step.type === 'tier'){
-      inner += `<div class="opt-list">`;
+      inner += '<div class="opt-list">';
       step.options.forEach((opt, idx) => {
         const isSel = answers.tier === opt.name;
-        inner += `
-          <div class="tier-opt ${isSel?'selected':''}" data-value="${opt.name}">
-            ${opt.badge ? `<div class="tier-opt-badge">${opt.badge}</div>` : ''}
-            <div class="tier-opt-top">
-              <div class="tier-opt-name">${opt.name}</div>
-              <div class="tier-opt-price">₩${opt.price.toLocaleString()}</div>
-            </div>
-            <div class="tier-opt-desc">${opt.desc}</div>
-            <div class="tier-more ${isSel?'open':''}" id="tierMore${idx}">
-              ${opt.more}
-              ${opt.moreCaption ? `<div class="tier-more-caption">${opt.moreCaption}</div>` : ''}
-            </div>
-          </div>`;
+        inner += ''
+          + '<div class="tier-opt ' + (isSel?'selected':'') + '" data-value="' + opt.name + '">'
+          + (opt.badge ? '<div class="tier-opt-badge">' + opt.badge + '</div>' : '')
+          + '<div class="tier-opt-top">'
+          + '<div class="tier-opt-name">' + opt.name + '</div>'
+          + '<div class="tier-opt-price">₩' + opt.price.toLocaleString() + '</div>'
+          + '</div>'
+          + '<div class="tier-opt-desc">' + opt.desc + '</div>'
+          + '<div class="tier-more ' + (isSel?'open':'') + '" id="tierMore' + idx + '">'
+          + opt.more
+          + (opt.moreCaption ? '<div class="tier-more-caption">' + opt.moreCaption + '</div>' : '')
+          + '</div>'
+          + '</div>';
       });
-      inner += `</div>`;
-      inner += `
-        <div class="surcharge-note">
-          <button type="button" class="surcharge-toggle" id="surchargeToggle">ⓘ 초등학생 이하이신가요? <span class="tier-more-arrow">▾</span></button>
-          <div class="surcharge-body" id="surchargeBody">모든 플랜 공통으로, 초등학생 이하 학습자는 추가금 20,000원이 붙습니다. 결제 안내 단계에서 최종 금액에 함께 안내해드려요.</div>
-        </div>`;
+      inner += '</div>';
+      inner += ''
+        + '<div class="surcharge-note">'
+        + '<button type="button" class="surcharge-toggle" id="surchargeToggle">ⓘ 초등학생 이하이신가요? <span class="tier-more-arrow">▾</span></button>'
+        + '<div class="surcharge-body" id="surchargeBody">모든 플랜 공통으로, 초등학생 이하 학습자는 추가금 20,000원이 붙습니다. 결제 안내 단계에서 최종 금액에 함께 안내해드려요.</div>'
+        + '</div>';
     } else if (step.type === 'date'){
       const val = answers[step.key] || '';
       const today = new Date().toISOString().split('T')[0];
-      inner += `<input type="date" id="dateInput" min="${today}" value="${val}">`;
+      inner += '<input type="date" id="dateInput" min="' + today + '" value="' + val + '">';
     } else if (step.type === 'rank'){
-      inner += `<div class="opt-list">`;
+      inner += '<div class="opt-list">';
       const selected = answers[step.key] || [];
       RANK_OPTIONS.forEach(opt => {
         const rankIdx = selected.indexOf(opt);
         const isSel = rankIdx > -1;
-        inner += `<div class="opt rank ${isSel?'selected':''}" data-value="${opt}"><div class="opt-rank-badge">${isSel ? (rankIdx+1) : ''}</div><div class="opt-label">${opt}</div></div>`;
+        inner += '<div class="opt rank ' + (isSel?'selected':'') + '" data-value="' + opt + '"><div class="opt-rank-badge">' + (isSel ? (rankIdx+1) : '') + '</div><div class="opt-label">' + opt + '</div></div>';
       });
-      inner += `</div>`;
+      inner += '</div>';
     } else if (step.type === 'single' || step.type === 'multi'){
-      inner += `<div class="opt-list">`;
- 
+      inner += '<div class="opt-list">';
+
     const selected = answers[step.key] || (step.type === 'multi' ? [] : null);
     step.options.forEach(opt => {
       const isSel = step.type === 'multi' ? selected.includes(opt) : selected === opt;
-      inner += `<div class="opt ${step.type==='multi'?'multi':''} ${isSel?'selected':''}" data-value="${opt}"><div class="opt-dot"></div><div class="opt-label">${opt}</div></div>`;
+      inner += '<div class="opt ' + (step.type==='multi'?'multi':'') + ' ' + (isSel?'selected':'') + '" data-value="' + opt + '"><div class="opt-dot"></div><div class="opt-label">' + opt + '</div></div>';
     });
-    inner += `</div>`;
+    inner += '</div>';
   } else if (step.type === 'gridtime'){
     const days = ['월','화','수','목','금','토','일'];
-    const hours = ['9:00','9:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30','22:00','22:30','23:00','23:30','24:00'];    const selected = new Set(answers[step.key] || []);
-    inner += `<div class="grid-wrap"><table class="time-grid" id="timeGrid"><thead><tr><th></th>`;
-    days.forEach(d => { inner += `<th>${d}</th>`; });
-    inner += `</tr></thead><tbody>`;
+    const hours = ['9:00','9:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30','22:00','22:30','23:00','23:30','24:00'];
+    const selected = new Set(answers[step.key] || []);
+    inner += '<div class="grid-wrap"><table class="time-grid" id="timeGrid"><thead><tr><th></th>';
+    days.forEach(d => { inner += '<th>' + d + '</th>'; });
+    inner += '</tr></thead><tbody>';
     hours.forEach(h => {
-      inner += `<tr><td class="hour-label">${h}</td>`;
+      inner += '<tr><td class="hour-label">' + h + '</td>';
       days.forEach(d => {
-        const cellKey = `${d} ${h}`;
+        const cellKey = d + ' ' + h;
         const isSel = selected.has(cellKey);
-        inner += `<td class="grid-cell ${isSel ? 'selected' : ''}" data-key="${cellKey}"></td>`;
+        inner += '<td class="grid-cell ' + (isSel ? 'selected' : '') + '" data-key="' + cellKey + '"></td>';
       });
-      inner += `</tr>`;
+      inner += '</tr>';
     });
-    inner += `</tbody></table></div>`;
-    inner += `
-      <div class="field-label" style="margin-top:1rem;">표에 없는 시간이 있다면 추가해주세요 (선택)</div>
-      <div id="noteChips" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.6rem;"></div>
-      <div class="note-add-row">
-        <select id="noteDay" style="flex:1;">
-          <option value="">요일</option>
-          <option>월요일</option><option>화요일</option><option>수요일</option><option>목요일</option><option>금요일</option><option>토요일</option><option>일요일</option>
-        </select>
-        <select id="noteHour" style="flex:1;"><option value="">시간</option></select>
-        <button type="button" class="note-add-btn" id="addNoteBtn">+</button>
-      </div>
-    `;
+    inner += '</tbody></table></div>';
+    inner += ''
+      + '<div class="field-label" style="margin-top:1rem;">표에 없는 시간이 있다면 추가해주세요 (선택)</div>'
+      + '<div id="noteChips" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.6rem;"></div>'
+      + '<div class="note-add-row">'
+      + '<select id="noteDay" style="flex:1;">'
+      + '<option value="">요일</option>'
+      + '<option>월요일</option><option>화요일</option><option>수요일</option><option>목요일</option><option>금요일</option><option>토요일</option><option>일요일</option>'
+      + '</select>'
+      + '<select id="noteHour" style="flex:1;"><option value="">시간</option></select>'
+      + '<button type="button" class="note-add-btn" id="addNoteBtn">+</button>'
+      + '</div>';
   } else if (step.type === 'text'){
     const val = answers[step.key] || '';
-    inner += `<textarea id="textInput" placeholder="${step.placeholder||''}">${val}</textarea>`;
-    if (step.quickFill) inner += `<button class="quick-fill" id="quickFillBtn">"${step.quickFill}"</button>`;
+    inner += '<textarea id="textInput" placeholder="' + (step.placeholder||'') + '">' + val + '</textarea>';
+    if (step.quickFill) inner += '<button class="quick-fill" id="quickFillBtn">"' + step.quickFill + '"</button>';
   } else if (step.type === 'contact'){
     const v = answers[step.key] || {name:'', phone:'', consent:false};
-    inner += `
-      <div class="field-label">이름</div>
-      <input type="text" id="nameInput" placeholder="홍길동" value="${v.name}">
-      <div class="field-label">연락처</div>
-      <input type="tel" id="phoneInput" placeholder="010-0000-0000" value="${v.phone}">
-
-      <div class="consent-box">
-        <label class="consent-row">
-          <input type="checkbox" id="consentCheck" ${v.consent ? 'checked' : ''}>
-          <span>개인정보 수집·이용에 동의합니다 <span class="required-mark">(필수)</span></span>
-        </label>
-        <button type="button" class="consent-toggle" id="consentToggle">자세히 보기</button>
-        <div class="consent-detail" id="consentDetail" style="display:none;">
-          <strong>수집 항목</strong> 이름, 연락처, 영어 수준, 학습 목표, 희망 시간대, 진행 방식, 문의사항<br>
-          <strong>수집 목적</strong> 선생님 매칭 및 상담을 위한 연락<br>
-          <strong>보유 기간</strong> 목적 달성 시 지체 없이 파기 (관련 법령에 따른 보관 예외 있음)<br>
-          동의를 거부하실 수 있으며, 다만 동의하지 않으실 경우 매칭 서비스 신청이 어렵습니다.<br><br>
-          자세한 내용은 <a href="privacy.html" target="_blank" style="color:var(--accent);font-weight:700;">개인정보처리방침</a> 및 <a href="terms.html" target="_blank" style="color:var(--accent);font-weight:700;">이용약관</a> 전문을 확인해주세요.
-        </div>
-      </div>
-    `;
+    inner += ''
+      + '<div class="field-label">이름</div>'
+      + '<input type="text" id="nameInput" placeholder="홍길동" value="' + v.name + '">'
+      + '<div class="field-label">연락처</div>'
+      + '<input type="tel" id="phoneInput" placeholder="010-0000-0000" value="' + v.phone + '">'
+      + '<div class="consent-box">'
+      + '<label class="consent-row">'
+      + '<input type="checkbox" id="consentCheck" ' + (v.consent ? 'checked' : '') + '>'
+      + '<span>개인정보 수집·이용에 동의합니다 <span class="required-mark">(필수)</span></span>'
+      + '</label>'
+      + '<button type="button" class="consent-toggle" id="consentToggle">자세히 보기</button>'
+      + '<div class="consent-detail" id="consentDetail" style="display:none;">'
+      + '<strong>수집 항목</strong> 이름, 연락처, 영어 수준, 학습 목표, 희망 시간대, 진행 방식, 문의사항<br>'
+      + '<strong>수집 목적</strong> 선생님 매칭 및 상담을 위한 연락<br>'
+      + '<strong>보유 기간</strong> 목적 달성 시 지체 없이 파기 (관련 법령에 따른 보관 예외 있음)<br>'
+      + '동의를 거부하실 수 있으며, 다만 동의하지 않으실 경우 매칭 서비스 신청이 어렵습니다.<br><br>'
+      + '자세한 내용은 <a href="privacy.html" target="_blank" style="color:var(--accent);font-weight:700;">개인정보처리방침</a> 및 <a href="terms.html" target="_blank" style="color:var(--accent);font-weight:700;">이용약관</a> 전문을 확인해주세요.'
+      + '</div>'
+      + '</div>';
   } else if (step.type === 'payment'){
     const tierName = answers.tier || '-';
     const price = TIER_PRICES[answers.tier] || 0;
-    inner += `
-      <div class="pay-box">
-        <div class="pay-row"><span>선택 플랜</span><strong>${tierName}</strong></div>
-        <div class="pay-row"><span>결제 금액</span><strong>₩${price.toLocaleString()}</strong></div>
-        <div class="pay-row"><span>입금 은행</span><strong>${BANK_INFO.bank}</strong></div>
-        <div class="pay-row"><span>계좌번호</span><strong>${BANK_INFO.account}</strong></div>
-        <div class="pay-row"><span>예금주</span><strong>${BANK_INFO.holder}</strong></div>
-      </div>
-      <div class="qsub" style="margin-top:-.4rem;">입금자명은 <strong style="color:var(--ink);">신청자 성함과 동일하게</strong> 입금해주세요. 매칭까지는 24시간이 걸립니다.<br> 매칭완료 전까지 입금부탁드립니다.</div>
-      <div class="consent-box">
-        <label class="consent-row">
-          <input type="checkbox" id="paymentAckCheck" ${answers.payment ? 'checked' : ''}>
-          <span>위 결제 안내를 확인했습니다 <span class="required-mark">(필수)</span></span>
-        </label>
-      </div>
-    `;
+    inner += ''
+      + '<div class="pay-box">'
+      + '<div class="pay-row"><span>선택 플랜</span><strong>' + tierName + '</strong></div>'
+      + '<div class="pay-row"><span>결제 금액</span><strong>₩' + price.toLocaleString() + '</strong></div>'
+      + '<div class="pay-row"><span>입금 은행</span><strong>' + BANK_INFO.bank + '</strong></div>'
+      + '<div class="pay-row"><span>계좌번호</span><strong>' + BANK_INFO.account + '</strong></div>'
+      + '<div class="pay-row"><span>예금주</span><strong>' + BANK_INFO.holder + '</strong></div>'
+      + '</div>'
+      + '<div class="qsub" style="margin-top:-.4rem;">입금자명은 <strong style="color:var(--ink);">신청자 성함과 동일하게</strong> 입금해주세요. 매칭까지는 24시간이 걸립니다.<br> 매칭완료 전까지 입금부탁드립니다.</div>'
+      + '<div class="consent-box">'
+      + '<label class="consent-row">'
+      + '<input type="checkbox" id="paymentAckCheck" ' + (answers.payment ? 'checked' : '') + '>'
+      + '<span>위 결제 안내를 확인했습니다 <span class="required-mark">(필수)</span></span>'
+      + '</label>'
+      + '</div>';
   }
 
-  inner += `</div>`;
+  inner += '</div>';
   qcardWrap.innerHTML = inner;
 
     if (step.type === 'tier'){
@@ -651,7 +642,7 @@ function renderStep(){
     renderNoteChips();
     document.getElementById('addNoteBtn').addEventListener('click', () => {
       if (noteDay.value && noteHour.value) {
-        answers.scheduleNotes.push(`${noteDay.value} ${noteHour.value}`);
+        answers.scheduleNotes.push(noteDay.value + ' ' + noteHour.value);
         noteDay.value = '';
         noteHour.value = '';
         renderNoteChips();
@@ -727,16 +718,16 @@ async function submitToJotform(a) {
   params.append('submission[31]', a.payment ? '완료' : '');           // 결제확인
   params.append(
     'submission[32]',
-    `${(a.schedule||[]).join(', ') || '-'}${(a.scheduleNotes&&a.scheduleNotes.length) ? ' / 기타: ' + a.scheduleNotes.join(', ') : ''}`
+    ((a.schedule||[]).join(', ') || '-') + ((a.scheduleNotes&&a.scheduleNotes.length) ? ' / 기타: ' + a.scheduleNotes.join(', ') : '')
   );                                                                  // 희망시간대
   params.append(
       'submission[33]',
-      (a.place || []).map((p,i)=>`${i+1}순위: ${p}`).join(' / ')
-    );                                                                  // 진행방식 순위 
-    params.append('submission[34]', a.startDate || '');                 // 희망 시작일 
+      (a.place || []).map((p,i)=>(i+1)+'순위: '+p).join(' / ')
+    );                                                                  // 진행방식 순위
+    params.append('submission[34]', a.startDate || '');                 // 희망 시작일
     params.append('submission[28]', a.notes || '');                     // 문의사항
   try {
-    await fetch(`https://api.jotform.com/form/${FORM_ID}/submissions?apiKey=${API_KEY}`, {
+    await fetch('https://api.jotform.com/form/' + FORM_ID + '/submissions?apiKey=' + API_KEY, {
       method: 'POST',
       body: params
     });
@@ -753,16 +744,15 @@ function showSuccess(){
   wrap.style.display = 'block';
 
   const a = answers;
-  document.getElementById('summaryBox').innerHTML = `
-    <strong>선택 플랜</strong> · ${a.tier || '-'} (₩${(TIER_PRICES[a.tier]||0).toLocaleString()})<br>
-    <strong>나이대</strong> · ${a.ageGroup || '-'}<br>
-    <strong>영어 수준</strong> · ${a.level || '-'}<br>
-    <strong>학습 목표</strong> · ${(a.goals||[]).join(', ') || '-'}<br>
-    <strong>희망 시간대</strong> · ${(a.schedule||[]).join(', ') || '-'}${(a.scheduleNotes&&a.scheduleNotes.length) ? ' / 기타: ' + a.scheduleNotes.join(', ') : ''}<br>
-    <strong>희망 시작일</strong> · ${a.startDate || '-'}<br>
-    <strong>진행 방식</strong> · ${(a.place||[]).length ? (a.place||[]).map((p,i)=>`${i+1}.${p}`).join(', ') : '-'}<br>    
-    <strong>연락처</strong> · ${a.contact ? a.contact.name + ' · ' + a.contact.phone : '-'}
-  `;
+  document.getElementById('summaryBox').innerHTML = ''
+    + '<strong>선택 플랜</strong> · ' + (a.tier || '-') + ' (₩' + (TIER_PRICES[a.tier]||0).toLocaleString() + ')<br>'
+    + '<strong>나이대</strong> · ' + (a.ageGroup || '-') + '<br>'
+    + '<strong>영어 수준</strong> · ' + (a.level || '-') + '<br>'
+    + '<strong>학습 목표</strong> · ' + ((a.goals||[]).join(', ') || '-') + '<br>'
+    + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).join(', ') || '-') + ((a.scheduleNotes&&a.scheduleNotes.length) ? ' / 기타: ' + a.scheduleNotes.join(', ') : '') + '<br>'
+    + '<strong>희망 시작일</strong> · ' + (a.startDate || '-') + '<br>'
+    + '<strong>진행 방식</strong> · ' + ((a.place||[]).length ? (a.place||[]).map((p,i)=>(i+1)+'.'+p).join(', ') : '-') + '<br>'
+    + '<strong>연락처</strong> · ' + (a.contact ? a.contact.name + ' · ' + a.contact.phone : '-');
 
   submitToJotform(a);
   console.log('신청 데이터:', a);
