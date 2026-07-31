@@ -75,7 +75,7 @@
   .tier-opt-desc{font-size:.82rem;color:var(--gray);margin-top:.35rem;line-height:1.5;}
   .tier-more-arrow{display:inline-block;transition:transform .2s;font-size:.7rem;}
   .tier-more{max-height:0;overflow:hidden;transition:max-height .25s ease, margin-top .25s ease;font-size:.82rem;color:var(--ink);line-height:1.6;background:var(--bg);border-radius:.7rem;}
-  .tier-more.open{max-height:260px;margin-top:.6rem;padding:.8rem .9rem;}
+  .tier-more.open{max-height:260px;margin-top:.6rem;padding:.8rem .9rem;overflow:visible;}
   .tier-more-caption{margin-top:.5rem;font-size:.72rem;color:var(--gray);line-height:1.5;}
   .surcharge-note{margin-top:1rem;border-top:1px solid var(--line);padding-top:1rem;}
   .surcharge-toggle{background:none;border:none;padding:0;font-size:.82rem;color:var(--gray);font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.3rem;font-family:'Pretendard',sans-serif;}
@@ -137,8 +137,8 @@
   .time-grid thead th{position:sticky;top:0;background:var(--white);z-index:2;font-size:.72rem;font-weight:800;color:var(--gray);padding:.5rem .2rem;border-bottom:1px solid var(--line);text-align:center;}
   .time-grid thead th:first-child{left:0;z-index:3;}
   .hour-label{position:sticky;left:0;background:var(--white);font-size:.68rem;color:var(--gray);font-weight:700;padding:0 .5rem;white-space:nowrap;border-right:1px solid var(--line);text-align:right;z-index:1;}
-  .grid-cell{width:34px;height:30px;border:1px solid var(--line);background:var(--bg);cursor:pointer;touch-action:pan-y;}
-  .grid-cell.selected{background:var(--accent);}
+  .grid-cell{width:34px;height:30px;border:1px solid var(--line);background:var(--bg);cursor:pointer;touch-action:pan-y;text-align:center;vertical-align:middle;font-size:.62rem;font-weight:800;color:transparent;}
+  .grid-cell.selected{background:var(--accent);color:#fff;}
 
   .note-chip{display:inline-flex;align-items:center;gap:.4rem;background:var(--accent-light);color:var(--accent-deep);font-size:.78rem;font-weight:700;padding:.4rem .5rem .4rem .8rem;border-radius:1rem;}
   .note-chip button{background:none;border:none;color:var(--accent-deep);font-size:.9rem;cursor:pointer;line-height:1;padding:0 .2rem;}
@@ -372,6 +372,18 @@ function setNextState(step){
   skipBtn.style.display = step.required ? 'none' : 'block';
 }
 
+function renderNoteChips(){
+  const wrap = document.getElementById('noteChips');
+  if (!wrap) return;
+  const list = answers.scheduleNotes || [];
+  wrap.innerHTML = list.map((t, i) => '<span class="note-chip">' + t + '<button type="button" data-i="' + i + '">✕</button></span>').join('');
+  wrap.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      answers.scheduleNotes.splice(parseInt(btn.dataset.i), 1);
+      renderNoteChips();
+    });
+  });
+}
 
 function renderStep(){
   if (current >= steps.length){ showSuccess(); return; }
@@ -594,30 +606,15 @@ function renderStep(){
         setNextState(step);
       });
     });
-} else if (step.type === 'gridtime'){
+  } else if (step.type === 'gridtime'){
     const selectedArr = answers[step.key] || [];
-    const CHIP_DAYS = ['월요일','화요일','수요일','목요일','금요일','토요일','일요일'];
-    const isChipEntry = v => CHIP_DAYS.some(d => v.indexOf(d) === 0);
-    const syncAll = () => {
+    const renumberCells = () => {
       qcardWrap.querySelectorAll('.grid-cell').forEach(c => {
         const rIdx = selectedArr.indexOf(c.dataset.key);
         const sel = rIdx > -1;
         c.classList.toggle('selected', sel);
         c.textContent = sel ? (rIdx + 1) : '';
       });
-      const wrap = document.getElementById('noteChips');
-      if (wrap) {
-        const chipEntries = selectedArr.map((v,i)=>({v,i})).filter(o => isChipEntry(o.v));
-        wrap.innerHTML = chipEntries.map(o => '<span class="note-chip">' + (o.i+1) + '. ' + o.v + '<button type="button" data-i="' + o.i + '">✕</button></span>').join('');
-        wrap.querySelectorAll('button').forEach(btn => {
-          btn.addEventListener('click', () => {
-            selectedArr.splice(parseInt(btn.dataset.i), 1);
-            answers[step.key] = selectedArr;
-            syncAll();
-            setNextState(step);
-          });
-        });
-      }
     };
     const applyCell = (cell, shouldSelect) => {
       const key = cell.dataset.key;
@@ -625,24 +622,24 @@ function renderStep(){
       if (shouldSelect && idx === -1) { selectedArr.push(key); }
       else if (!shouldSelect && idx > -1) { selectedArr.splice(idx, 1); }
       answers[step.key] = selectedArr;
-      syncAll();
+      renumberCells();
       setNextState(step);
     };
-   qcardWrap.querySelectorAll('.grid-cell').forEach(cell => {
-     cell.addEventListener('mousedown', (e) => {
-       e.preventDefault();
-       dragState.isDragging = true;
-       dragState.mode = selectedArr.indexOf(cell.dataset.key) === -1;
-       applyCell(cell, dragState.mode);
-     });
-     cell.addEventListener('mouseenter', () => {
-       if (dragState.isDragging) applyCell(cell, dragState.mode);
-     });
-     cell.addEventListener('touchend', (e) => {
-       e.preventDefault();
-       applyCell(cell, selectedArr.indexOf(cell.dataset.key) === -1);
-     });
-   });
+    qcardWrap.querySelectorAll('.grid-cell').forEach(cell => {
+      cell.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        dragState.isDragging = true;
+        dragState.mode = selectedArr.indexOf(cell.dataset.key) === -1;
+        applyCell(cell, dragState.mode);
+      });
+      cell.addEventListener('mouseenter', () => {
+        if (dragState.isDragging) applyCell(cell, dragState.mode);
+      });
+      cell.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        applyCell(cell, selectedArr.indexOf(cell.dataset.key) === -1);
+      });
+    });
 
     const noteDay = document.getElementById('noteDay');
     const noteHour = document.getElementById('noteHour');
@@ -652,15 +649,14 @@ function renderStep(){
       opt.textContent = h + ':30';
       noteHour.appendChild(opt);
     }
-    syncAll();
+    if (!answers.scheduleNotes) answers.scheduleNotes = [];
+    renderNoteChips();
     document.getElementById('addNoteBtn').addEventListener('click', () => {
       if (noteDay.value && noteHour.value) {
-        selectedArr.push(noteDay.value + ' ' + noteHour.value);
-        answers[step.key] = selectedArr;
+        answers.scheduleNotes.push(noteDay.value + ' ' + noteHour.value);
         noteDay.value = '';
         noteHour.value = '';
-        syncAll();
-        setNextState(step);
+        renderNoteChips();
       }
     });
   } else if (step.type === 'text'){
@@ -733,7 +729,8 @@ async function submitToJotform(a) {
   params.append('submission[31]', a.payment ? '완료' : '');           // 결제확인
   params.append(
     'submission[32]',
-    (a.schedule || []).map((v,i)=>(i+1)+'. '+v).join(', '));                                                                  // 희망시간대
+    ((a.schedule||[]).join(', ') || '-') + ((a.scheduleNotes&&a.scheduleNotes.length) ? ' / 기타: ' + a.scheduleNotes.join(', ') : '')
+  );                                                                  // 희망시간대
   params.append(
       'submission[33]',
       (a.place || []).map((p,i)=>(i+1)+'순위: '+p).join(' / ')
@@ -763,7 +760,8 @@ function showSuccess(){
     + '<strong>나이대</strong> · ' + (a.ageGroup || '-') + '<br>'
     + '<strong>영어 수준</strong> · ' + (a.level || '-') + '<br>'
     + '<strong>학습 목표</strong> · ' + ((a.goals||[]).join(', ') || '-') + '<br>'
-    + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).length ? (a.schedule||[]).map((v,i)=>(i+1)+'.'+v).join(', ') : '-') + '<br>'    + '<strong>희망 시작일</strong> · ' + (a.startDate || '-') + '<br>'
+    + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).join(', ') || '-') + ((a.scheduleNotes&&a.scheduleNotes.length) ? ' / 기타: ' + a.scheduleNotes.join(', ') : '') + '<br>'
+    + '<strong>희망 시작일</strong> · ' + (a.startDate || '-') + '<br>'
     + '<strong>진행 방식</strong> · ' + ((a.place||[]).length ? (a.place||[]).map((p,i)=>(i+1)+'.'+p).join(', ') : '-') + '<br>'
     + '<strong>연락처</strong> · ' + (a.contact ? a.contact.name + ' · ' + a.contact.phone : '-');
 
