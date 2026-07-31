@@ -383,7 +383,7 @@ function renderStep(){
   const isEconomy = answers.tier === '이코노미';
   const RANK_OPTIONS = isEconomy
     ? ['IGC인천글로벌캠퍼스 카페에서 만나고 싶어요', '송도 트리플스트리트 카페에서 만나고 싶어요']
-    : ['IGC인천글로벌캠퍼스 카페에서 만나고 싶어요', '송도 트리플스트리트 카페에서 만나고 싶어요', '선생님과 협의할게요', '어떤 방식이든 상관없어요'];
+    : ['IGC인천글로벌캠퍼스 카페에서 만나고 싶어요', '송도 트리플스트리트 카페에서 만나고 싶어요', '선생님과 협의할게요'];
   if (step.type === 'rank') {
     title = isEconomy ? '이코노미는 정해진 두 곳 중에서 진행돼요' : '송도에서 어떻게 진행하고 싶으신가요?';
     sub = isEconomy
