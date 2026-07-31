@@ -518,24 +518,30 @@ function renderStep(){
   inner += `</div>`;
   qcardWrap.innerHTML = inner;
 
-  if (step.type === 'tier'){
-    qcardWrap.querySelectorAll('.tip-icon').forEach(tip => {
-  tip.addEventListener('click', (e) => {
-    e.stopPropagation();
-    qcardWrap.querySelectorAll('.tip-icon').forEach(t => { if (t !== tip) t.classList.remove('open'); });
-    tip.classList.toggle('open');
-  });
-})
-   
-    qcardWrap.querySelectorAll('.tier-more-toggle').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const idx = btn.dataset.idx;
-        const body = document.getElementById('tierMore' + idx);
-        const open = body.classList.toggle('open');
-        btn.classList.toggle('open', open);
+    if (step.type === 'tier'){
+    qcardWrap.querySelectorAll('.tier-opt').forEach(el => {
+      el.addEventListener('click', () => {
+        if (answers.tier !== el.dataset.value) {
+          answers.place = [];   // 요금제가 바뀌면 장소 선택 초기화
+        }
+        answers.tier = el.dataset.value;
+        qcardWrap.querySelectorAll('.tier-opt').forEach(o => {
+          o.classList.remove('selected');
+          o.querySelector('.tier-more').classList.remove('open');
+        });
+        el.classList.add('selected');
+        el.querySelector('.tier-more').classList.add('open');
+        setNextState(step);
       });
     });
+    qcardWrap.querySelectorAll('.tip-icon').forEach(tip => {
+      tip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        qcardWrap.querySelectorAll('.tip-icon').forEach(t => { if (t !== tip) t.classList.remove('open'); });
+        tip.classList.toggle('open');
+      });
+    });
+
     const surchargeToggle = document.getElementById('surchargeToggle');
     if (surchargeToggle) {
       surchargeToggle.addEventListener('click', (e) => {
@@ -545,19 +551,7 @@ function renderStep(){
         surchargeToggle.classList.toggle('open', open);
       });
     }
-    qcardWrap.querySelectorAll('.tip-trigger').forEach(tip => {
-      tip.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const existing = tip.querySelector('.tip-bubble');
-        qcardWrap.querySelectorAll('.tip-bubble').forEach(b => b.remove());
-        if (!existing) {
-          const bubble = document.createElement('span');
-          bubble.className = 'tip-bubble';
-          bubble.textContent = tip.dataset.tip;
-          tip.appendChild(bubble);
-        }
-      });
-    });
+
     } else if (step.type === 'date'){
     const dateInput = document.getElementById('dateInput');
     dateInput.addEventListener('input', () => {
