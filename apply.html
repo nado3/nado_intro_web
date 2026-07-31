@@ -372,19 +372,6 @@ function setNextState(step){
   skipBtn.style.display = step.required ? 'none' : 'block';
 }
 
-function renderNoteChips(){
-  const wrap = document.getElementById('noteChips');
-  if (!wrap) return;
-  const list = answers.scheduleNotes || [];
-  wrap.innerHTML = list.map((t, i) => '<span class="note-chip">' + t + '<button type="button" data-i="' + i + '">✕</button></span>').join('');
-  wrap.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      answers.scheduleNotes.splice(parseInt(btn.dataset.i), 1);
-      renderNoteChips();
-    });
-  });
-}
-
 function renderStep(){
   if (current >= steps.length){ showSuccess(); return; }
   const step = steps[current];
@@ -481,6 +468,7 @@ function renderStep(){
       + '<option>월요일</option><option>화요일</option><option>수요일</option><option>목요일</option><option>금요일</option><option>토요일</option><option>일요일</option>'
       + '</select>'
       + '<select id="noteHour" style="flex:1;"><option value="">30분 단위 시간</option></select>'
+      + '<select id="notePosition" style="flex:0 0 76px;"><option value="">순위</option></select>'
       + '<button type="button" class="note-add-btn" id="addNoteBtn">+</button>'
       + '</div>';
   } else if (step.type === 'text'){
@@ -608,13 +596,39 @@ function renderStep(){
     });
   } else if (step.type === 'gridtime'){
     const selectedArr = answers[step.key] || [];
-    const renumberCells = () => {
+    const CHIP_DAYS = ['월요일','화요일','수요일','목요일','금요일','토요일','일요일'];
+    const isChipEntry = v => CHIP_DAYS.some(d => v.indexOf(d) === 0);
+    const syncAll = () => {
       qcardWrap.querySelectorAll('.grid-cell').forEach(c => {
         const rIdx = selectedArr.indexOf(c.dataset.key);
         const sel = rIdx > -1;
         c.classList.toggle('selected', sel);
         c.textContent = sel ? (rIdx + 1) : '';
       });
+      const wrap = document.getElementById('noteChips');
+      if (wrap) {
+        const chipEntries = selectedArr.map((v,i)=>({v,i})).filter(o => isChipEntry(o.v));
+        wrap.innerHTML = chipEntries.map(o => '<span class="note-chip">' + (o.i+1) + '. ' + o.v + '<button type="button" data-i="' + o.i + '">✕</button></span>').join('');
+        wrap.querySelectorAll('button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            selectedArr.splice(parseInt(btn.dataset.i), 1);
+            answers[step.key] = selectedArr;
+            syncAll();
+            setNextState(step);
+          });
+        });
+      }
+      const posSelect = document.getElementById('notePosition');
+      if (posSelect) {
+        const n = selectedArr.length;
+        posSelect.innerHTML = '<option value="">순위 (안 고르면 맨 뒤)</option>';
+        for (let p = 1; p <= n + 1; p++) {
+          const o = document.createElement('option');
+          o.value = p;
+          o.textContent = p + '번째';
+          posSelect.appendChild(o);
+        }
+      }
     };
     const applyCell = (cell, shouldSelect) => {
       const key = cell.dataset.key;
@@ -622,7 +636,7 @@ function renderStep(){
       if (shouldSelect && idx === -1) { selectedArr.push(key); }
       else if (!shouldSelect && idx > -1) { selectedArr.splice(idx, 1); }
       answers[step.key] = selectedArr;
-      renumberCells();
+      syncAll();
       setNextState(step);
     };
     qcardWrap.querySelectorAll('.grid-cell').forEach(cell => {
@@ -649,14 +663,19 @@ function renderStep(){
       opt.textContent = h + ':30';
       noteHour.appendChild(opt);
     }
-    if (!answers.scheduleNotes) answers.scheduleNotes = [];
-    renderNoteChips();
+    syncAll();
     document.getElementById('addNoteBtn').addEventListener('click', () => {
       if (noteDay.value && noteHour.value) {
-        answers.scheduleNotes.push(noteDay.value + ' ' + noteHour.value);
+        const entry = noteDay.value + ' ' + noteHour.value;
+        const posVal = document.getElementById('notePosition').value;
+        const insertAt = posVal ? (parseInt(posVal) - 1) : selectedArr.length;
+        selectedArr.splice(insertAt, 0, entry);
+        answers[step.key] = selectedArr;
         noteDay.value = '';
         noteHour.value = '';
-        renderNoteChips();
+        document.getElementById('notePosition').value = '';
+        syncAll();
+        setNextState(step);
       }
     });
   } else if (step.type === 'text'){
@@ -729,8 +748,8 @@ async function submitToJotform(a) {
   params.append('submission[31]', a.payment ? '완료' : '');           // 결제확인
   params.append(
     'submission[32]',
-    ((a.schedule||[]).join(', ') || '-') + ((a.scheduleNotes&&a.scheduleNotes.length) ? ' / 기타: ' + a.scheduleNotes.join(', ') : '')
-  );                                                                  // 희망시간대
+    (a.schedule || []).map((v,i)=>(i+1)+'. '+v).join(', ')
+  );                                                           // 희망시간대
   params.append(
       'submission[33]',
       (a.place || []).map((p,i)=>(i+1)+'순위: '+p).join(' / ')
@@ -760,8 +779,7 @@ function showSuccess(){
     + '<strong>나이대</strong> · ' + (a.ageGroup || '-') + '<br>'
     + '<strong>영어 수준</strong> · ' + (a.level || '-') + '<br>'
     + '<strong>학습 목표</strong> · ' + ((a.goals||[]).join(', ') || '-') + '<br>'
-    + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).join(', ') || '-') + ((a.scheduleNotes&&a.scheduleNotes.length) ? ' / 기타: ' + a.scheduleNotes.join(', ') : '') + '<br>'
-    + '<strong>희망 시작일</strong> · ' + (a.startDate || '-') + '<br>'
+    + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).length ? (a.schedule||[]).map((v,i)=>(i+1)+'.'+v).join(', ') : '-') + '<br>'    + '<strong>희망 시작일</strong> · ' + (a.startDate || '-') + '<br>'
     + '<strong>진행 방식</strong> · ' + ((a.place||[]).length ? (a.place||[]).map((p,i)=>(i+1)+'.'+p).join(', ') : '-') + '<br>'
     + '<strong>연락처</strong> · ' + (a.contact ? a.contact.name + ' · ' + a.contact.phone : '-');
 
