@@ -425,20 +425,7 @@ function renderStep(){
               <div class="tier-opt-name">${opt.name}</div>
               <div class="tier-opt-price">₩${opt.price.toLocaleString()}</div>
             </div>
-            <div class="tier-opt-desc">
-             ${opt.desc}
-             ${
-               opt.name === '프리미엄'
-                 ? `<span class="tip-icon">?
-                     <span class="tip-bubble">
-                       최우수 선생님은 학생 만족도, 수업 지속률,
-                       피드백 평가 등을 종합하여 선정된
-                       상위 선생님입니다.
-                     </span>
-                   </span>`
-                 : ''
-             }
-           </div>
+            <div class="tier-opt-desc">${opt.desc}</div>
             <div class="tier-more ${isSel?'open':''}" id="tierMore${idx}">
               ${opt.more}
               ${opt.moreCaption ? `<div class="tier-more-caption">${opt.moreCaption}</div>` : ''}
