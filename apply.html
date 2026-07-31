@@ -419,8 +419,8 @@ function renderStep(){
         + '<div class="surcharge-body" id="surchargeBody">모든 플랜 공통으로, 초등학생 이하 학습자는 추가금 20,000원이 붙습니다. 결제 안내 단계에서 최종 금액에 함께 안내해드려요.</div>'
         + '</div>';
     } else if (step.type === 'date'){
-      const val = answers[step.key] || '';
       const today = new Date().toISOString().split('T')[0];
+      const val = answers[step.key] || today;
       inner += '<input type="date" id="dateInput" min="' + today + '" value="' + val + '">';
     } else if (step.type === 'rank'){
       inner += '<div class="opt-list">';
@@ -552,6 +552,7 @@ function renderStep(){
 
     } else if (step.type === 'date'){
     const dateInput = document.getElementById('dateInput');
+    if (!answers[step.key]) { answers[step.key] = dateInput.value; }
     dateInput.addEventListener('input', () => {
       answers[step.key] = dateInput.value;
       setNextState(step);
