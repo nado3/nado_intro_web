@@ -643,8 +643,9 @@ function renderStep(){
     const noteHour = document.getElementById('noteHour');
     for (let h = 9; h <= 23; h++) {
       const opt = document.createElement('option');
-      opt.value = h + ':30';
-      opt.textContent = h + ':30';
+      const label = h + ':30-' + (h + 1) + ':30';
+      opt.value = label;
+      opt.textContent = label;
       noteHour.appendChild(opt);
     }
     syncAll();
