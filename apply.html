@@ -452,9 +452,8 @@ function renderStep(){
       inner += '<tr><td class="hour-label">' + h + '</td>';
       days.forEach(d => {
         const cellKey = d + ' ' + h;
-        const rankIdx = selectedArr.indexOf(cellKey);
-        const isSel = rankIdx > -1;
-        inner += '<td class="grid-cell ' + (isSel ? 'selected' : '') + '" data-key="' + cellKey + '">' + (isSel ? (rankIdx+1) : '') + '</td>';
+        const isSel = selectedArr.indexOf(cellKey) > -1;
+        inner += '<td class="grid-cell ' + (isSel ? 'selected' : '') + '" data-key="' + cellKey + '"></td>';
       });
       inner += '</tr>';
     });
@@ -463,7 +462,6 @@ function renderStep(){
       + '<div class="field-label" style="margin-top:1rem;">표는 정각 시간만 보여드려요. 30분 단위(예: 9시 30분)로 가능하시면 아래에서 추가해주세요.<br>가능하신 시간을 전부 골라서 알려주시면 정확한 매칭에 더 도움이 돼요.<br> 선택 후 ➕를 눌러야 목록에 추가됩니다.</div>'
       + '<div id="noteChips" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.6rem;"></div>'
       + '<div class="note-add-row">'
-      + '<select id="notePosition" style="flex:0 0 76px;"><option value="">순위</option></select>'
       + '<select id="noteDay" style="flex:1;">'
       + '<option value="">요일</option>'
       + '<option>월요일</option><option>화요일</option><option>수요일</option><option>목요일</option><option>금요일</option><option>토요일</option><option>일요일</option>'
@@ -600,16 +598,13 @@ function renderStep(){
     const isChipEntry = v => CHIP_DAYS.some(d => v.indexOf(d) === 0);
     const syncAll = () => {
       qcardWrap.querySelectorAll('.grid-cell').forEach(c => {
-        const rIdx = selectedArr.indexOf(c.dataset.key);
-        const sel = rIdx > -1;
+        const sel = selectedArr.indexOf(c.dataset.key) > -1;
         c.classList.toggle('selected', sel);
-        c.textContent = sel ? (rIdx + 1) : '';
       });
       const wrap = document.getElementById('noteChips');
       if (wrap) {
         const chipEntries = selectedArr.map((v,i)=>({v,i})).filter(o => isChipEntry(o.v));
-        wrap.innerHTML = chipEntries.map(o => '<span class="note-chip">' + (o.i+1) + '. ' + o.v + '<button type="button" data-i="' + o.i + '">✕</button></span>').join('');
-        wrap.querySelectorAll('button').forEach(btn => {
+        wrap.innerHTML = chipEntries.map(o => '<span class="note-chip">' + o.v + '<button type="button" data-i="' + o.i + '">✕</button></span>').join('');        wrap.querySelectorAll('button').forEach(btn => {
           btn.addEventListener('click', () => {
             selectedArr.splice(parseInt(btn.dataset.i), 1);
             answers[step.key] = selectedArr;
@@ -617,17 +612,6 @@ function renderStep(){
             setNextState(step);
           });
         });
-      }
-      const posSelect = document.getElementById('notePosition');
-      if (posSelect) {
-        const n = selectedArr.length;
-        posSelect.innerHTML = '<option value=""> 순위(미선택 시 맨 뒤)</option>';
-        for (let p = 1; p <= n + 1; p++) {
-          const o = document.createElement('option');
-          o.value = p;
-          o.textContent = p + '번째';
-          posSelect.appendChild(o);
-        }
       }
     };
     const applyCell = (cell, shouldSelect) => {
@@ -666,14 +650,10 @@ function renderStep(){
     syncAll();
     document.getElementById('addNoteBtn').addEventListener('click', () => {
       if (noteDay.value && noteHour.value) {
-        const entry = noteDay.value + ' ' + noteHour.value;
-        const posVal = document.getElementById('notePosition').value;
-        const insertAt = posVal ? (parseInt(posVal) - 1) : selectedArr.length;
-        selectedArr.splice(insertAt, 0, entry);
+        selectedArr.push(noteDay.value + ' ' + noteHour.value);
         answers[step.key] = selectedArr;
         noteDay.value = '';
         noteHour.value = '';
-        document.getElementById('notePosition').value = '';
         syncAll();
         setNextState(step);
       }
@@ -748,8 +728,8 @@ async function submitToJotform(a) {
   params.append('submission[31]', a.payment ? '완료' : '');           // 결제확인
   params.append(
     'submission[32]',
-    (a.schedule || []).map((v,i)=>(i+1)+'. '+v).join(', ')
-  );                                                           // 희망시간대
+    (a.schedule || []).join(', ')
+  );                                                          // 희망시간대
   params.append(
       'submission[33]',
       (a.place || []).map((p,i)=>(i+1)+'순위: '+p).join(' / ')
@@ -779,8 +759,7 @@ function showSuccess(){
     + '<strong>나이대</strong> · ' + (a.ageGroup || '-') + '<br>'
     + '<strong>영어 수준</strong> · ' + (a.level || '-') + '<br>'
     + '<strong>학습 목표</strong> · ' + ((a.goals||[]).join(', ') || '-') + '<br>'
-    + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).length ? (a.schedule||[]).map((v,i)=>(i+1)+'.'+v).join(', ') : '-') + '<br>'    + '<strong>희망 시작일</strong> · ' + (a.startDate || '-') + '<br>'
-    + '<strong>진행 방식</strong> · ' + ((a.place||[]).length ? (a.place||[]).map((p,i)=>(i+1)+'.'+p).join(', ') : '-') + '<br>'
+    + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).join(', ') || '-') + '<br>'    + '<strong>진행 방식</strong> · ' + ((a.place||[]).length ? (a.place||[]).map((p,i)=>(i+1)+'.'+p).join(', ') : '-') + '<br>'
     + '<strong>연락처</strong> · ' + (a.contact ? a.contact.name + ' · ' + a.contact.phone : '-');
 
   submitToJotform(a);
