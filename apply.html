@@ -84,9 +84,25 @@
   .surcharge-toggle.open .tier-more-arrow{transform:rotate(180deg);}
   .surcharge-body{max-height:0;overflow:hidden;transition:max-height .25s ease, margin-top .25s ease;font-size:.8rem;color:var(--gray);line-height:1.6;}
   .surcharge-body.open{max-height:150px;margin-top:.6rem;}
-  .tip-trigger{position:relative;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;background:var(--accent-light);color:var(--accent-deep);border-radius:50%;font-size:.62rem;font-weight:800;cursor:pointer;margin-left:.15rem;font-style:normal;}
-  .tip-bubble{position:absolute;bottom:130%;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:.72rem;font-weight:500;line-height:1.5;padding:.6rem .8rem;border-radius:.6rem;width:200px;white-space:normal;z-index:20;box-shadow:0 8px 20px rgba(0,0,0,0.2);}
-  .tip-bubble::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--navy);}
+  .tip-icon{
+   display:inline-flex;align-items:center;justify-content:center;
+   width:16px;height:16px;border-radius:50%;
+   border:1.5px solid var(--gray);color:var(--gray);
+   font-size:.62rem;font-weight:700;cursor:help;
+   margin-left:.2rem;position:relative;vertical-align:middle;
+ }
+ .tip-icon .tip-bubble{
+   display:none;position:absolute;bottom:135%;left:50%;transform:translateX(-50%);
+   background:var(--navy);color:#fff;font-size:.72rem;font-weight:500;line-height:1.5;
+   padding:.6rem .8rem;border-radius:.6rem;width:200px;white-space:normal;z-index:20;
+   box-shadow:0 8px 20px rgba(0,0,0,0.2);text-align:left;
+ }
+ .tip-icon .tip-bubble::after{
+   content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+   border:6px solid transparent;border-top-color:var(--navy);
+ }
+ .tip-icon:hover .tip-bubble,
+ .tip-icon.open .tip-bubble{ display:block; }
   textarea, input[type=text], input[type=tel]{
     width:100%;font-family:'Pretendard',sans-serif;font-size:.98rem;padding:1rem 1.1rem;
     border:1.5px solid var(--line);border-radius:1rem;background:var(--bg);color:var(--ink);outline:none;
@@ -224,7 +240,6 @@ const steps = [
         name: '프리미엄', price: 220000,
         desc: '나도 최우수 선생님 3명 중 선택',
         more: '· 원하는 시간 우선 배치 · 원하는 곳 어디서든<br>· 해외 대학 + 영어회화 교육 경험이 많은 선생님<br>· 학적 인증 완료 대학생 선생님<br>· 나도 최우수 선생님? 3명 중 선택<br>· 1시간 수업 (스피킹 50분 + 피드백 10분)<br>· 뚜렷한 목적이 있고 영어 회화 실력 상승이 급한 분께 추천',
-        moreCaption: '최우수 선생님이란? 나도 매칭 실적과 학생 후기를 기준으로 선정된 상위 선생님을 의미해요.'
       }
     ]
   },
@@ -504,18 +519,13 @@ function renderStep(){
   qcardWrap.innerHTML = inner;
 
   if (step.type === 'tier'){
-    qcardWrap.querySelectorAll('.tier-opt').forEach(el => {
-      el.addEventListener('click', () => {
-        if (answers.tier !== el.dataset.value) {
-          answers.place = [];   // 요금제가 바뀌면 장소 선택 초기화
-        }
-        answers.tier = el.dataset.value;
-        qcardWrap.querySelectorAll('.tier-opt').forEach(o => o.classList.remove('selected'));
-        el.classList.add('selected');
-        el.querySelector('.tier-more').classList.toggle('open');
-        setNextState(step);
-      });
-    });
+    qcardWrap.querySelectorAll('.tip-icon').forEach(tip => {
+  tip.addEventListener('click', (e) => {
+    e.stopPropagation();
+    qcardWrap.querySelectorAll('.tip-icon').forEach(t => { if (t !== tip) t.classList.remove('open'); });
+    tip.classList.toggle('open');
+  });
+})
    
     qcardWrap.querySelectorAll('.tier-more-toggle').forEach(btn => {
       btn.addEventListener('click', (e) => {
