@@ -85,16 +85,27 @@
   .surcharge-body{max-height:0;overflow:hidden;transition:max-height .25s ease, margin-top .25s ease;font-size:.8rem;color:var(--gray);line-height:1.6;}
   .surcharge-body.open{max-height:150px;margin-top:.6rem;}
   .tip-icon{
-   display:inline-flex;align-items:center;justify-content:center;
-   width:16px;height:16px;border-radius:50%;
-   border:1.5px solid var(--gray);color:var(--gray);
-   font-size:.62rem;font-weight:700;cursor:help;
-   margin-left:.2rem;position:relative;vertical-align:middle;
+     display:inline-flex;
+     justify-content:center;
+     align-items:center;
+ 
+     width:18px;
+     height:18px;
+ 
+     border-radius:50%;
+     background:#4A90E2;
+     color:white;
+ 
+     font-size:11px;
+     font-weight:700;
+ 
+     cursor:help;
+     margin-left:4px;
  }
- .tip-icon .tip-bubble{
+ .tip-bubble{
    display:none;position:absolute;bottom:135%;left:50%;transform:translateX(-50%);
-   background:var(--navy);color:#fff;font-size:.72rem;font-weight:500;line-height:1.5;
-   padding:.6rem .8rem;border-radius:.6rem;width:200px;white-space:normal;z-index:20;
+   background:var(--navy);color:#fff;font-size:.8rem;font-weight:500;line-height:1.6;
+   padding:.75rem .9rem;border-radius:.6rem;width:240px;white-space:normal;z-index:20;
    box-shadow:0 8px 20px rgba(0,0,0,0.2);text-align:left;
  }
  .tip-icon .tip-bubble::after{
@@ -239,7 +250,12 @@ const steps = [
       {
         name: '프리미엄', price: 220000,
         desc: '나도 최우수 선생님 3명 중 선택',
-        more: '· 원하는 시간 우선 배치 · 원하는 곳 어디서든<br>· 해외 대학 + 영어회화 교육 경험이 많은 선생님<br>· 학적 인증 완료 대학생 선생님<br>· 나도 최우수 선생님? 3명 중 선택<br>· 1시간 수업 (스피킹 50분 + 피드백 10분)<br>· 뚜렷한 목적이 있고 영어 회화 실력 상승이 급한 분께 추천',
+        more: '· 원하는 시간 우선 배치 · 원하는 곳 어디서든<br>· 해외 대학 + 영어회화 교육 경험이 많은 선생님<br>· 학적 인증 완료 대학생 선생님<br>· 나도 최우수 선생님 <span class="tip-icon"> ? <span class="tip-bubble">
+         최우수 선생님은 학생 만족도,
+         수업 지속률, 피드백 평가 등을
+         종합하여 선정된 상위 선생님입니다.
+         </span>
+         </span>3명 중 선택<br>· 1시간 수업 (스피킹 50분 + 피드백 10분)<br>· 뚜렷한 목적이 있고 영어 회화 실력 상승이 급한 분께 추천',
       }
     ]
   },
