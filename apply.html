@@ -294,9 +294,15 @@ const steps = [
     placeholder: '예: 발표 준비 때문에 비즈니스 표현 위주로 배우고 싶어요',
     quickFill: '선생님과 상담 시 논의할게요'
   },
+{
+    key: 'referral', type: 'multi', required: true,
+    title: '나도를 어떻게 알게 되셨나요?',
+    sub: '중복 선택 가능해요.',
+    options: ['당근마켓 광고','인스타그램','지인 추천','유튜브','구글 광고','기타']
+  },
   {
     key: 'contact', type: 'contact', required: true,
-    title: '마지막이에요! 연락처를 남겨주세요.',
+    title: '마지막이에요! 연락처를 남겨주세요',
     sub: '매칭 결과를 이 번호로 안내드려요.'
   },
   {
@@ -736,8 +742,9 @@ async function submitToJotform(a) {
       (a.place || []).map((p,i)=>(i+1)+'순위: '+p).join(' / ')
     );                                                                  // 진행방식 순위
     params.append('submission[34]', a.startDate || '');                 // 희망 시작일
+    (a.referral || []).forEach(r => params.append('submission[35][]', r)); // 유입경로 (다중) — TODO: 실제 새 필드 qid로 바꿔주세요
     params.append('submission[28]', a.notes || '');                     // 문의사항
-  try {
+ try {
     await fetch('https://api.jotform.com/form/' + FORM_ID + '/submissions?apiKey=' + API_KEY, {
       method: 'POST',
       body: params
@@ -761,8 +768,9 @@ function showSuccess(){
     + '<strong>영어 수준</strong> · ' + (a.level || '-') + '<br>'
     + '<strong>학습 목표</strong> · ' + ((a.goals||[]).join(', ') || '-') + '<br>'
     + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).join(', ') || '-') + '<br>'    + '<strong>진행 방식</strong> · ' + ((a.place||[]).length ? (a.place||[]).map((p,i)=>(i+1)+'.'+p).join(', ') : '-') + '<br>'
+    + '<strong>유입 경로</strong> · ' + ((a.referral||[]).join(', ') || '-') + '<br>'
     + '<strong>연락처</strong> · ' + (a.contact ? a.contact.name + ' · ' + a.contact.phone : '-');
-
+ 
   submitToJotform(a);
   console.log('신청 데이터:', a);
 }
