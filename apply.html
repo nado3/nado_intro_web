@@ -257,10 +257,16 @@ const steps = [
     ]
   },
 
+/* 변경 후 */
   {
     key: 'ageGroup', type: 'single', required: true,
-    title: '학생의 나이대를 알려주세요',
+    title: '나이대가 어떻게 되시나요?',
     options: ['초등학생','중고등학생','20대','30대','40대','50대 이상']
+  },
+  {
+    key: 'gender', type: 'single', required: true,
+    title: '성별이 어떻게 되시나요?',
+    options: ['남성','여성','응답하지 않음']
   },
   {
     key: 'level', type: 'single', required: true,
@@ -446,6 +452,10 @@ function renderStep(){
       inner += '<div class="opt ' + (step.type==='multi'?'multi':'') + ' ' + (isSel?'selected':'') + '" data-value="' + opt + '"><div class="opt-dot"></div><div class="opt-label">' + opt + '</div></div>';
     });
     inner += '</div>';
+    if (step.key === 'referral') {
+      const showOther = selected.includes('기타');
+      inner += '<div id="referralOtherWrap" style="margin-top:.8rem;' + (showOther?'':'display:none;') + '"><input type="text" id="referralOtherInput" placeholder="어떻게 알게 되셨는지 적어주세요" value="' + (answers.referralOther||'') + '"></div>';
+    }
   } else if (step.type === 'gridtime'){
     const days = ['월','화','수','목','금','토','일'];
     const hours = ['9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','24:00'];
@@ -595,6 +605,16 @@ function renderStep(){
           answers[step.key] = arr;
           el.classList.toggle('selected');
         }
+        if (step.key === 'referral') {
+          const wrap = document.getElementById('referralOtherWrap');
+          const input = document.getElementById('referralOtherInput');
+          const show = (answers.referral||[]).includes('기타');
+          if (wrap) wrap.style.display = show ? 'block' : 'none';
+          if (input && !input.dataset.bound) {
+            input.dataset.bound = '1';
+            input.addEventListener('input', () => { answers.referralOther = input.value; });
+          }
+        }
         setNextState(step);
       });
     });
@@ -707,6 +727,10 @@ function renderStep(){
 nextBtn.addEventListener('click', () => {
   const step = steps[current];
   if (!checkValid(step)) return;
+  if (current === steps.length - 1) {
+    if (nextBtn.dataset.submitted) return;
+    nextBtn.dataset.submitted = '1';
+  }
   current++;
   renderStep();
 });
@@ -754,7 +778,10 @@ async function submitToJotform(a) {
   }
 }
 
+let alreadySubmitted = false;
 function showSuccess(){
+  if (alreadySubmitted) return;
+  alreadySubmitted = true;
   document.getElementById('formMain').style.display = 'none';
   document.getElementById('bottombar').style.display = 'none';
   document.querySelector('.topbar').style.display = 'none';
