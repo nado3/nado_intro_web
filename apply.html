@@ -766,9 +766,10 @@ async function submitToJotform(a) {
       (a.place || []).map((p,i)=>(i+1)+'순위: '+p).join(' / ')
     );                                                                  // 진행방식 순위
     params.append('submission[34]', a.startDate || '');                 // 희망 시작일
-    (a.referral || []).forEach(r => params.append('submission[35][]', r)); // 유입경로 (다중) — TODO: 실제 새 필드 qid로 바꿔주세요
+    (a.referral || []).forEach(r => params.append('submission[35][]', r)); // 유입경로 (다중) 
     params.append('submission[36]', a.gender || '');                    // 성별
-    params.append('submission[28]', a.notes || '');                     // 문의사항
+    params.append('submission[38]', a.referralOther || '');             // 유입경로 기타 직접입력 — TODO: 실제 qid로 교체
+   params.append('submission[28]', a.notes || '');                     // 문의사항
  try {
     await fetch('https://api.jotform.com/form/' + FORM_ID + '/submissions?apiKey=' + API_KEY, {
       method: 'POST',
