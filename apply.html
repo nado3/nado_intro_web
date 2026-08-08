@@ -809,8 +809,7 @@ function showSuccess(){
     + '<strong>선택 플랜</strong> · ' + (a.tier || '-') + ' (₩' + (TIER_PRICES[a.tier]||0).toLocaleString() + ')<br>'
     + '<strong>나이대</strong> · ' + (a.ageGroup || '-') + '<br>'
     + '<strong>영어 수준</strong> · ' + (a.level || '-') + '<br>'
-    + '<strong>학습 목표</strong> · ' + ((a.goals||[]).join(', ') || '-') + '<br>'
-    + '<strong>학습 목표</strong> · ' + ((a.goals||[]).map(g => g === '기타' && a.goalsOther ? '기타(' + a.goalsOther + ')' : g).join(', ') || '-') + '<br>'
+    + '<strong>학습 목표</strong> · ' + ((a.goals||[]).map(g => g === '기타' && a.goalsOther ? '기타(' + a.goalsOther + ')' : g).join(', ') || '-') + '<br>'    + '<strong>학습 목표</strong> · ' + ((a.goals||[]).map(g => g === '기타' && a.goalsOther ? '기타(' + a.goalsOther + ')' : g).join(', ') || '-') + '<br>'
     + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).join(', ') || '-') + '<br>'    + '<strong>진행 방식</strong> · ' + ((a.place||[]).length ? (a.place||[]).map((p,i)=>(i+1)+'.'+p).join(', ') : '-') + '<br>'
     + '<strong>유입 경로</strong> · ' + ((a.referral||[]).join(', ') || '-') + '<br>'
     + '<strong>연락처</strong> · ' + (a.contact ? a.contact.name + ' · ' + a.contact.phone : '-');
