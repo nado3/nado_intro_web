@@ -219,7 +219,7 @@
   <div class="trust-row">
     <div class="trust-item"><div class="trust-num">100%</div><div class="trust-label">학적 인증</div></div>
     <div class="trust-item"><div class="trust-num">1시간</div><div class="trust-label">1:1 수업</div></div>
-    <div class="trust-item"><div class="trust-num">송도</div><div class="trust-label">오프라인</div></div>
+    <div class="trust-item"><div class="trust-num">오프라인</div><div class="trust-label">만나서</div></div>
   </div>
   <div class="summary-box" id="summaryBox"></div>
   <a class="btn-home" href="index.html">홈으로 돌아가기</a>
@@ -813,7 +813,7 @@ document.getElementById('summaryBox').innerHTML = ''
     + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).join(', ') || '-') + '<br>'
     + '<strong>진행 방식</strong> · ' + ((a.place||[]).length ? (a.place||[]).map((p,i)=>(i+1)+'.'+p).join(', ') : '-') + '<br>'
     + '<strong>유입 경로</strong> · ' + ((a.referral||[]).join(', ') || '-') + '<br>'
-    + '<strong>연락처</strong> · ' + (a.contact ? a.contact.name + ' · ' + a.contact.phone : '-'); 
+    + '<strong>연락처</strong> · ' + (a.contact ? a.contact.name + ' · ' + a.contact.phone : '-');
   submitToJotform(a);
   console.log('신청 데이터:', a);
 }
