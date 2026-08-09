@@ -771,11 +771,8 @@ backBtn.addEventListener('click', () => {
 });
 
 async function submitToJotform(a) {
-  const FORM_ID = '262064236851052';
-  const API_KEY = '32abecc4b70bf065c8adf25c9b02b7cb';
-
   const params = new URLSearchParams();
-  params.append('submission[3]', a.contact.name);                     // 이름
+  params.append('submission[3]', a.contact.name);                   // 이름
   params.append('submission[4][full]', a.contact.phone);              // 연락처
   params.append('submission[5]', a.ageGroup);                         // 나이대
   params.append('submission[7]', a.level);                            // 영어 수준
@@ -797,13 +794,14 @@ async function submitToJotform(a) {
     params.append('submission[38]', a.referralOther || '');             // 유입경로 기타 직접입력
     params.append('submission[39]', a.goalsOther || '');                // 학습목표 기타 직접입력 — TODO: 실제 qid로 교체
    params.append('submission[28]', a.notes || '');                     // 문의사항
- try {
-    await fetch('https://api.jotform.com/form/' + FORM_ID + '/submissions?apiKey=' + API_KEY, {
+  try {
+    await fetch('/api/submit', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: params
     });
   } catch (err) {
-    console.error('Jotform 제출 실패:', err);
+    console.error('제출 실패:', err);
   }
 }
 
