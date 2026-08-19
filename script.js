@@ -11,6 +11,10 @@ function durationLabel(idx, tier){
   if (idx === 4) return tier === '이코노미' ? '50분' : '60분';
   return DURATIONS[idx];
 }
+function calcPrice(tier, idx, freq){
+  const raw = PRICE_TABLE[tier][idx] * FREQ_MULTIPLIER[freq];
+  return freq === '체험 1회' ? Math.ceil(raw / 100) * 100 : raw;
+}
 
 const steps = [
   {
@@ -111,6 +115,7 @@ const skipBtn = document.getElementById('skipBtn');
 const backBtn = document.getElementById('backBtn');
 const dragState = { isDragging: false, mode: true };
 document.addEventListener('mouseup', () => { dragState.isDragging = false; });
+let scheduleActiveDay = '월';
 
 function updateProgress(){
   const pct = Math.round((current / steps.length) * 100);
@@ -213,8 +218,7 @@ if (step.type === 'tier'){
           + (opt.badge ? '<div class="tier-opt-badge">' + opt.badge + '</div>' : '')
           + '<div class="tier-opt-top">'
           + '<div class="tier-opt-name">' + opt.name + '</div>'
-          + '<div class="tier-opt-price">₩' + (PRICE_TABLE[opt.name][0] * FREQ_MULTIPLIER[answers.frequency]).toLocaleString() + '~</div>'
-          + '</div>'
+          + '<div class="tier-opt-price">₩' + calcPrice(opt.name, 0, answers.frequency).toLocaleString() + '~</div>'          + '</div>'
           + '<div class="tier-opt-desc">' + opt.desc + '</div>'
           + '<div class="tier-more ' + (isSel?'open':'') + '" id="tierMore' + idx + '">'
           + opt.more
@@ -232,7 +236,7 @@ if (step.type === 'tier'){
       let v = answers.duration || { index: Math.min(4, maxIdx) };
       if (v.index > maxIdx) v = { index: maxIdx };
       answers.duration = v;
-      const price = PRICE_TABLE[tier][v.index] * FREQ_MULTIPLIER[answers.frequency];
+      const price = calcPrice(tier, v.index, answers.frequency);
       const reasonFor = (idx) => {
         if (idx === 0) return '점심시간·저녁시간에 가볍게 짧고 굵게';
         if (idx === 4) {
@@ -295,32 +299,30 @@ if (step.type === 'tier'){
     }
   } else if (step.type === 'gridtime'){
     const days = ['월','화','수','목','금','토','일'];
-    const hours = ['9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','24:00'];
+    const slots = [];
+    for (let h = 9; h < 24; h++){ slots.push(h + ':00'); slots.push(h + ':30'); }
+    slots.push('24:00');
     const selectedArr = answers[step.key] || [];
-    inner += '<div class="grid-wrap"><table class="time-grid" id="timeGrid"><thead><tr><th></th>';
-    days.forEach(d => { inner += '<th>' + d + '</th>'; });
-    inner += '</tr></thead><tbody>';
-    hours.forEach(h => {
-      inner += '<tr><td class="hour-label">' + h + '</td>';
-      days.forEach(d => {
-        const cellKey = d + ' ' + h;
-        const isSel = selectedArr.indexOf(cellKey) > -1;
-        inner += '<td class="grid-cell ' + (isSel ? 'selected' : '') + '" data-key="' + cellKey + '"></td>';
-      });
-      inner += '</tr>';
+    const activeDay = scheduleActiveDay;
+
+    inner += '<div class="day-tabs" id="dayTabs">';
+    days.forEach(d => {
+      const count = selectedArr.filter(v => v.indexOf(d + ' ') === 0).length;
+      inner += '<button type="button" class="day-tab ' + (d === activeDay ? 'active' : '') + '" data-day="' + d + '">'
+        + d
+        + (count > 0 ? '<span class="day-tab-badge">' + count + '</span>' : '')
+        + '</button>';
     });
-    inner += '</tbody></table></div>';
-    inner += ''
-      + '<div class="field-label" style="margin-top:1rem;">표는 정각 시간만 보여드려요. 30분 단위(예: 9시 30분)로 가능하시면 아래에서 추가해주세요.<br>가능하신 시간을 전부 골라서 알려주시면 정확한 매칭에 더 도움이 돼요.<br> 선택 후 ➕를 눌러야 목록에 추가됩니다.</div>'
-      + '<div id="noteChips" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.6rem;"></div>'
-      + '<div class="note-add-row">'
-      + '<select id="noteDay" style="flex:1;">'
-      + '<option value="">요일</option>'
-      + '<option>월요일</option><option>화요일</option><option>수요일</option><option>목요일</option><option>금요일</option><option>토요일</option><option>일요일</option>'
-      + '</select>'
-      + '<select id="noteHour" style="flex:1;"><option value="">30분 단위 시간</option></select>'
-      + '<button type="button" class="note-add-btn" id="addNoteBtn">+</button>'
-      + '</div>';
+    inner += '</div>';
+
+    inner += '<div class="time-slot-grid" id="timeSlotGrid">';
+    slots.forEach(t => {
+      const key = activeDay + ' ' + t;
+      const isSel = selectedArr.indexOf(key) > -1;
+      inner += '<div class="time-slot ' + (isSel ? 'selected' : '') + '" data-key="' + key + '">' + t + '</div>';
+    });
+    inner += '</div>';
+    inner += '<div class="field-label" style="margin-top:1rem;">30분 단위로 가능한 시간을 모두 선택해주세요.<br>요일 탭을 눌러 다른 요일도 선택할 수 있어요.</div>';
   } else if (step.type === 'text'){
     const val = answers[step.key] || '';
     inner += '<textarea id="textInput" placeholder="' + (step.placeholder||'') + '">' + val + '</textarea>';
@@ -349,8 +351,7 @@ if (step.type === 'tier'){
   } else if (step.type === 'payment'){
     const tierName = answers.tier || '-';
     const d = answers.duration || { index: 4 };
-    const price = PRICE_TABLE[answers.tier] ? PRICE_TABLE[answers.tier][d.index] * FREQ_MULTIPLIER[answers.frequency] : 0;
-    inner += ''
+    const price = PRICE_TABLE[answers.tier] ? calcPrice(answers.tier, d.index, answers.frequency) : 0;    inner += ''
       + '<div class="pay-box">'
       + '<div class="pay-row"><span>선택 플랜</span><strong>' + tierName + '</strong></div>'
       + '<div class="pay-row"><span>수업 빈도</span><strong>' + answers.frequency + '</strong></div>'
@@ -427,8 +428,7 @@ if (step.type === 'tier'){
         document.getElementById('durTooltip').textContent = durationLabel(idx, answers.tier);
         document.getElementById('durTooltip').style.left = leftForIdx(idx) + 'px';
         document.getElementById('durReason').textContent = reasonFor(idx);
-        document.getElementById('durPrice').innerHTML = '<span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + (PRICE_TABLE[answers.tier][idx] * FREQ_MULTIPLIER[answers.frequency]).toLocaleString();
-        setNextState(step);
+        document.getElementById('durPrice').innerHTML = '<span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + calcPrice(answers.tier, idx, answers.frequency).toLocaleString();        setNextState(step);
       };
       durSlider.addEventListener('input', syncDuration);
       document.getElementById('durTooltip').style.left = leftForIdx(parseInt(durSlider.value)) + 'px';
@@ -495,74 +495,87 @@ if (step.type === 'tier'){
            setNextState(step);
       });
     });
-  } else if (step.type === 'gridtime'){
+} else if (step.type === 'gridtime'){
     const selectedArr = answers[step.key] || [];
-    const CHIP_DAYS = ['월요일','화요일','수요일','목요일','금요일','토요일','일요일'];
-    const isChipEntry = v => CHIP_DAYS.some(d => v.indexOf(d) === 0);
-    const syncAll = () => {
-      qcardWrap.querySelectorAll('.grid-cell').forEach(c => {
-        const sel = selectedArr.indexOf(c.dataset.key) > -1;
-        c.classList.toggle('selected', sel);
-      });
-      const wrap = document.getElementById('noteChips');
-      if (wrap) {
-        const chipEntries = selectedArr.map((v,i)=>({v,i})).filter(o => isChipEntry(o.v));
-        wrap.innerHTML = chipEntries.map(o => '<span class="note-chip">' + o.v + '<button type="button" data-i="' + o.i + '">✕</button></span>').join('');
-        wrap.querySelectorAll('button').forEach(btn => {
-          btn.addEventListener('click', () => {
-            selectedArr.splice(parseInt(btn.dataset.i), 1);
-            answers[step.key] = selectedArr;
-            syncAll();
-            setNextState(step);
-          });
-        });
-      }
+
+    const buildSlots = () => {
+      const slots = [];
+      for (let h = 9; h < 24; h++){ slots.push(h + ':00'); slots.push(h + ':30'); }
+      slots.push('24:00');
+      return slots;
     };
-    const applyCell = (cell, shouldSelect) => {
-      const key = cell.dataset.key;
+
+    const renderTabs = () => {
+      document.querySelectorAll('.day-tab').forEach(tab => {
+        const d = tab.dataset.day;
+        tab.classList.toggle('active', d === scheduleActiveDay);
+        const count = selectedArr.filter(v => v.indexOf(d + ' ') === 0).length;
+        let badge = tab.querySelector('.day-tab-badge');
+        if (count > 0) {
+          if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'day-tab-badge';
+            tab.appendChild(badge);
+          }
+          badge.textContent = count;
+        } else if (badge) {
+          badge.remove();
+        }
+      });
+    };
+
+    const applySlot = (key, shouldSelect) => {
       const idx = selectedArr.indexOf(key);
-      if (shouldSelect && idx === -1) { selectedArr.push(key); }
-      else if (!shouldSelect && idx > -1) { selectedArr.splice(idx, 1); }
+      if (shouldSelect && idx === -1) selectedArr.push(key);
+      else if (!shouldSelect && idx > -1) selectedArr.splice(idx, 1);
       answers[step.key] = selectedArr;
-      syncAll();
+      renderTabs();
       setNextState(step);
     };
-    qcardWrap.querySelectorAll('.grid-cell').forEach(cell => {
-      cell.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        dragState.isDragging = true;
-        dragState.mode = selectedArr.indexOf(cell.dataset.key) === -1;
-        applyCell(cell, dragState.mode);
+
+    const bindSlotEvents = () => {
+      qcardWrap.querySelectorAll('.time-slot').forEach(cell => {
+        cell.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          dragState.isDragging = true;
+          dragState.mode = selectedArr.indexOf(cell.dataset.key) === -1;
+          cell.classList.toggle('selected', dragState.mode);
+          applySlot(cell.dataset.key, dragState.mode);
+        });
+        cell.addEventListener('mouseenter', () => {
+          if (dragState.isDragging) {
+            cell.classList.toggle('selected', dragState.mode);
+            applySlot(cell.dataset.key, dragState.mode);
+          }
+        });
+        cell.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          const shouldSelect = selectedArr.indexOf(cell.dataset.key) === -1;
+          cell.classList.toggle('selected', shouldSelect);
+          applySlot(cell.dataset.key, shouldSelect);
+        });
       });
-      cell.addEventListener('mouseenter', () => {
-        if (dragState.isDragging) applyCell(cell, dragState.mode);
-      });
-      cell.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        applyCell(cell, selectedArr.indexOf(cell.dataset.key) === -1);
+    };
+
+    const rebuildSlotGrid = () => {
+      const grid = document.getElementById('timeSlotGrid');
+      grid.innerHTML = buildSlots().map(t => {
+        const key = scheduleActiveDay + ' ' + t;
+        const isSel = selectedArr.indexOf(key) > -1;
+        return '<div class="time-slot ' + (isSel ? 'selected' : '') + '" data-key="' + key + '">' + t + '</div>';
+      }).join('');
+      bindSlotEvents();
+    };
+
+    document.querySelectorAll('.day-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        scheduleActiveDay = tab.dataset.day;
+        renderTabs();
+        rebuildSlotGrid();
       });
     });
 
-    const noteDay = document.getElementById('noteDay');
-    const noteHour = document.getElementById('noteHour');
-    for (let h = 9; h <= 23; h++) {
-      const opt = document.createElement('option');
-      const label = h + ':30-' + (h + 1) + ':30';
-      opt.value = label;
-      opt.textContent = label;
-      noteHour.appendChild(opt);
-    }
-    syncAll();
-    document.getElementById('addNoteBtn').addEventListener('click', () => {
-      if (noteDay.value && noteHour.value) {
-        selectedArr.push(noteDay.value + ' ' + noteHour.value);
-        answers[step.key] = selectedArr;
-        noteDay.value = '';
-        noteHour.value = '';
-        syncAll();
-        setNextState(step);
-      }
-    });
+    bindSlotEvents();
   } else if (step.type === 'text'){
     const ta = document.getElementById('textInput');
     ta.addEventListener('input', () => { answers[step.key] = ta.value; });
