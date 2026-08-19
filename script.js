@@ -237,7 +237,7 @@ if (step.type === 'tier'){
         }
         return '';
       };
-      const recoIdxList = maxIdx > 4 ? [0, 4] : [0];
+      const recoIdxList = [0, 4];
       let ticksHtml = '';
       recoIdxList.forEach(idx => {
         const pct = idx / maxIdx;
