@@ -5,7 +5,7 @@ const PRICE_TABLE = {
   '프리미엄': [120000,140000,160000,180000,220000,256668,293336,330004,366672,403340,440000]
 };
 const KID_SURCHARGE = 1500;
-const FREQ_MULTIPLIER = { '주 1회': 1, '주 2회': 2 };
+const FREQ_MULTIPLIER = { '주 1회': 1, '주 2회': 2, '체험 1회': 0.25 };
 const TIER_DURATION_MAX_INDEX = { '이코노미': 4 }; // 이코노미는 30~50분(인덱스 0~4)까지만 선택 가능
 function durationLabel(idx, tier){
   if (idx === 4) return tier === '이코노미' ? '50분' : '60분';
@@ -99,9 +99,10 @@ const steps = [
     sub: '결제 금액을 확인해주세요. 선생님 매칭이 완료된 후 <strong style="color:var(--ink);">카카오톡으로</strong> 결제 방법을 안내해드릴 예정입니다.'
   }
 ];
+const TRIAL_MODE = document.body.dataset.mode === 'trial';
 
 let current = 0;
-const answers = { frequency: '주 1회' };
+const answers = { frequency: TRIAL_MODE ? '체험 1회' : '주 1회' };
 const historyEl = document.getElementById('history');
 const qcardWrap = document.getElementById('qcardWrap');
 const progressFill = document.getElementById('progressFill');
@@ -190,13 +191,20 @@ function renderStep(){
   if (sub) inner += '<div class="qsub">' + sub + '</div>';
 
 if (step.type === 'tier'){
-      inner += ''
-        + '<div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">'
-        + '<button type="button" id="freqToggle" style="background:var(--navy);color:#fff;border:none;padding:.5rem 1.1rem;border-radius:2rem;font-weight:800;font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:.35rem;">'
-        + answers.frequency
-        + '<span style="font-size:.68rem;opacity:.75;">↻ 변경</span>'
-        + '</button>'
-        + '</div>';
+      if (!TRIAL_MODE) {
+        inner += ''
+          + '<div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">'
+          + '<button type="button" id="freqToggle" style="background:var(--navy);color:#fff;border:none;padding:.5rem 1.1rem;border-radius:2rem;font-weight:800;font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:.35rem;">'
+          + answers.frequency
+          + '<span style="font-size:.68rem;opacity:.75;">↻ 변경</span>'
+          + '</button>'
+          + '</div>';
+      } else {
+        inner += ''
+          + '<div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">'
+          + '<span style="background:var(--accent-light);color:var(--accent-deep);padding:.5rem 1.1rem;border-radius:2rem;font-weight:800;font-size:.85rem;">체험 1회</span>'
+          + '</div>';
+      }
       inner += '<div class="opt-list">';
       step.options.forEach((opt, idx) => {
         const isSel = answers.tier === opt.name;
@@ -215,7 +223,9 @@ if (step.type === 'tier'){
           + '</div>';
       });
       inner += '</div>';
-      inner += '<div style="font-size:.75rem;color:var(--gray);margin-top:.5rem;">주 3회 이상 수업을 원하시면 홈페이지 우측 하단 상담 채팅으로 문의해주세요.</div>';
+      inner += TRIAL_MODE
+        ? '<div style="font-size:.75rem;color:var(--gray);margin-top:.5rem;">체험 수업은 1회만 진행돼요. 마음에 드셨다면 정규 수업은 매칭 후 안내해드릴게요.</div>'
+        : '<div style="font-size:.75rem;color:var(--gray);margin-top:.5rem;">주 3회 이상 수업을 원하시면 홈페이지 우측 하단 상담 채팅으로 문의해주세요.</div>';
     } else if (step.type === 'duration'){
       const tier = answers.tier;
       const maxIdx = TIER_DURATION_MAX_INDEX[tier] !== undefined ? TIER_DURATION_MAX_INDEX[tier] : 10;
@@ -248,8 +258,7 @@ if (step.type === 'tier'){
         + '<div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--gray);margin-top:2px;"><span>30분</span><span>' + durationLabel(maxIdx, tier) + '</span></div>'
         + '<div id="durReason" style="font-size:.8rem;color:var(--accent-deep);font-weight:700;margin-top:.7rem;min-height:1.2em;">' + reasonFor(v.index) + '</div>'
         + '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:.6rem 0 .8rem;">'
-        + '<span style="font-size:.85rem;color:var(--gray);font-weight:600;">' + answers.frequency + ' · 월 ' + (answers.frequency === '주 2회' ? '8' : '4') + '회 기준</span>'
-        + '<span id="durPrice" style="font-size:1.1rem;font-weight:800;"><span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + price.toLocaleString() + '</span>'
+        + '<span style="font-size:.85rem;color:var(--gray);font-weight:600;">' + (answers.frequency === '체험 1회' ? '체험 1회 기준' : (answers.frequency + ' · 월 ' + (answers.frequency === '주 2회' ? '8' : '4') + '회 기준')) + '</span>'        + '<span id="durPrice" style="font-size:1.1rem;font-weight:800;"><span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + price.toLocaleString() + '</span>'
         + '</div>'
         + (tier === '이코노미'
           ? '<div style="font-size:.75rem;color:var(--ink);font-weight:700;border-top:1px solid var(--line);padding-top:.8rem;">이코노미 플랜은 30분~' + durationLabel(maxIdx, tier) + '까지 선택하실 수 있어요. <br> 더 긴 시간을 원하시면 스탠다드·프리미엄 플랜을 확인해보세요.</div>'
@@ -640,7 +649,9 @@ async function submitToJotform(a) {
     params.append('submission[38]', a.referralOther || '');             // 유입경로 기타 직접입력
     params.append('submission[39]', a.goalsOther || '');                // 학습목표 기타 직접입력
     params.append('submission[40]', a.frequency || '');                 // 수업 빈도
-    params.append('submission[41]', a.duration ? durationLabel(a.duration.index, a.tier) : ''); // 수업 시간    params.append('submission[28]', a.notes || '');                     // 문의사항
+    params.append('submission[41]', a.duration ? durationLabel(a.duration.index, a.tier) : ''); // 수업 시간
+    params.append('submission[43]', TRIAL_MODE ? '체험 신청' : '정규 신청');        // 신청 구분
+    params.append('submission[28]', a.notes || '');                     // 문의사항                     
  try {
     await fetch('https://api.jotform.com/form/' + FORM_ID + '/submissions?apiKey=' + API_KEY, {
       method: 'POST',
