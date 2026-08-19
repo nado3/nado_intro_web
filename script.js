@@ -96,7 +96,7 @@ const steps = [
   {
     key: 'payment', type: 'payment', required: true,
     title: '결제 안내',
-    sub: '결제 금액을 확인해주세요. 선생님 매칭이 완료된 후 카카오톡으로 결제 방법을 안내해드릴 예정입니다.'
+    sub: '결제 금액을 확인해주세요. 선생님 매칭이 완료된 후 <strong style="color:var(--ink);">카카오톡으로</strong> 결제 방법을 안내해드릴 예정입니다.'
   }
 ];
 
@@ -252,7 +252,7 @@ if (step.type === 'tier'){
         + '<span id="durPrice" style="font-size:1.1rem;font-weight:800;"><span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + price.toLocaleString() + '</span>'
         + '</div>'
         + (tier === '이코노미'
-          ? '<div style="font-size:.75rem;color:var(--ink);font-weight:700;border-top:1px solid var(--line);padding-top:.8rem;">이코노미 플랜은 30분~' + durationLabel(maxIdx, tier) + '까지 선택하실 수 있어요. 더 긴 시간을 원하시면 스탠다드·프리미엄 플랜을 확인해보세요.</div>'
+          ? '<div style="font-size:.75rem;color:var(--ink);font-weight:700;border-top:1px solid var(--line);padding-top:.8rem;">이코노미 플랜은 30분~' + durationLabel(maxIdx, tier) + '까지 선택하실 수 있어요. <br> 더 긴 시간을 원하시면 스탠다드·프리미엄 플랜을 확인해보세요.</div>'
           : '<div style="font-size:.75rem;color:var(--ink);border-top:1px solid var(--line);padding-top:.8rem;">긴 시간을 한 번에 몰아 듣기 부담스러우시면, 이전 화면에서 주 2회로 나눠 진행하실 수도 있어요.</div>');
     } else if (step.type === 'date'){
       const today = new Date().toISOString().split('T')[0];
@@ -348,7 +348,6 @@ if (step.type === 'tier'){
       + '<div class="pay-row"><span>수업 시간</span><strong>' + durationLabel(d.index, answers.tier) + '</strong></div>'
       + '<div class="pay-row"><span>결제 금액</span><strong>₩' + price.toLocaleString() + '</strong></div>'
       + '</div>'
-      + '<div class="qsub" style="margin-top:-.4rem;">매칭이 완료되면 카카오톡으로 <strong style="color:var(--ink);">입금 계좌와 입금 안내</strong>를 다시 보내드려요. 안내를 받으신 후 입금해주시면 됩니다.</div>'
       + '<div class="consent-box">'
       + '<label class="consent-row">'
       + '<input type="checkbox" id="paymentAckCheck" ' + (answers.payment ? 'checked' : '') + '>'
