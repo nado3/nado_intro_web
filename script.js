@@ -70,7 +70,7 @@ const steps = [
    {
     key: 'startDate', type: 'date', required: true,
     title: '언제부터 수업을 시작하고 싶으신가요?',
-    sub: '희망하시는 첫 수업 날짜를 선택해주세요.<br>선생님 일정에 따라, 희망하신 날짜보다 첫 수업이 조금 늦어질 수 있어요.'
+    sub: '희망하시는 첫 수업 날짜를 선택해주세요.<br>선생님 일정에 따라, 희망하신 날짜보다 첫 수업이 조금 늦어지거나 빨라질 수 있어요.'
   },
   {
     key: 'place', type: 'rank', required: true
