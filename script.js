@@ -280,6 +280,19 @@ if (step.type === 'tier'){
         inner += '<div class="opt rank ' + (isSel?'selected':'') + '" data-value="' + opt + '"><div class="opt-rank-badge">' + (isSel ? (rankIdx+1) : '') + '</div><div class="opt-label">' + opt + '</div></div>';
       });
       inner += '</div>';
+
+      const negotiateSelected = selected.includes('선생님과 협의할게요');
+      inner += ''
+        + '<div id="negotiateLocationWrap" style="margin-top:1.2rem;' + (negotiateSelected ? '' : 'display:none;') + '">'
+        + '<div class="field-label" style="margin-top:0;">선생님을 만나고 싶으신 대략적인 위치를 알려주세요</div>'
+        + '<div class="qsub" style="margin-top:-.2rem;margin-bottom:.7rem;">'
+        + '대략적으로 원하시는 동네 및 랜드마크를 적어주세요. <br> 이 정보를 바탕으로 선생님이 이동 가능한 거리인지 확인합니다.'
+        + '</div>'
+        + '<textarea id="negotiateLocationInput" placeholder="예: 인천대입구역 인근 카페, 송도에듀포레푸르지오 근처 등">' + (answers.negotiateLocation || '') + '</textarea>'
+        + '<div style="font-size:.78rem;color:#E85C5C;font-weight:700;line-height:1.6;margin-top:.6rem;">'
+        + '⚠️ 대략적인 위치를 꼭 입력해주세요. 미입력 시 매칭이 취소될 수 있습니다.'
+        + '</div>'
+        + '</div>';
     } else if (step.type === 'single' || step.type === 'multi'){
       inner += '<div class="opt-list">';
 
@@ -441,23 +454,33 @@ if (step.type === 'tier'){
       setNextState(step);
     });
   } else if (step.type === 'rank'){
-    qcardWrap.querySelectorAll('.opt').forEach(el => {
-      el.addEventListener('click', () => {
-        const val = el.dataset.value;
-        const arr = answers[step.key] || [];
-        const idx = arr.indexOf(val);
-        if (idx > -1) { arr.splice(idx, 1); } else { arr.push(val); }
-        answers[step.key] = arr;
-        qcardWrap.querySelectorAll('.opt').forEach(o => {
-          const rIdx = arr.indexOf(o.dataset.value);
-          const sel = rIdx > -1;
-          o.classList.toggle('selected', sel);
-          o.querySelector('.opt-rank-badge').textContent = sel ? (rIdx + 1) : '';
-        });
-        setNextState(step);
+  const negotiateWrap = document.getElementById('negotiateLocationWrap');
+  const negotiateInput = document.getElementById('negotiateLocationInput');
+  if (negotiateInput) {
+    negotiateInput.addEventListener('input', () => { answers.negotiateLocation = negotiateInput.value; });
+  }
+  qcardWrap.querySelectorAll('.opt').forEach(el => {
+    el.addEventListener('click', () => {
+      const val = el.dataset.value;
+      const arr = answers[step.key] || [];
+      const idx = arr.indexOf(val);
+      if (idx > -1) { arr.splice(idx, 1); } else { arr.push(val); }
+      answers[step.key] = arr;
+      qcardWrap.querySelectorAll('.opt').forEach(o => {
+        const rIdx = arr.indexOf(o.dataset.value);
+        const sel = rIdx > -1;
+        o.classList.toggle('selected', sel);
+        o.querySelector('.opt-rank-badge').textContent = sel ? (rIdx + 1) : '';
       });
+      if (negotiateWrap) {
+        const show = arr.includes('선생님과 협의할게요');
+        negotiateWrap.style.display = show ? 'block' : 'none';
+        if (!show) { answers.negotiateLocation = ''; if (negotiateInput) negotiateInput.value = ''; }
+      }
+      setNextState(step);
     });
-  } else if (step.type === 'single' || step.type === 'multi'){
+  });
+} else if (step.type === 'single' || step.type === 'multi'){
     qcardWrap.querySelectorAll('.opt').forEach(el => {
       el.addEventListener('click', () => {
         const val = el.dataset.value;
@@ -664,7 +687,8 @@ async function submitToJotform(a) {
     params.append('submission[40]', a.frequency || '');                 // 수업 빈도
     params.append('submission[41]', a.duration ? durationLabel(a.duration.index, a.tier) : ''); // 수업 시간
     params.append('submission[43]', TRIAL_MODE ? '체험 신청' : '정규 신청');        // 신청 구분
-    params.append('submission[28]', a.notes || '');                     // 문의사항                     
+    const negotiateNote = a.negotiateLocation ? '[협의 희망 위치] ' + a.negotiateLocation : '';
+    params.append('submission[28]', [a.notes || '', negotiateNote].filter(Boolean).join(' / ')); // 문의사항 (+협의 위치)                                         
  try {
     await fetch('https://api.jotform.com/form/' + FORM_ID + '/submissions?apiKey=' + API_KEY, {
       method: 'POST',
@@ -692,6 +716,7 @@ document.getElementById('summaryBox').innerHTML = ''
     + '<strong>학습 목표</strong> · ' + ((a.goals||[]).map(g => g === '기타' && a.goalsOther ? '기타(' + a.goalsOther + ')' : g).join(', ') || '-') + '<br>'
     + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).join(', ') || '-') + '<br>'
     + '<strong>진행 방식</strong> · ' + ((a.place||[]).length ? (a.place||[]).map((p,i)=>(i+1)+'.'+p).join(', ') : '-') + '<br>'
+    + (a.negotiateLocation ? '<strong>협의 희망 위치</strong> · ' + a.negotiateLocation + '<br>' : '')
     + '<strong>유입 경로</strong> · ' + ((a.referral||[]).join(', ') || '-') + '<br>'
     + '<strong>연락처</strong> · ' + (a.contact ? a.contact.name + ' · ' + a.contact.phone : '-');
   submitToJotform(a);
