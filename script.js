@@ -6,6 +6,11 @@ const PRICE_TABLE = {
 };
 const KID_SURCHARGE = 1500;
 const FREQ_MULTIPLIER = { '주 1회': 1, '주 2회': 2 };
+const TIER_DURATION_MAX_INDEX = { '이코노미': 4 }; // 이코노미는 30~50분(인덱스 0~4)까지만 선택 가능
+function durationLabel(idx, tier){
+  if (idx === 4) return tier === '이코노미' ? '50분' : '60분';
+  return DURATIONS[idx];
+}
 const BANK_INFO = {
   bank: '신한은행',
   account: '110517571415',
@@ -122,8 +127,7 @@ function labelFor(step, value){
   if (step.type === 'gridtime') return Array.isArray(value) && value.length ? value.length + '개 시간대 선택' : '';
   if (step.type === 'contact') return value && value.name ? value.name + ' · ' + (value.phone || '') : '';
   if (step.type === 'payment') return value === true ? '확인 완료' : '';
-  if (step.type === 'duration') return value ? DURATIONS[value.index] + (value.isKid ? ' · 초등학생 이하' : '') : '';
-  return value || '';
+  if (step.type === 'duration') return value ? durationLabel(value.index, answers.tier) + (value.isKid ? ' · 초등학생 이하' : '') : '';  return value || '';
 }
 
 function renderHistory(){
@@ -219,29 +223,42 @@ if (step.type === 'tier'){
       inner += '<div style="font-size:.75rem;color:var(--gray);margin-top:.5rem;">주 3회 이상 수업을 원하시면 홈페이지 우측 하단 상담 채팅으로 문의해주세요.</div>';
     } else if (step.type === 'duration'){
       const tier = answers.tier;
-      const v = answers.duration || { index: 4 };
+      const maxIdx = TIER_DURATION_MAX_INDEX[tier] !== undefined ? TIER_DURATION_MAX_INDEX[tier] : 10;
+      let v = answers.duration || { index: Math.min(4, maxIdx) };
+      if (v.index > maxIdx) v = { index: maxIdx };
+      answers.duration = v;
       const price = PRICE_TABLE[tier][v.index] * FREQ_MULTIPLIER[answers.frequency];
-      const reasonFor = (idx) => idx === 0
-        ? '점심시간·저녁시간에 가볍게 짧고 굵게'
-        : idx === 4
-          ? '단기간에 실력을 확 끌어올리고 싶은 분께'
-          : '';
+      const reasonFor = (idx) => {
+        if (idx === 0) return '점심시간·저녁시간에 가볍게 짧고 굵게';
+        if (idx === 4) {
+          return tier === '이코노미'
+            ? '이코노미에서 선택하실 수 있는 가장 넉넉한 시간이에요'
+            : '단기간에 실력을 확 끌어올리고 싶은 분께';
+        }
+        return '';
+      };
+      const recoIdxList = maxIdx > 4 ? [0, 4] : [0];
+      let ticksHtml = '';
+      recoIdxList.forEach(idx => {
+        const pct = idx / maxIdx;
+        ticksHtml += '<div class="dur-tick" style="left:calc(9px + (100% - 18px) * ' + pct + ');"></div>'
+          + '<div class="dur-tick-badge" style="left:calc(9px + (100% - 18px) * ' + pct + ');">추천</div>';
+      });
       inner += ''
         + '<div class="dur-track-wrap">'
-        + '<div class="dur-tooltip" id="durTooltip">' + DURATIONS[v.index] + '</div>'
-        + '<div class="dur-tick" style="left:calc(9px + (100% - 18px) * 0);"></div>'
-        + '<div class="dur-tick-badge" style="left:calc(9px + (100% - 18px) * 0);">추천</div>'
-        + '<div class="dur-tick" style="left:calc(9px + (100% - 18px) * 0.4);"></div>'
-        + '<div class="dur-tick-badge" style="left:calc(9px + (100% - 18px) * 0.4);">추천</div>'
-        + '<input type="range" id="durSlider" min="0" max="10" step="1" value="' + v.index + '" style="width:100%;position:relative;z-index:1;">'
+        + '<div class="dur-tooltip" id="durTooltip">' + durationLabel(v.index, tier) + '</div>'
+        + ticksHtml
+        + '<input type="range" id="durSlider" min="0" max="' + maxIdx + '" step="1" value="' + v.index + '" style="width:100%;position:relative;z-index:1;">'
         + '</div>'
-        + '<div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--gray);margin-top:2px;"><span>30분</span><span>2시간</span></div>'
+        + '<div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--gray);margin-top:2px;"><span>30분</span><span>' + durationLabel(maxIdx, tier) + '</span></div>'
         + '<div id="durReason" style="font-size:.8rem;color:var(--accent-deep);font-weight:700;margin-top:.7rem;min-height:1.2em;">' + reasonFor(v.index) + '</div>'
         + '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:.6rem 0 .8rem;">'
         + '<span style="font-size:.85rem;color:var(--gray);font-weight:600;">' + answers.frequency + ' · 월 ' + (answers.frequency === '주 2회' ? '8' : '4') + '회 기준</span>'
         + '<span id="durPrice" style="font-size:1.1rem;font-weight:800;"><span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + price.toLocaleString() + '</span>'
         + '</div>'
-        + '<div style="font-size:.75rem;color:var(--gray);border-top:1px solid var(--line);padding-top:.8rem;">긴 시간을 한 번에 몰아 듣기 부담스러우시면, 이전 화면에서 주 2회로 나눠 진행하실 수도 있어요.</div>';
+        + (tier === '이코노미'
+          ? '<div style="font-size:.75rem;color:var(--accent-deep);font-weight:700;border-top:1px solid var(--line);padding-top:.8rem;">이코노미 플랜은 30분~' + durationLabel(maxIdx, tier) + '까지 선택하실 수 있어요. 더 긴 시간을 원하시면 스탠다드·프리미엄 플랜을 확인해보세요.</div>'
+          : '<div style="font-size:.75rem;color:var(--gray);border-top:1px solid var(--line);padding-top:.8rem;">긴 시간을 한 번에 몰아 듣기 부담스러우시면, 이전 화면에서 주 2회로 나눠 진행하실 수도 있어요.</div>');
     } else if (step.type === 'date'){
       const today = new Date().toISOString().split('T')[0];
       const val = answers[step.key] || today;
@@ -333,8 +350,7 @@ if (step.type === 'tier'){
       + '<div class="pay-box">'
       + '<div class="pay-row"><span>선택 플랜</span><strong>' + tierName + '</strong></div>'
       + '<div class="pay-row"><span>수업 빈도</span><strong>' + answers.frequency + '</strong></div>'
-      + '<div class="pay-row"><span>수업 시간</span><strong>' + DURATIONS[d.index] + '</strong></div>'
-      + '<div class="pay-row"><span>결제 금액</span><strong>₩' + price.toLocaleString() + '</strong></div>'
+      + '<div class="pay-row"><span>수업 시간</span><strong>' + durationLabel(d.index, answers.tier) + '</strong></div>'      + '<div class="pay-row"><span>결제 금액</span><strong>₩' + price.toLocaleString() + '</strong></div>'
       + '<div class="pay-row"><span>입금 은행</span><strong>' + BANK_INFO.bank + '</strong></div>'
       + '<div class="pay-row"><span>계좌번호</span><strong>' + BANK_INFO.account + '</strong></div>'
       + '<div class="pay-row"><span>예금주</span><strong>' + BANK_INFO.holder + '</strong></div>'
@@ -365,6 +381,10 @@ if (step.type === 'tier'){
           answers.place = [];   // 요금제가 바뀌면 장소 선택 초기화
         }
         answers.tier = el.dataset.value;
+        const maxIdx = TIER_DURATION_MAX_INDEX[answers.tier] !== undefined ? TIER_DURATION_MAX_INDEX[answers.tier] : 10;
+        if (answers.duration && answers.duration.index > maxIdx) {
+          answers.duration = { index: maxIdx };
+        }
         qcardWrap.querySelectorAll('.tier-opt').forEach(o => {
           o.classList.remove('selected');
           o.querySelector('.tier-more').classList.remove('open');
@@ -384,21 +404,26 @@ if (step.type === 'tier'){
 
 } else if (step.type === 'duration'){
       const durSlider = document.getElementById('durSlider');
+      const maxIdx = parseInt(durSlider.max);
       const thumbW = 18;
       const leftForIdx = (idx) => {
         const trackW = durSlider.offsetWidth;
-        const pct = idx / 10;
+        const pct = idx / maxIdx;
         return thumbW / 2 + pct * (trackW - thumbW);
       };
-      const reasonFor = (idx) => idx === 0
-        ? '점심시간·저녁시간에 가볍게 짧고 굵게'
-        : idx === 4
-          ? '단기간에 실력을 확 끌어올리고 싶은 분께'
-          : '';
+      const reasonFor = (idx) => {
+        if (idx === 0) return '점심시간·저녁시간에 가볍게 짧고 굵게';
+        if (idx === 4) {
+          return answers.tier === '이코노미'
+            ? '이코노미에서 선택하실 수 있는 가장 넉넉한 시간이에요'
+            : '단기간에 실력을 확 끌어올리고 싶은 분께';
+        }
+        return '';
+      };
       const syncDuration = () => {
         const idx = parseInt(durSlider.value);
         answers.duration = { index: idx };
-        document.getElementById('durTooltip').textContent = DURATIONS[idx];
+        document.getElementById('durTooltip').textContent = durationLabel(idx, answers.tier);
         document.getElementById('durTooltip').style.left = leftForIdx(idx) + 'px';
         document.getElementById('durReason').textContent = reasonFor(idx);
         document.getElementById('durPrice').innerHTML = '<span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + (PRICE_TABLE[answers.tier][idx] * FREQ_MULTIPLIER[answers.frequency]).toLocaleString();
@@ -406,7 +431,6 @@ if (step.type === 'tier'){
       };
       durSlider.addEventListener('input', syncDuration);
       document.getElementById('durTooltip').style.left = leftForIdx(parseInt(durSlider.value)) + 'px';
-      if (!answers.duration) syncDuration();
 
     } else if (step.type === 'date'){
     const dateInput = document.getElementById('dateInput');
@@ -622,10 +646,9 @@ async function submitToJotform(a) {
     (a.referral || []).forEach(r => params.append('submission[35][]', r)); // 유입경로 (다중)
     params.append('submission[36]', a.gender || '');                    // 성별
     params.append('submission[38]', a.referralOther || '');             // 유입경로 기타 직접입력
-params.append('submission[39]', a.goalsOther || '');                // 학습목표 기타 직접입력
+    params.append('submission[39]', a.goalsOther || '');                // 학습목표 기타 직접입력
     params.append('submission[40]', a.frequency || '');                 // 수업 빈도
-    params.append('submission[41]', a.duration ? DURATIONS[a.duration.index] : ''); // 수업 시간
-    params.append('submission[28]', a.notes || '');                     // 문의사항
+    params.append('submission[41]', a.duration ? durationLabel(a.duration.index, a.tier) : ''); // 수업 시간    params.append('submission[28]', a.notes || '');                     // 문의사항
  try {
     await fetch('https://api.jotform.com/form/' + FORM_ID + '/submissions?apiKey=' + API_KEY, {
       method: 'POST',
@@ -648,8 +671,7 @@ function showSuccess(){
 
   const a = answers;
 document.getElementById('summaryBox').innerHTML = ''
-    + '<strong>선택 플랜</strong> · ' + (a.tier || '-') + ' · ' + (a.frequency || '-') + ' · ' + (a.duration ? DURATIONS[a.duration.index] : '-') + '<br>'
-    + '<strong>나이대</strong> · ' + (a.ageGroup || '-') + '<br>'
+    + '<strong>선택 플랜</strong> · ' + (a.tier || '-') + ' · ' + (a.frequency || '-') + ' · ' + (a.duration ? durationLabel(a.duration.index, a.tier) : '-') + '<br>'    + '<strong>나이대</strong> · ' + (a.ageGroup || '-') + '<br>'
     + '<strong>영어 수준</strong> · ' + (a.level || '-') + '<br>'
     + '<strong>학습 목표</strong> · ' + ((a.goals||[]).map(g => g === '기타' && a.goalsOther ? '기타(' + a.goalsOther + ')' : g).join(', ') || '-') + '<br>'
     + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).join(', ') || '-') + '<br>'
