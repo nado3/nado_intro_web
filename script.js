@@ -11,11 +11,6 @@ function durationLabel(idx, tier){
   if (idx === 4) return tier === '이코노미' ? '50분' : '60분';
   return DURATIONS[idx];
 }
-const BANK_INFO = {
-  bank: '신한은행',
-  account: '110517571415',
-  holder: '장준섭'
-};
 
 const steps = [
   {
@@ -101,7 +96,7 @@ const steps = [
   {
     key: 'payment', type: 'payment', required: true,
     title: '결제 안내',
-    sub: '아래 계좌로 첫 수업 전까지 입금부탁드립니다. 추후에 카톡으로 추가적인 안내가 나갈 예정입니다.'
+    sub: '결제 금액을 확인해주세요. 선생님 매칭이 완료된 후 카카오톡으로 결제 방법을 안내해드릴 예정입니다.'
   }
 ];
 
@@ -350,16 +345,14 @@ if (step.type === 'tier'){
       + '<div class="pay-box">'
       + '<div class="pay-row"><span>선택 플랜</span><strong>' + tierName + '</strong></div>'
       + '<div class="pay-row"><span>수업 빈도</span><strong>' + answers.frequency + '</strong></div>'
-      + '<div class="pay-row"><span>수업 시간</span><strong>' + durationLabel(d.index, answers.tier) + '</strong></div>'      + '<div class="pay-row"><span>결제 금액</span><strong>₩' + price.toLocaleString() + '</strong></div>'
-      + '<div class="pay-row"><span>입금 은행</span><strong>' + BANK_INFO.bank + '</strong></div>'
-      + '<div class="pay-row"><span>계좌번호</span><strong>' + BANK_INFO.account + '</strong></div>'
-      + '<div class="pay-row"><span>예금주</span><strong>' + BANK_INFO.holder + '</strong></div>'
+      + '<div class="pay-row"><span>수업 시간</span><strong>' + durationLabel(d.index, answers.tier) + '</strong></div>'
+      + '<div class="pay-row"><span>결제 금액</span><strong>₩' + price.toLocaleString() + '</strong></div>'
       + '</div>'
-      + '<div class="qsub" style="margin-top:-.4rem;">입금자명은 <strong style="color:var(--ink);">신청자 성함과 동일하게</strong> 입금해주세요. 매칭까지는 24시간이 걸립니다.</div>'
+      + '<div class="qsub" style="margin-top:-.4rem;">매칭이 완료되면 카카오톡으로 <strong style="color:var(--ink);">입금 계좌와 입금 안내</strong>를 다시 보내드려요. 안내를 받으신 후 입금해주시면 됩니다.</div>'
       + '<div class="consent-box">'
       + '<label class="consent-row">'
       + '<input type="checkbox" id="paymentAckCheck" ' + (answers.payment ? 'checked' : '') + '>'
-      + '<span>위 결제 안내를 확인했습니다 <span class="required-mark">(필수)</span></span>'
+      + '<span>위 결제 금액 안내를 확인했습니다 <span class="required-mark">(필수)</span></span>'
       + '</label>'
       + '</div>';
   }
