@@ -257,8 +257,8 @@ if (step.type === 'tier'){
         + '<span id="durPrice" style="font-size:1.1rem;font-weight:800;"><span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + price.toLocaleString() + '</span>'
         + '</div>'
         + (tier === '이코노미'
-          ? '<div style="font-size:.75rem;color:var(--accent-deep);font-weight:700;border-top:1px solid var(--line);padding-top:.8rem;">이코노미 플랜은 30분~' + durationLabel(maxIdx, tier) + '까지 선택하실 수 있어요. 더 긴 시간을 원하시면 스탠다드·프리미엄 플랜을 확인해보세요.</div>'
-          : '<div style="font-size:.75rem;color:var(--gray);border-top:1px solid var(--line);padding-top:.8rem;">긴 시간을 한 번에 몰아 듣기 부담스러우시면, 이전 화면에서 주 2회로 나눠 진행하실 수도 있어요.</div>');
+          ? '<div style="font-size:.75rem;color:var(--ink);font-weight:700;border-top:1px solid var(--line);padding-top:.8rem;">이코노미 플랜은 30분~' + durationLabel(maxIdx, tier) + '까지 선택하실 수 있어요. 더 긴 시간을 원하시면 스탠다드·프리미엄 플랜을 확인해보세요.</div>'
+          : '<div style="font-size:.75rem;color:var(--ink);border-top:1px solid var(--line);padding-top:.8rem;">긴 시간을 한 번에 몰아 듣기 부담스러우시면, 이전 화면에서 주 2회로 나눠 진행하실 수도 있어요.</div>');
     } else if (step.type === 'date'){
       const today = new Date().toISOString().split('T')[0];
       const val = answers[step.key] || today;
