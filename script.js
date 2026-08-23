@@ -687,8 +687,8 @@ async function submitToJotform(a) {
     params.append('submission[40]', a.frequency || '');                 // 수업 빈도
     params.append('submission[41]', a.duration ? durationLabel(a.duration.index, a.tier) : ''); // 수업 시간
     params.append('submission[43]', TRIAL_MODE ? '체험 신청' : '정규 신청');        // 신청 구분
-    const negotiateNote = a.negotiateLocation ? '[협의 희망 위치] ' + a.negotiateLocation : '';
-    params.append('submission[28]', [a.notes || '', negotiateNote].filter(Boolean).join(' / ')); // 문의사항 (+협의 위치)                                         
+    params.append('submission[28]', a.notes || '');                      // 문의사항
+    params.append('submission[44]', a.negotiateLocation || '');          // 협의 희망 위치                                         
  try {
     await fetch('https://api.jotform.com/form/' + FORM_ID + '/submissions?apiKey=' + API_KEY, {
       method: 'POST',
