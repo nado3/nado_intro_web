@@ -152,7 +152,7 @@
     .teach-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
     .teach-card { background: var(--white); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2.2rem; text-align: center; position: relative; }
     .rank-badge { position: absolute; top: 1.3rem; left: 1.3rem; background: var(--navy); color: var(--white); font-size: 0.72rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 1rem; }
-    .teach-avatar { width: 140px; height: 140px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 2.1rem; margin: 1.2rem auto 1rem; border: 2px solid var(--accent); }
+    .teach-avatar { width: 140px; height: 140px; border-radius: 50%; background: var(--accent-light); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; font-size: 2.1rem; font-weight: 900; margin: 1.2rem auto 1rem; border: 2px solid var(--accent); overflow: hidden; }
     .teach-school { font-size: 0.82rem; color: var(--accent-deep); font-weight: 700; margin-bottom: 0.2rem; }
     .teach-major { font-size: 0.82rem; color: var(--gray); margin-bottom: 1rem; }
     .teach-tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
@@ -297,8 +297,8 @@
     <div class="hero-tag">미국 대학생과 1:1 영어회화</div>
     <h1 class="hero-title">진짜 영어는<br><em>만나서 합니다.</em></h1>
     <p class="hero-sub">
-      나도는 송도에서 미국 대학생과 직접 만나 영어를 나누는 공간입니다.<br><br>
-      오프라인 · 1:1 맞춤 매칭 · 인천 송도에서 자연스러운 영어 회화를 경험하세요.
+      나도에서 미국 대학생과 만나 영어로 대화해보세요.<br><br>
+      오프라인에서 나에게 딱 맞는 선생님과 1:1로 이어가는 영어회화.
     </p>
     <div class="hero-buttons">
       <a class="btn-primary" href="apply.html">1분 만에 신청하기</a>
@@ -439,34 +439,9 @@
 <!-- TOP3 TEACHERS -->
 <section id="teachers" class="teachers-section">
   <div class="section-label">Top Teachers</div>
-  <h2 class="section-title">지금 가장 많이 만나는<br><em>TOP 3 선생님</em></h2>
-  <p class="section-sub">학생 수 기준 상위 3명의 선생님을 소개합니다.</p>
-  <div class="teach-grid">
-    <div class="teach-card fade-in">
-      <div class="rank-badge">TOP 1</div>
-      <div class="teach-avatar"><img src="img/martin.png" alt="martin" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
-      <div class="teach-name">Matin</div>
-      <div class="teach-school">George Mason University</div>
-      <div class="teach-major">Global Affairs</div>
-      <div class="teach-tags"><span class="tag">어렵지 않은</span><span class="tag">토론 위주</span></div>
-    </div>
-    <div class="teach-card fade-in">
-      <div class="rank-badge">TOP 2</div>
-      <div class="teach-avatar"><img src="img/vero.png" alt="vero" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
-      <div class="teach-name">Veronica </div>
-      <div class="teach-school">George Mason University</div>
-      <div class="teach-major">Computer Game Design</div>
-      <div class="teach-tags"><span class="tag">프리토킹</span><span class="tag">여행영어</span></div>
-    </div>
-    <div class="teach-card fade-in">
-      <div class="rank-badge">TOP 3</div>
-      <div class="teach-avatar"><img src="img/justina.png" alt="justina" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
-      <div class="teach-name">Justina</div>
-      <div class="teach-school">George Mason University</div>
-      <div class="teach-major">Conflict Analysis and Resolution</div>
-      <div class="teach-tags"><span class="tag">초급 특화</span><span class="tag">발음교정</span></div>
-    </div>
-  </div>
+  <h2 class="section-title">새로운 만남을 기대하게 하는<br><em>오늘의 선생님 3명</em></h2>
+  <p class="section-sub">페이지를 새로고침할 때마다 세 분의 선생님을 새롭게 소개합니다.</p>
+  <div class="teach-grid" id="randomTeachers" aria-live="polite"></div>
   <div style="text-align:center;margin-top:3rem;">
     <a class="btn-primary" href="teachers.html">선생님 전체 보기</a>
   </div>
@@ -556,6 +531,37 @@
 </footer>
 
 <script>
+  const teachers = [
+    { name: 'Abhinay', school: 'George Mason University Korea', major: 'Business', tags: ['회화', '글쓰기'], initials: 'AB' },
+    { name: 'Amelia Lee', school: 'George Mason University Korea', major: 'Conflict Analysis and Resolution', tags: ['문화', '프리토킹'], initials: 'AM' },
+    { name: 'Ej', school: 'George Mason Korea', major: 'Global Affairs', tags: ['맞춤 회화', '자신감'], initials: 'EJ' },
+    { name: 'Oscar', school: 'George Mason University Korea', major: 'Computational Data Science', tags: ['원어민 회화', '의사소통'], initials: 'OS' },
+    { name: 'Sophie Phillips', school: 'George Mason University Korea', major: 'Economics', tags: ['원어민 회화', '프리토킹'], initials: 'SP' },
+    { name: 'Tae Minsuk', school: 'University of Utah', major: 'Film and Media Arts', tags: ['영화', '미디어 영어'], initials: 'TM' },
+    { name: 'Victoria Yuguy', school: 'George Mason University Korea', major: 'Global Affairs', tags: ['경력 튜터', '맞춤 회화'], initials: 'VY' },
+    { name: 'Vitalina Skardova', school: 'Utah University Asia Campus', major: 'Game Design', tags: ['맞춤 학습', '생활 영어'], initials: 'VS' },
+    { name: '박의해 (Justina)', school: 'George Mason University', major: 'Conflict Analysis and Resolution', tags: ['실전 회화', '자연스러운 표현'], image: 'img/justina.png' }
+  ];
+
+  const randomTeachers = document.getElementById('randomTeachers');
+  if (randomTeachers) {
+    const selectedTeachers = [...teachers].sort(() => Math.random() - 0.5).slice(0, 3);
+    randomTeachers.innerHTML = selectedTeachers.map((teacher, index) => {
+      const avatar = teacher.image
+        ? `<img src="${teacher.image}" alt="${teacher.name}" style="width:100%;height:100%;object-fit:cover;">`
+        : teacher.initials;
+      return `
+        <article class="teach-card fade-in">
+          <div class="rank-badge">TODAY ${index + 1}</div>
+          <div class="teach-avatar">${avatar}</div>
+          <div class="teach-name">${teacher.name}</div>
+          <div class="teach-school">${teacher.school}</div>
+          <div class="teach-major">${teacher.major}</div>
+          <div class="teach-tags">${teacher.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
+        </article>`;
+    }).join('');
+  }
+
   const navToggle = document.getElementById('navToggle');
   if (navToggle) {
     navToggle.addEventListener('click', () => {
