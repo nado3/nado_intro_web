@@ -1,15 +1,13 @@
-const DURATIONS = ['30분','35분','40분','45분','60분','1시간 10분','1시간 20분','1시간 30분','1시간 40분','1시간 50분','2시간'];
+const DURATIONS = ['1시간','2시간'];
 const PRICE_TABLE = {
-  '이코노미': [80000,93400,106700,120000,140000,163400,186700,210000,233400,256700,280000],
-  '스탠다드': [100000,116700,133400,150000,180000,210000,240000,270000,300000,330000,360000],
-  '프리미엄': [120000,140000,160000,180000,220000,256700,293400,330000,366700,403400,440000]
+  '이코노미': [140000,280000],
+  '스탠다드': [180000,360000],
+  '프리미엄': [220000,440000]
 };
 const KID_SURCHARGE = 1500;
 const FREQ_MULTIPLIER = { '주 1회': 1, '주 2회': 2, '체험 1회': 0.25 };
-const TIER_DURATION_MAX_INDEX = { '이코노미': 4 }; // 이코노미는 30~50분(인덱스 0~4)까지만 선택 가능
-function durationLabel(idx, tier){
-  if (idx === 4) return tier === '이코노미' ? '50분' : '60분';
-  return DURATIONS[idx];
+function durationLabel(idx){
+  return DURATIONS[idx] || DURATIONS[0];
 }
 function calcPrice(tier, idx, freq){
   const raw = PRICE_TABLE[tier][idx] * FREQ_MULTIPLIER[freq];
@@ -42,7 +40,7 @@ const steps = [
   {
     key: 'duration', type: 'duration', required: true,
     title: '수업 시간을 선택해주세요',
-    sub: '슬라이더를 움직이면 선택하신 플랜·빈도의 가격이 함께 표시돼요.'
+    sub: '1시간 또는 2시간을 선택하면 플랜·빈도에 따른 가격을 바로 확인할 수 있어요.'
   },
 
   {
@@ -232,41 +230,21 @@ if (step.type === 'tier'){
         : '<div style="font-size:.75rem;color:var(--gray);margin-top:.5rem;">주 3회 이상 수업을 원하시면 홈페이지 우측 하단 상담 채팅으로 문의해주세요.</div>';
     } else if (step.type === 'duration'){
       const tier = answers.tier;
-      const maxIdx = TIER_DURATION_MAX_INDEX[tier] !== undefined ? TIER_DURATION_MAX_INDEX[tier] : 10;
-      let v = answers.duration || { index: Math.min(4, maxIdx) };
-      if (v.index > maxIdx) v = { index: maxIdx };
+      let v = answers.duration || { index: 0 };
+      if (v.index < 0 || v.index >= DURATIONS.length) v = { index: 0 };
       answers.duration = v;
       const price = calcPrice(tier, v.index, answers.frequency);
-      const reasonFor = (idx) => {
-        if (idx === 0) return '점심시간·저녁시간에 가볍게 짧고 굵게';
-        if (idx === 4) {
-          return tier === '이코노미'
-            ? '이코노미에서 선택하실 수 있는 가장 넉넉한 시간이에요'
-            : '단기간에 실력을 확 끌어올리고 싶은 분께';
-        }
-        return '';
-      };
-      const recoIdxList = [0, 4];
-      let ticksHtml = '';
-      recoIdxList.forEach(idx => {
-        const pct = idx / maxIdx;
-        ticksHtml += '<div class="dur-tick" style="left:calc(9px + (100% - 18px) * ' + pct + ');"></div>'
-          + '<div class="dur-tick-badge" style="left:calc(9px + (100% - 18px) * ' + pct + ');">추천</div>';
-      });
       inner += ''
-        + '<div class="dur-track-wrap">'
-        + '<div class="dur-tooltip" id="durTooltip">' + durationLabel(v.index, tier) + '</div>'
-        + ticksHtml
-        + '<input type="range" id="durSlider" min="0" max="' + maxIdx + '" step="1" value="' + v.index + '" style="width:100%;position:relative;z-index:1;">'
+        + '<div class="duration-options">'
+        + '<button type="button" class="duration-opt ' + (v.index === 0 ? 'selected' : '') + '" data-index="0">'
+        + '<span class="duration-opt-time">1시간</span><span class="duration-opt-desc">꾸준히 집중해서 배우기</span></button>'
+        + '<button type="button" class="duration-opt ' + (v.index === 1 ? 'selected' : '') + '" data-index="1">'
+        + '<span class="duration-opt-time">2시간</span><span class="duration-opt-desc">한 번에 깊이 있게 배우기</span></button>'
         + '</div>'
-        + '<div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--gray);margin-top:2px;"><span>30분</span><span>' + durationLabel(maxIdx, tier) + '</span></div>'
-        + '<div id="durReason" style="font-size:.8rem;color:var(--accent-deep);font-weight:700;margin-top:.7rem;min-height:1.2em;">' + reasonFor(v.index) + '</div>'
-        + '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:.6rem 0 .8rem;">'
+        + '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:1.2rem 0 .8rem;">'
         + '<span style="font-size:.85rem;color:var(--gray);font-weight:600;">' + (answers.frequency === '체험 1회' ? '체험 1회 기준' : (answers.frequency + ' · 월 ' + (answers.frequency === '주 2회' ? '8' : '4') + '회 기준')) + '</span>'        + '<span id="durPrice" style="font-size:1.1rem;font-weight:800;"><span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + price.toLocaleString() + '</span>'
         + '</div>'
-        + (tier === '이코노미'
-          ? '<div style="font-size:.75rem;color:var(--ink);font-weight:700;border-top:1px solid var(--line);padding-top:.8rem;">이코노미 플랜은 30분~' + durationLabel(maxIdx, tier) + '까지 선택하실 수 있어요. <br> 더 긴 시간을 원하시면 스탠다드·프리미엄 플랜을 확인해보세요.</div>'
-          : '<div style="font-size:.75rem;color:var(--ink);border-top:1px solid var(--line);padding-top:.8rem;">긴 시간을 한 번에 몰아 듣기 부담스러우시면, 이전 화면에서 주 2회로 나눠 진행하실 수도 있어요.</div>');
+        + '<div style="font-size:.75rem;color:var(--ink);border-top:1px solid var(--line);padding-top:.8rem;">모든 플랜에서 1시간 또는 2시간 수업을 선택할 수 있어요.</div>';
     } else if (step.type === 'date'){
       const today = new Date().toISOString().split('T')[0];
       const val = answers[step.key] || today;
@@ -363,7 +341,7 @@ if (step.type === 'tier'){
       + '</div>';
   } else if (step.type === 'payment'){
     const tierName = answers.tier || '-';
-    const d = answers.duration || { index: 4 };
+    const d = answers.duration || { index: 0 };
     const price = PRICE_TABLE[answers.tier] ? calcPrice(answers.tier, d.index, answers.frequency) : 0;    inner += ''
       + '<div class="pay-box">'
       + '<div class="pay-row"><span>선택 플랜</span><strong>' + tierName + '</strong></div>'
@@ -396,10 +374,6 @@ if (step.type === 'tier'){
           answers.place = [];   // 요금제가 바뀌면 장소 선택 초기화
         }
         answers.tier = el.dataset.value;
-        const maxIdx = TIER_DURATION_MAX_INDEX[answers.tier] !== undefined ? TIER_DURATION_MAX_INDEX[answers.tier] : 10;
-        if (answers.duration && answers.duration.index > maxIdx) {
-          answers.duration = { index: maxIdx };
-        }
         qcardWrap.querySelectorAll('.tier-opt').forEach(o => {
           o.classList.remove('selected');
           o.querySelector('.tier-more').classList.remove('open');
@@ -418,33 +392,16 @@ if (step.type === 'tier'){
     });
 
 } else if (step.type === 'duration'){
-      const durSlider = document.getElementById('durSlider');
-      const maxIdx = parseInt(durSlider.max);
-      const thumbW = 18;
-      const leftForIdx = (idx) => {
-        const trackW = durSlider.offsetWidth;
-        const pct = idx / maxIdx;
-        return thumbW / 2 + pct * (trackW - thumbW);
-      };
-      const reasonFor = (idx) => {
-        if (idx === 0) return '점심시간·저녁시간에 가볍게 짧고 굵게';
-        if (idx === 4) {
-          return answers.tier === '이코노미'
-            ? '이코노미에서 선택하실 수 있는 가장 넉넉한 시간이에요'
-            : '단기간에 실력을 확 끌어올리고 싶은 분께';
-        }
-        return '';
-      };
-      const syncDuration = () => {
-        const idx = parseInt(durSlider.value);
+      qcardWrap.querySelectorAll('.duration-opt').forEach(option => {
+        option.addEventListener('click', () => {
+          const idx = parseInt(option.dataset.index);
         answers.duration = { index: idx };
-        document.getElementById('durTooltip').textContent = durationLabel(idx, answers.tier);
-        document.getElementById('durTooltip').style.left = leftForIdx(idx) + 'px';
-        document.getElementById('durReason').textContent = reasonFor(idx);
-        document.getElementById('durPrice').innerHTML = '<span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + calcPrice(answers.tier, idx, answers.frequency).toLocaleString();        setNextState(step);
-      };
-      durSlider.addEventListener('input', syncDuration);
-      document.getElementById('durTooltip').style.left = leftForIdx(parseInt(durSlider.value)) + 'px';
+          qcardWrap.querySelectorAll('.duration-opt').forEach(el => el.classList.remove('selected'));
+          option.classList.add('selected');
+          document.getElementById('durPrice').innerHTML = '<span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + calcPrice(answers.tier, idx, answers.frequency).toLocaleString();
+          setNextState(step);
+        });
+      });
 
     } else if (step.type === 'date'){
     const dateInput = document.getElementById('dateInput');
