@@ -152,7 +152,7 @@
     .teach-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
     .teach-card { background: var(--white); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2.2rem; text-align: center; position: relative; }
     .rank-badge { position: absolute; top: 1.3rem; left: 1.3rem; background: var(--navy); color: var(--white); font-size: 0.72rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 1rem; }
-    .teach-avatar { width: 140px; height: 140px; border-radius: 50%; background: var(--accent-light); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; font-size: 2.1rem; font-weight: 900; margin: 1.2rem auto 1rem; border: 2px solid var(--accent); overflow: hidden; }
+    .teach-avatar { width: 170px; height: 170px; border-radius: 50%; background: var(--accent-light); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; font-size: 2.1rem; font-weight: 900; margin: 1.2rem auto 1rem; border: 2px solid var(--accent); overflow: hidden; }
     .teach-school { font-size: 0.82rem; color: var(--accent-deep); font-weight: 700; margin-bottom: 0.2rem; }
     .teach-major { font-size: 0.82rem; color: var(--gray); margin-bottom: 1rem; }
     .teach-tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
@@ -255,6 +255,12 @@
       .hero-right { min-height: 320px; }
       .hero-visual { width: 100%; max-width: 320px; height: 400px; }
       section { padding: 4rem 1.5rem; }
+      .teach-grid.mobile-teacher-marquee { display: block; max-width: none; overflow: hidden; margin-left: -1.5rem; margin-right: -1.5rem; }
+      .mobile-teacher-track { display: flex; width: max-content; animation: teacherMarquee 24s linear infinite; }
+      .mobile-teacher-group { display: flex; gap: 1rem; padding-right: 1rem; }
+      .mobile-teacher-group .teach-card { width: 270px; flex: 0 0 270px; }
+      .mobile-teacher-group .teach-avatar { width: 130px; height: 130px; }
+      .mobile-teacher-group .fade-in { opacity: 1; transform: none; }
       .stats-strip { grid-template-columns: repeat(2, 1fr); padding: 3rem 1.5rem 0; }
       .verify-grid, .teach-grid, .steps-grid, .tier-grid { grid-template-columns: 1fr; }
       .tier-card.popular { transform: none; }
@@ -262,6 +268,10 @@
       .cta-section { padding: 5rem 1.5rem; }
       .footer-info { align-items: center; }
       footer { flex-direction: column; text-align: center; }
+    }
+    @keyframes teacherMarquee { to { transform: translateX(-50%); } }
+    @media (prefers-reduced-motion: reduce) {
+      .mobile-teacher-track { animation-play-state: paused; }
     }
     @media (max-width: 480px) {
       .stats-strip { grid-template-columns: 1fr 1fr; }
@@ -560,6 +570,21 @@
           <div class="teach-tags">${teacher.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
         </article>`;
     }).join('');
+
+    if (window.matchMedia('(max-width: 900px)').matches) {
+      const cards = Array.from(randomTeachers.children);
+      const firstGroup = document.createElement('div');
+      const secondGroup = document.createElement('div');
+      firstGroup.className = 'mobile-teacher-group';
+      secondGroup.className = 'mobile-teacher-group';
+      cards.forEach(card => firstGroup.appendChild(card));
+      cards.forEach(card => secondGroup.appendChild(card.cloneNode(true)));
+      const track = document.createElement('div');
+      track.className = 'mobile-teacher-track';
+      track.append(firstGroup, secondGroup);
+      randomTeachers.appendChild(track);
+      randomTeachers.classList.add('mobile-teacher-marquee');
+    }
   }
 
   const navToggle = document.getElementById('navToggle');
