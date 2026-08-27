@@ -151,8 +151,8 @@
     }
     .teacher-avatar,
     .teach-avatar {
-      width: 140px;
-      height: 140px;
+      width: 170px;
+      height: 170px;
       border-radius: 50%;
       background: var(--accent-light);
       display: flex;
@@ -344,9 +344,18 @@
       .nav-links.mobile-open .nav-cta { display: block; text-align: center; padding: 1.2rem; font-size: 1.05rem; }
       .page-header { padding: 8rem 1.5rem 4rem; }
       .teachers-section { padding: 3rem 1.5rem; }
-      .teachers-grid { grid-template-columns: 1fr; }
+      .teachers-grid.mobile-teacher-marquee { display: block; overflow: hidden; margin-left: -1.5rem; margin-right: -1.5rem; }
+      .mobile-teacher-track { display: flex; width: max-content; animation: teacherMarquee 42s linear infinite; }
+      .mobile-teacher-group { display: flex; gap: 1rem; padding-right: 1rem; }
+      .mobile-teacher-group .teacher-card { width: 280px; flex: 0 0 280px; }
+      .mobile-teacher-group .teach-avatar { width: 130px; height: 130px; }
+      .mobile-teacher-group .fade-in { opacity: 1; transform: none; }
       .cta-section { margin: 3rem 1.5rem; padding: 4rem 2rem; }
       footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem 1.5rem; }
+    }
+    @keyframes teacherMarquee { to { transform: translateX(-50%); } }
+    @media (prefers-reduced-motion: reduce) {
+      .mobile-teacher-track { animation-play-state: paused; }
     }
     @media (max-width: 480px) {
       .page-header { padding: 7rem 1.2rem 3rem; }
@@ -513,6 +522,22 @@
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  const teachersGrid = document.querySelector('.teachers-grid');
+  if (teachersGrid && window.matchMedia('(max-width: 900px)').matches) {
+    const cards = Array.from(teachersGrid.children);
+    const firstGroup = document.createElement('div');
+    const secondGroup = document.createElement('div');
+    firstGroup.className = 'mobile-teacher-group';
+    secondGroup.className = 'mobile-teacher-group';
+    cards.forEach(card => firstGroup.appendChild(card));
+    cards.forEach(card => secondGroup.appendChild(card.cloneNode(true)));
+    const track = document.createElement('div');
+    track.className = 'mobile-teacher-track';
+    track.append(firstGroup, secondGroup);
+    teachersGrid.appendChild(track);
+    teachersGrid.classList.add('mobile-teacher-marquee');
+  }
 </script>
 
 <!--Start of Tawk.to Script-->
