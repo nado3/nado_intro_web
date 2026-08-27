@@ -133,7 +133,7 @@
     /* TEACHER GRID */
     .teachers-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 2rem;
       margin-bottom: 4rem;
     }
@@ -149,7 +149,8 @@
       transform: translateY(-8px);
       box-shadow: 0 20px 50px rgba(74, 144, 226, 0.15);
     }
-    .teacher-avatar {
+    .teacher-avatar,
+    .teach-avatar {
       width: 80px;
       height: 80px;
       border-radius: 50%;
@@ -160,6 +161,10 @@
       font-size: 3rem;
       margin-bottom: 1.5rem;
       border: 3px solid var(--accent);
+      overflow: hidden;
+      color: var(--accent-deep);
+      font-size: 1.35rem;
+      font-weight: 900;
     }
     .teacher-name {
       font-family: 'Pretendard', sans-serif;
@@ -185,6 +190,9 @@
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
+    }
+    @media (max-width: 1000px) {
+      .teachers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     .tag {
       background: var(--accent-light);
@@ -393,52 +401,77 @@
   </div>
 
   <div class="teachers-grid">
-    <!-- Teacher 1 -->
     <div class="teacher-card fade-in">
-      <div class="teach-avatar"><img src="img/martin.png" alt="martin" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
-      <div class="teacher-name">Matin</div>
-      <div class="teacher-major">Global Affairs<br> · George Mason University</div>
-      <div class="teacher-bio">
-        부담 없이 편하게 대화하듯 토론하는 수업을 지향합니다.
-      </div>
-      <div class="teacher-tags">
-        <span class="tag">어렵지 않은</span>
-        <span class="tag">토론 위주</span>
-      </div>
+      <div class="teach-avatar" aria-hidden="true">AB</div>
+      <div class="teacher-name">Abhinay</div>
+      <div class="teacher-major">Business<br> · George Mason University Korea</div>
+      <div class="teacher-bio">Hello Guys!! My name is Abhinay. I’m passionate about helping students build natural confidence in English conversation and writing.</div>
+      <div class="teacher-tags"><span class="tag">회화</span><span class="tag">글쓰기</span></div>
     </div>
 
-    <!-- Teacher 2 -->
     <div class="teacher-card fade-in">
-      <div class="teach-avatar"><img src="img/vero.png" alt="vero" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
-      <div class="teacher-name">Veronica </div>
-      <div class="teacher-major">Computer Game Design<br> · George Mason University</div>
-      <div class="teacher-bio">
-        Hello! I am Veronika. I'm a student at Mason Korea and I have lived here for 17 years. Fun fact about me: I speak 3 languages!
-      </div>
-      <div class="teacher-tags">
-        <span class="tag">여행영어</span>
-        <span class="tag">프리토킹</span>
-      </div>
+      <div class="teach-avatar" aria-hidden="true">AM</div>
+      <div class="teacher-name">Amelia Lee</div>
+      <div class="teacher-major">Conflict Analysis and Resolution<br> · George Mason University Korea</div>
+      <div class="teacher-bio">Hi, My name is Amelia! I’m a native speaker from the US, and I'm interested in a wide variety of music, movies, and books. Let’s have fun learning and getting to know each other!</div>
+      <div class="teacher-tags"><span class="tag">문화</span><span class="tag">프리토킹</span></div>
     </div>
 
-    <!-- Teacher 3 -->
     <div class="teacher-card fade-in">
-      <div class="teach-avatar"><img src="img/justina.png" alt="justina" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
-      <div class="teacher-name">Justina </div>
-      <div class="teacher-major"> Conflict Analysis and Resolution<br> · George Mason University</div>
-      <div class="teacher-bio">
-        초급 학습자에 특화된 친절한 발음 교정 수업을 진행합니다.
-      </div>
-      <div class="teacher-tags">
-        <span class="tag">초급 특화</span>
-        <span class="tag">발음교정</span>
-      </div>
+      <div class="teach-avatar" aria-hidden="true">EJ</div>
+      <div class="teacher-name">Ej</div>
+      <div class="teacher-major">Global Affairs<br> · George Mason Korea</div>
+      <div class="teacher-bio">Hello, I'm Ej here to help you on your English journey. Looking forward to working with you.</div>
+      <div class="teacher-tags"><span class="tag">맞춤 회화</span><span class="tag">자신감</span></div>
     </div>
-   </div>
 
-  <!-- More teachers placeholder -->
-  <div class="more-placeholder fade-in">
-    <div class="more-dots"><span></span><span></span><span></span></div>
+    <div class="teacher-card fade-in">
+      <div class="teach-avatar" aria-hidden="true">OS</div>
+      <div class="teacher-name">Oscar</div>
+      <div class="teacher-major">Computational Data Science<br> · George Mason University Korea</div>
+      <div class="teacher-bio">Hi! I'm Oscar, a friendly native English speaker who enjoys helping students improve their confidence and communication skills. I look forward to learning with you!</div>
+      <div class="teacher-tags"><span class="tag">원어민 회화</span><span class="tag">의사소통</span></div>
+    </div>
+
+    <div class="teacher-card fade-in">
+      <div class="teach-avatar" aria-hidden="true">SP</div>
+      <div class="teacher-name">Sophie Phillips</div>
+      <div class="teacher-major">Economics<br> · George Mason University Korea</div>
+      <div class="teacher-bio">Hi! My name is Sophie, and I am a native English speaker from Virginia!</div>
+      <div class="teacher-tags"><span class="tag">원어민 회화</span><span class="tag">프리토킹</span></div>
+    </div>
+
+    <div class="teacher-card fade-in">
+      <div class="teach-avatar" aria-hidden="true">TM</div>
+      <div class="teacher-name">Tae Minsuk</div>
+      <div class="teacher-major">Film and Media Arts<br> · University of Utah</div>
+      <div class="teacher-bio">Let’s learn English comfortably and easily through the movies and media we enjoy!</div>
+      <div class="teacher-tags"><span class="tag">영화</span><span class="tag">미디어 영어</span></div>
+    </div>
+
+    <div class="teacher-card fade-in">
+      <div class="teach-avatar" aria-hidden="true">VY</div>
+      <div class="teacher-name">Victoria Yuguy</div>
+      <div class="teacher-major">Global Affairs<br> · George Mason University Korea</div>
+      <div class="teacher-bio">Hi! I'm Victoria Yuguy. I've been a tutor for over 5 years and love to meet new people. I have a lot of different interests, so hopefully we can connect. :)</div>
+      <div class="teacher-tags"><span class="tag">경력 튜터</span><span class="tag">맞춤 회화</span></div>
+    </div>
+
+    <div class="teacher-card fade-in">
+      <div class="teach-avatar" aria-hidden="true">VS</div>
+      <div class="teacher-name">Vitalina Skardova</div>
+      <div class="teacher-major">Game Design<br> · Utah University Asia Campus</div>
+      <div class="teacher-bio">Having learned multiple foreign languages myself, I understand the challenges language learners face. I strive to develop a unique teaching approach based on each student’s interests, goals, and needs.</div>
+      <div class="teacher-tags"><span class="tag">맞춤 학습</span><span class="tag">생활 영어</span></div>
+    </div>
+
+    <div class="teacher-card fade-in">
+      <div class="teach-avatar"><img src="img/justina.png" alt="박의해" style="width:100%;height:100%;object-fit:cover;"></div>
+      <div class="teacher-name">박의해 (Justina)</div>
+      <div class="teacher-major">Conflict Analysis and Resolution<br> · George Mason University</div>
+      <div class="teacher-bio">Born and raised in Korea, I speak English fluently and naturally. My lessons focus on real conversations and natural expressions, helping you turn the English you know into English you can actually use with confidence! :)</div>
+      <div class="teacher-tags"><span class="tag">실전 회화</span><span class="tag">자연스러운 표현</span></div>
+    </div>
   </div>
 </section>
 
