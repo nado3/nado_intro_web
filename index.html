@@ -152,7 +152,7 @@
     .teach-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
     .teach-card { background: var(--white); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2.2rem; text-align: center; position: relative; }
     .rank-badge { position: absolute; top: 1.3rem; left: 1.3rem; background: var(--navy); color: var(--white); font-size: 0.72rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 1rem; }
-    .teach-avatar { width: 140px; height: 140px; border-radius: 50%; background: var(--accent-light); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; font-size: 2.1rem; font-weight: 900; margin: 1.2rem auto 1rem; border: 2px solid var(--accent); overflow: hidden; }
+    .teach-avatar { width: 220px; max-width: 100%; aspect-ratio: 4 / 3; border-radius: 1.35rem; background: var(--accent-light); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; font-size: 2.1rem; font-weight: 900; margin: 1.2rem auto 1.25rem; border: 1px solid var(--border); overflow: hidden; }
     .teach-school { font-size: 0.82rem; color: var(--accent-deep); font-weight: 700; margin-bottom: 0.2rem; }
     .teach-major { font-size: 0.82rem; color: var(--gray); margin-bottom: 1rem; }
     .teach-tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
@@ -535,12 +535,12 @@
     { name: 'Abhinay', school: 'George Mason University Korea', major: 'Business', tags: ['회화', '글쓰기'], image: 'img/abhinay.jpg' },
     { name: 'Amelia Lee', school: 'George Mason University Korea', major: 'Conflict Analysis and Resolution', tags: ['문화', '프리토킹'], image: 'img/amelia.jpg' },
     { name: 'Ej', school: 'George Mason Korea', major: 'Global Affairs', tags: ['맞춤 회화', '자신감'], image: 'img/ej.jpg' },
-    { name: 'Oscar', school: 'George Mason University Korea', major: 'Computational Data Science', tags: ['원어민 회화', '의사소통'], initials: 'OS' },
-    { name: 'Sophie Phillips', school: 'George Mason University Korea', major: 'Economics', tags: ['원어민 회화', '프리토킹'], initials: 'SP' },
+    { name: 'Oscar', school: 'George Mason University Korea', major: 'Computational Data Science', tags: ['원어민 회화', '의사소통'], image: 'img/oscar.jpg' },
+    { name: 'Sophie Phillips', school: 'George Mason University Korea', major: 'Economics', tags: ['원어민 회화', '프리토킹'], image: 'img/sophie.jpg' },
     { name: 'Tae Minsuk', school: 'University of Utah', major: 'Film and Media Arts', tags: ['영화', '미디어 영어'], image: 'img/tae.jpg' },
-    { name: 'Victoria Yuguy', school: 'George Mason University Korea', major: 'Global Affairs', tags: ['경력 튜터', '맞춤 회화'], initials: 'VY' },
-    { name: 'Vitalina Skardova', school: 'Utah University Asia Campus', major: 'Game Design', tags: ['맞춤 학습', '생활 영어'], initials: 'VS' },
-    { name: '박의해 (Justina)', school: 'George Mason University', major: 'Conflict Analysis and Resolution', tags: ['실전 회화', '자연스러운 표현'], image: 'img/justina.png' }
+    { name: 'Victoria Yuguy', school: 'George Mason University Korea', major: 'Global Affairs', tags: ['경력 튜터', '맞춤 회화'], image: 'img/victoria.jpg' },
+    { name: 'Vitalina Skardova', school: 'Utah University Asia Campus', major: 'Game Design', tags: ['맞춤 학습', '생활 영어'], image: 'img/vitalina.jpg' },
+    { name: '박의해 (Justina)', school: 'George Mason University', major: 'Conflict Analysis and Resolution', tags: ['실전 회화', '자연스러운 표현'], image: 'img/justina.jpg' }
   ];
 
   const randomTeachers = document.getElementById('randomTeachers');
