@@ -51,21 +51,21 @@
     .nav-logo { font-family: 'Pretendard', sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--black); text-decoration: none; position: relative; z-index: 101; }    
     .nav-logo span { color: var(--accent); }
     .nav-links { display: flex; gap: 2rem; list-style: none; }
-    .nav-links a { font-size: 0.85rem; color: var(--dark-gray); text-decoration: none; letter-spacing: 0.03em; transition: color 0.2s; }
+    .nav-links a { font-size: 0.95rem; color: var(--dark-gray); text-decoration: none; letter-spacing: 0.02em; transition: color 0.2s; }
     .nav-links a:hover { color: var(--accent); }
-    .nav-cta { background: var(--accent); color: var(--white) !important; padding: 0.55rem 1.4rem; border-radius: 2rem; font-size: 0.85rem !important; transition: background 0.2s !important; }
+    .nav-cta { background: var(--accent); color: var(--white) !important; padding: 0.65rem 1.4rem; border-radius: 2rem; font-size: 0.95rem !important; transition: background 0.2s !important; }
     .nav-cta:hover { background: var(--accent-deep) !important; }
     .nav-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--black); padding: 0; position: relative; z-index: 101; }    
 
     /* HERO */
-    .hero { background: linear-gradient(135deg, #F5F8FE 0%, #E3F2FD 55%, #D3E7FB 100%); padding: 11rem 3rem 6rem; }
-    .hero-inner { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 1fr 0.85fr; gap: 2rem; align-items: center; }
+    .hero { background: linear-gradient(135deg, #F5F8FE 0%, #E3F2FD 55%, #D3E7FB 100%); padding: 8.5rem 2.5rem 4.5rem; }
+    .hero-inner { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, .78fr); gap: 1rem; align-items: center; }
     .hero-left { display: flex; flex-direction: column; justify-content: center; }
     .hero-tag { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 2rem; }
     .hero-tag::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--accent); }
     .hero-title { font-family: 'Pretendard', sans-serif; font-size: clamp(3rem, 5vw, 5rem); font-weight: 900; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
     .hero-title em { font-style: normal; color: var(--accent); }
-    .hero-sub { font-size: 1.1rem; color: var(--dark-gray); line-height: 1.7; font-weight: 300; max-width: 500px; margin-bottom: 2.4rem; }
+    .hero-sub { font-size: 1.15rem; color: var(--dark-gray); line-height: 1.7; font-weight: 400; max-width: 540px; margin-bottom: 2rem; }
     .hero-sub strong { color: var(--black); font-weight: 700; }
     .hero-buttons { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
     .btn-primary {
@@ -74,8 +74,14 @@
       font-family: 'Pretendard', sans-serif; display: inline-block; transition: transform 0.2s, box-shadow 0.2s;
     }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(74, 144, 226, 0.3); }
-    .btn-text { font-size: 1rem; color: var(--dark-gray); text-decoration: underline; text-underline-offset: 4px; }
-    .hero-micro { font-size: 0.8rem; color: var(--gray); margin-top: 1rem; max-width: 420px; line-height: 1.6; }
+    .btn-text {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 53px; padding: 0 1.8rem; border: 1.5px solid rgba(74, 144, 226, .28); border-radius: 3rem;
+      background: rgba(255,255,255,.82); color: var(--accent-deep); font-size: 1rem; font-weight: 700;
+      text-decoration: none; transition: border-color .2s, background .2s, transform .2s;
+    }
+    .btn-text:hover { background: var(--white); border-color: var(--accent); transform: translateY(-2px); }
+    .hero-micro { font-size: 0.88rem; color: var(--gray); margin-top: 1rem; max-width: 460px; line-height: 1.6; }
 
     .hero-right { position: relative; display: flex; align-items: center; justify-content: center; }
     .hero-visual { position: relative; width: 380px; height: 480px; max-width: 100%; }
@@ -88,11 +94,11 @@
     @keyframes floatSmall2 { 0%, 100% { transform: rotate(-4deg) translateY(0); } 50% { transform: rotate(-4deg) translateY(-8px); } }
     .avatar-row { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
     .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid var(--white); background: var(--accent-light); }
-    .card-label { font-size: 0.7rem; letter-spacing: 0.1em; color: var(--gray); text-transform: uppercase; margin-bottom: 0.3rem; }
+    .card-label { font-size: 0.8rem; letter-spacing: 0.08em; color: var(--gray); text-transform: uppercase; margin-bottom: 0.3rem; }
     .card-match-name { font-family: 'Pretendard', sans-serif; font-weight: 700; font-size: 1.1rem; }
     .card-match-sub { font-size: 0.8rem; color: var(--dark-gray); margin-top: 0.2rem; }
     .card-tag-row { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.8rem; }
-    .tag { background: var(--accent-light); color: var(--accent); font-size: 0.7rem; padding: 0.25rem 0.6rem; border-radius: 1rem; font-weight: 700; }
+    .tag { background: var(--accent-light); color: var(--accent); font-size: 0.8rem; padding: 0.3rem 0.65rem; border-radius: 1rem; font-weight: 700; }
     .tag.gray { background: var(--cream); color: var(--dark-gray); }
     .card-stat { display: flex; align-items: baseline; gap: 0.3rem; margin-top: 1rem; }
     .card-stat-num { font-size: 0.9rem; font-weight: 900; color: var(--black); }
@@ -100,31 +106,52 @@
     .small-card-icon { font-size: 1.5rem; margin-bottom: 0.4rem; }
     .small-card-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem; }
     .small-card-sub { font-size: 0.75rem; color: var(--gray); }
+    .hero-teacher-carousel-shell { width: min(380px, 100%); overflow: visible; }
+    .teacher-flip-deck { position: relative; width: min(350px, calc(100% - 22px)); height: 466px; margin: 0 auto; perspective: 1200px; }
+    .teacher-flip-deck .flip-teacher-card {
+      position: absolute; top: 0; right: 22px; left: 0; width: auto; height: 100%; min-width: 0; min-height: 0; padding: 1.75rem;
+      display: flex; flex-direction: column; cursor: pointer; user-select: none;
+      transform-origin: 50% 100%; transition: transform .52s cubic-bezier(.22,.72,.2,1), opacity .36s ease, box-shadow .36s ease;
+    }
+    .teacher-flip-deck .flip-teacher-card[data-position="0"] { z-index: 3; transform: translate3d(0,0,0) rotate(0deg); opacity: 1; box-shadow: 0 22px 55px rgba(36,74,120,.22); }
+    .teacher-flip-deck .flip-teacher-card[data-position="1"] { z-index: 2; transform: translate3d(11px,11px,-40px) rotate(1.6deg) scale(.985); opacity: .96; }
+    .teacher-flip-deck .flip-teacher-card[data-position="2"] { z-index: 1; transform: translate3d(22px,22px,-80px) rotate(3deg) scale(.965); opacity: .88; }
+    .teacher-flip-deck .flip-teacher-card[data-position]:not([data-position="0"]):not([data-position="1"]):not([data-position="2"]) { z-index: 0; transform: translate3d(22px,22px,-100px) scale(.95); opacity: 0; pointer-events: none; }
+    .teacher-flip-deck .flip-teacher-card:focus-visible { outline: 3px solid rgba(74,144,226,.45); outline-offset: 4px; }
+    .teacher-flip-deck .teach-avatar { width: 138px; height: 138px; margin-top: .05rem; }
+    .teacher-flip-deck .teach-name { font-size: 1.4rem; font-weight: 800; }
+    .teacher-flip-deck .teach-school { margin-top: .25rem; font-size: .92rem; }
+    .teacher-flip-deck .teach-school--mason { color: #006633; }
+    .teacher-flip-deck .teach-school--utah { color: #cc0000; }
+    .teacher-flip-deck .teach-major { margin: .1rem 0 0; font-size: .92rem; }
+    .hero-teacher-bio { min-height: 110px; margin: .7rem 0 0; color: var(--dark-gray); font-size: .92rem; line-height: 1.55; text-align: left; display: block; overflow: visible; -webkit-line-clamp: unset; }
+    .teacher-flip-deck .teach-tags { min-height: 29px; margin-top: 0; padding-top: .45rem; align-items: center; }
+    .teacher-flip-deck .flip-teacher-hint { margin-top: .55rem; padding-top: .45rem; border-top: 1px solid var(--border); color: var(--gray); font-size: .72rem; line-height: 1.3; text-align: right; }
 
     .scroll-hint { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); animation: bounce 2s infinite; }
     .scroll-hint::after { content: '↓'; font-size: 1.2rem; color: var(--accent); }
     @keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(6px); } }
 
     /* STATS STRIP (kimstudy-style trust row) */
-    .stats-strip { padding: 4rem 5rem 1rem; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+    .stats-strip { padding: 3.25rem 3rem 0.5rem; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
     .stat-card { text-align: center; padding: 1.2rem; }
     .stat-num { font-family: 'Pretendard', sans-serif; font-size: 2.6rem; font-weight: 900; color: var(--navy); margin-bottom: 0.4rem; letter-spacing: -0.02em; }
     .stat-num em { font-style: normal; color: var(--accent); }
-    .stat-label { font-size: 0.85rem; color: var(--dark-gray); font-weight: 400; }
+    .stat-label { font-size: 0.95rem; color: var(--dark-gray); font-weight: 400; }
 
     /* SECTION COMMON */
-    section { padding: 6rem 5rem; }
-    .section-label { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); font-weight: 700; display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.5rem; justify-content: center; }
+    section { padding: 4.75rem 3rem; }
+    .section-label { font-size: 0.82rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--accent); font-weight: 700; display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.2rem; justify-content: center; }
     .section-label::after { content: ''; flex: 0 0 40px; height: 1px; background: var(--accent); }
     .section-title { font-family: 'Pretendard', sans-serif; font-size: clamp(2.1rem, 4vw, 3.1rem); font-weight: 800; line-height: 1.35; letter-spacing: -0.02em; margin-bottom: 1rem; text-align: center; }
     .section-title em { font-style: normal; color: var(--accent); }
-    .section-sub { text-align: center; color: var(--dark-gray); font-weight: 300; max-width: 560px; margin: 0 auto 3.5rem; line-height: 1.7; }
+    .section-sub { text-align: center; color: var(--dark-gray); font-size: 1.05rem; font-weight: 400; max-width: 620px; margin: 0 auto 2.75rem; line-height: 1.7; }
 
     /* VERIFICATION */
     .verify-card { background: var(--cream); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2.4rem; }
     .verify-num { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-light); color: var(--accent-deep); font-weight: 900; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; }
     .verify-title { font-family: 'Pretendard', sans-serif; font-weight: 800; font-size: 1.15rem; margin-bottom: 0.7rem; }
-    .verify-desc { font-size: 0.9rem; color: var(--dark-gray); line-height: 1.7; font-weight: 300; }
+    .verify-desc { font-size: 0.98rem; color: var(--dark-gray); line-height: 1.7; font-weight: 400; }
 
     /* WHY */
     .why-section { background: var(--navy); text-align: center; }
@@ -137,7 +164,7 @@
     .why-point { max-width: 220px; }
     .why-point-icon { font-size: 2rem; margin-bottom: 0.8rem; }
     .why-point-title { color: var(--white); font-weight: 800; font-size: 0.98rem; margin-bottom: 0.4rem; }
-    .why-point-desc { color: rgba(255,255,255,0.65); font-size: 0.85rem; line-height: 1.6; }
+    .why-point-desc { color: rgba(255,255,255,0.72); font-size: 0.95rem; line-height: 1.65; }
     
     /* FEATURES */
     .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; max-width: 1200px; margin: 0 auto; }
@@ -163,7 +190,7 @@
     .step:hover { box-shadow: 0 16px 40px rgba(74, 144, 226, 0.12); transform: translateY(-4px); }
     .step-num { font-family: 'Pretendard', sans-serif; font-size: 3.5rem; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 1.2rem; }
     .step-title { font-family: 'Pretendard', sans-serif; font-weight: 800; font-size: 1.15rem; margin-bottom: 0.6rem; }
-    .step-desc { font-size: 0.9rem; color: var(--dark-gray); line-height: 1.7; font-weight: 300; }
+    .step-desc { font-size: 0.98rem; color: var(--dark-gray); line-height: 1.7; font-weight: 400; }
 
     /* PRICE */
     .price-section { background: var(--navy); }
@@ -201,10 +228,10 @@
     .review-quote { font-family: 'Pretendard', sans-serif; font-size: clamp(1.3rem, 2.6vw, 1.9rem); font-weight: 800; line-height: 1.5; color: var(--black); max-width: 640px; margin: 0 auto 1.2rem; }
     .review-quote span { color: var(--accent); }
     .review-by { font-size: 0.9rem; color: var(--gray); font-weight: 600; margin-bottom: 1rem; }
-    .review-note { font-size: 0.75rem; color: var(--gray); opacity: 0.7; }
+    .review-note { font-size: 0.85rem; color: var(--gray); opacity: 0.8; }
 
     /* FINAL CTA */
-    .cta-section { background: var(--accent); color: var(--white); text-align: center; padding: 7rem 5rem; }
+    .cta-section { background: var(--accent); color: var(--white); text-align: center; padding: 5.5rem 3rem; }
     .cta-section .section-label { color: rgba(255,255,255,0.8); justify-content: center; }
     .cta-section .section-label::after { background: rgba(255,255,255,0.8); }
     .cta-title { font-family: 'Pretendard', sans-serif; font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 900; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 1.2rem; color: var(--white); }
@@ -249,23 +276,23 @@
       .nav-links.mobile-open li a:not(.nav-cta) { display: block; padding: 1.4rem 0.2rem; font-size: 1.15rem; font-weight: 700; color: var(--black); }
       .nav-links.mobile-open li:last-child { border-bottom: none; margin-top: 1.5rem; }
       .nav-links.mobile-open .nav-cta { display: block; text-align: center; padding: 1.2rem; font-size: 1.05rem; }
-      .hero { padding: 8rem 1.5rem 3rem; }
+      .hero { padding: 7rem 1.25rem 3.25rem; }
       .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
       .hero-left { padding: 0; }
       .hero-right { min-height: 320px; }
       .hero-visual { width: 100%; max-width: 320px; height: 400px; }
-      section { padding: 4rem 1.5rem; }
+      section { padding: 3.5rem 1.25rem; }
       .teach-grid.mobile-teacher-marquee { display: block; max-width: none; overflow: hidden; margin-left: -1.5rem; margin-right: -1.5rem; }
       .mobile-teacher-track { display: flex; width: max-content; animation: teacherMarquee 24s linear infinite; }
       .mobile-teacher-group { display: flex; gap: 1rem; padding-right: 1rem; }
       .mobile-teacher-group .teach-card { width: 270px; flex: 0 0 270px; }
       .mobile-teacher-group .teach-avatar { width: 130px; height: 130px; }
       .mobile-teacher-group .fade-in { opacity: 1; transform: none; }
-      .stats-strip { grid-template-columns: repeat(2, 1fr); padding: 3rem 1.5rem 0; }
+      .stats-strip { grid-template-columns: repeat(2, 1fr); padding: 2.75rem 1.25rem 0; }
       .verify-grid, .teach-grid, .steps-grid, .tier-grid { grid-template-columns: 1fr; }
       .tier-card.popular { transform: none; }
       .features-grid { grid-template-columns: 1fr 1fr; }
-      .cta-section { padding: 5rem 1.5rem; }
+      .cta-section { padding: 4.25rem 1.25rem; }
       .footer-info { align-items: center; }
       footer { flex-direction: column; text-align: center; }
     }
@@ -278,25 +305,245 @@
       .features-grid { grid-template-columns: 1fr; }
       .price-layout { padding: 2rem 1.4rem; }
     }
+
+    /* RESPONSIVE SYSTEM — fluid scale + layout-specific breakpoints */
+    :root {
+      --content-wide: 1240px;
+      --content-standard: 1120px;
+      --page-gutter: clamp(1.5rem, 4vw, 3.5rem);
+      --section-space: clamp(4.25rem, 6.3vw, 5.75rem);
+      --body-size: clamp(1rem, 0.35vw + 0.92rem, 1.12rem);
+      --small-size: clamp(0.88rem, 0.2vw + 0.83rem, 0.98rem);
+    }
+    body { font-size: 16px; }
+    nav { padding: 1.05rem var(--page-gutter); }
+    .nav-links { gap: clamp(1.15rem, 2vw, 2rem); }
+    .nav-links a { font-size: clamp(.9rem, .25vw + .82rem, 1rem); }
+    .nav-links a[style] { font-size: .9rem !important; }
+
+    .hero {
+      padding: clamp(8rem, 10vw, 9.5rem) var(--page-gutter) clamp(4.5rem, 6vw, 5.5rem);
+    }
+    .hero-inner {
+      max-width: 1040px;
+      grid-template-columns: minmax(0, 1fr) minmax(340px, .78fr);
+      gap: clamp(1rem, 2vw, 1.75rem);
+    }
+    .hero-title {
+      max-width: 760px;
+      font-size: clamp(3.25rem, 5.3vw, 4.9rem);
+      line-height: 1.08;
+      text-wrap: balance;
+    }
+    .hero-title .title-line { display: block; }
+    .hero-tag { font-size: clamp(1rem, 1.2vw, 1.3rem); margin-bottom: clamp(1.25rem, 2vw, 1.8rem); }
+    .hero-sub {
+      max-width: 590px;
+      font-size: var(--body-size);
+      line-height: 1.72;
+      word-break: keep-all;
+    }
+    .hero-sub .copy-line { display: block; }
+    .hero-sub .copy-line + .copy-line { margin-top: .9rem; }
+    .hero-micro { font-size: var(--small-size); }
+    .hero-visual { width: min(400px, 100%); height: 460px; }
+
+    section { padding: var(--section-space) var(--page-gutter); }
+    .features-grid, .why-points, .steps-grid, .teach-grid, .tier-grid { width: 100%; }
+    .features-grid {
+      max-width: var(--content-standard);
+      grid-template-columns: repeat(4, 260px);
+      justify-content: center;
+      gap: 1.25rem;
+    }
+    .why-points { max-width: 980px; margin-left: auto; margin-right: auto; }
+    .section-title {
+      font-size: clamp(2.2rem, 3.6vw, 3.25rem);
+      line-height: 1.24;
+      text-wrap: balance;
+      word-break: keep-all;
+    }
+    .section-sub {
+      max-width: 680px;
+      font-size: var(--body-size);
+      line-height: 1.72;
+      text-wrap: pretty;
+      word-break: keep-all;
+    }
+    .section-sub .copy-sentence + .copy-sentence::before { content: ' '; }
+    .feature-card { padding: clamp(1.7rem, 2.2vw, 2.1rem) clamp(1.35rem, 1.8vw, 1.7rem); }
+    .feature-title { font-size: clamp(1.2rem, .7vw + 1rem, 1.4rem); }
+    .feature-desc, .verify-desc, .step-desc, .why-point-desc { font-size: clamp(.96rem, .25vw + .9rem, 1.05rem); }
+    .step { padding: clamp(1.8rem, 2.8vw, 2.5rem); }
+    .teach-card { padding: clamp(1.8rem, 2.5vw, 2.2rem); }
+    .tier-card { padding: clamp(1.8rem, 2.2vw, 2.3rem) clamp(1.4rem, 2vw, 1.9rem); }
+    .tier-desc, .tier-name { font-size: .95rem; }
+    .tier-features li { font-size: .92rem; line-height: 1.55; }
+    .review-quote { max-width: 760px; font-size: clamp(1.45rem, 2.3vw, 2rem); text-wrap: balance; word-break: keep-all; }
+    .cta-title { font-size: clamp(2.6rem, 4.5vw, 3.8rem); text-wrap: balance; }
+    .cta-title .title-line { display: block; }
+    .cta-sub { font-size: var(--body-size); }
+
+    @media (min-width: 820px) and (max-width: 1199px) {
+      .features-grid { grid-template-columns: repeat(2, 360px); max-width: 760px; }
+    }
+
+    /* Compact desktop / laptop */
+    @media (max-width: 1099px) {
+      :root { --page-gutter: clamp(1.75rem, 4vw, 2.75rem); --section-space: clamp(4rem, 6.5vw, 5rem); }
+      .hero-inner { grid-template-columns: minmax(0, 1.12fr) minmax(290px, .75fr); gap: 2rem; }
+      .hero-title { font-size: clamp(3.15rem, 5.6vw, 4rem); }
+      .hero-visual { width: 330px; height: 420px; }
+      .hero-card.card-main { width: 238px; }
+      .features-grid { grid-template-columns: repeat(2, 360px); max-width: 760px; }
+      .feature-card { text-align: left; }
+      .feature-icon { font-size: 2.15rem; }
+      .tier-grid { gap: 1rem; }
+      .tier-price { font-size: 1.9rem; }
+    }
+
+    /* Tablet: switch composition before cards become cramped */
+    @media (max-width: 900px) {
+      :root { --page-gutter: clamp(1.5rem, 5vw, 2.5rem); }
+      nav { padding: .9rem var(--page-gutter); }
+      .hero { padding-top: 7.25rem; }
+      .hero-inner { grid-template-columns: minmax(0, 1fr); gap: 2.25rem; }
+      .hero-left { align-items: center; text-align: center; }
+      .hero-title { max-width: 720px; }
+      .hero-sub { max-width: 660px; }
+      .hero-buttons { justify-content: center; }
+      .hero-right { min-height: 350px; }
+      .hero-visual { width: 350px; height: 390px; }
+      .hero-card.card-main { top: 47%; }
+      .hero-card.card-small-1 { top: 1%; right: -2%; }
+      .hero-card.card-small-2 { bottom: 0; left: -3%; }
+      .stats-strip { max-width: 760px; gap: .75rem; }
+      .stat-card { padding: 1rem .75rem; }
+      .steps-grid { gap: 1rem; }
+      .step { padding: 1.7rem; }
+      .step-num { font-size: 2.8rem; }
+      .tier-grid { grid-template-columns: 1fr; max-width: 640px; gap: 1.2rem; }
+      .tier-card { min-height: auto; }
+      .tier-card.popular { transform: none; }
+    }
+
+    /* Portrait tablet: reading-first single-column sections */
+    @media (max-width: 819px) {
+      .features-grid { grid-template-columns: minmax(0, 660px); max-width: 660px; }
+      .steps-grid { grid-template-columns: 1fr; max-width: 680px; }
+      .step { display: grid; grid-template-columns: 72px 1fr; column-gap: 1.2rem; align-items: start; }
+      .step-num { grid-row: 1 / span 2; margin-bottom: 0; }
+      .step-title { margin-top: .15rem; }
+      .why-points { display: grid; grid-template-columns: 1fr; max-width: 660px; gap: .8rem; }
+      .why-point { max-width: none; display: grid; grid-template-columns: 48px 1fr; column-gap: 1rem; text-align: left; padding: 1rem 1.1rem; border-radius: 1rem; background: rgba(255,255,255,.05); }
+      .why-point-icon { grid-row: 1 / span 2; margin: 0; }
+      .why-point-title { margin-top: .1rem; }
+      .teach-grid.mobile-teacher-marquee { margin-left: calc(var(--page-gutter) * -1); margin-right: calc(var(--page-gutter) * -1); }
+    }
+
+    /* Mobile */
+    @media (max-width: 599px) {
+      :root { --page-gutter: 1.25rem; --section-space: clamp(3.5rem, 15vw, 4.25rem); }
+      .hero { padding: 5.75rem var(--page-gutter) 1.5rem; }
+      .hero-inner { gap: 0; }
+      .hero-left { align-items: flex-start; text-align: left; }
+      .hero-tag { font-size: .95rem; letter-spacing: .08em; margin-bottom: .75rem; }
+      .hero-tag::before { width: 18px; }
+      .hero-title { font-size: clamp(2.75rem, 12vw, 3.35rem); line-height: 1.08; margin-bottom: .9rem; }
+      .hero-title .title-line { display: block; }
+      .hero-title .title-line:first-child::after { content: none; }
+      .hero-sub { font-size: 1.05rem; line-height: 1.68; margin-bottom: 1.1rem; }
+      .hero-sub .copy-line + .copy-line { margin-top: .55rem; }
+      .hero-buttons { width: auto; display: flex; flex-flow: row nowrap; gap: .8rem; }
+      .hero-buttons .btn-primary { width: auto; min-height: auto; display: inline-block; padding: .9rem 1.65rem; text-align: center; }
+      .hero-buttons .btn-text { width: auto; min-height: auto; height: 48px; display: inline-flex; align-items: center; padding: 0 1.35rem; border: 1.5px solid rgba(74, 144, 226, .28); border-radius: 3rem; background: rgba(255,255,255,.82); text-decoration: none; }
+      .hero-micro { width: auto; margin-top: .65rem; margin-bottom: .75rem; text-align: left; font-size: .86rem; }
+      .hero-right { min-height: 0; }
+      .hero-teacher-carousel-shell { width: min(326px, 100%); }
+      .teacher-flip-deck { width: min(312px, calc(100% - 16px)); height: 426px; }
+      .teacher-flip-deck .flip-teacher-card { right: 16px; min-height: 332px; padding: 1.05rem; border-radius: 1.25rem; }
+      .teacher-flip-deck .flip-teacher-card[data-position="1"] { transform: translate3d(8px,8px,-40px) rotate(1.3deg) scale(.988); }
+      .teacher-flip-deck .flip-teacher-card[data-position="2"] { transform: translate3d(16px,16px,-80px) rotate(2.5deg) scale(.972); }
+      .teacher-flip-deck .teach-avatar { width: 170px; height: 170px; margin: 0 auto .45rem; }
+      .teacher-flip-deck .teach-name { font-size: 1.22rem; margin-bottom: .15rem; }
+      .teacher-flip-deck .teach-school, .teacher-flip-deck .teach-major { font-size: .84rem; line-height: 1.35; }
+      .teacher-flip-deck .teach-major { margin-bottom: 0; }
+      .hero-teacher-bio { min-height: 82px; display: block; margin: .55rem 0 0; font-size: .84rem; line-height: 1.45; overflow: visible; -webkit-line-clamp: unset; }
+      .teacher-flip-deck .tag { padding: .23rem .55rem; font-size: .76rem; }
+      .teacher-flip-deck .teach-tags { min-height: 27px; padding-top: 0; }
+      .teacher-flip-deck .flip-teacher-hint { font-size: .68rem; }
+      .hero-visual { width: 290px; height: 320px; }
+      .hero-card { padding: 1.2rem; }
+      .hero-card.card-main { width: 232px; top: 50%; }
+      .hero-card.card-small-1 { width: 125px; right: -2%; }
+      .hero-card.card-small-2 { width: 145px; left: -2%; }
+      .stats-strip { padding: 2.5rem var(--page-gutter) .25rem; gap: .35rem; }
+      .stat-card { padding: .9rem .35rem; }
+      .stat-num { font-size: clamp(1.65rem, 8vw, 2.1rem); }
+      .stat-label { font-size: .86rem; line-height: 1.45; word-break: keep-all; }
+      .section-label { margin-bottom: 1rem; }
+      .section-title { font-size: clamp(2rem, 9.5vw, 2.55rem); line-height: 1.2; }
+      .section-sub { margin-bottom: 2.25rem; font-size: 1rem; }
+      .features-grid { grid-template-columns: minmax(0, 1fr); max-width: 390px; gap: .9rem; justify-items: center; }
+      .feature-card { display: grid; width: min(100%, 344px); grid-template-columns: 40px minmax(0, 1fr); column-gap: .9rem; align-items: start; text-align: left; padding: 1.15rem 1.25rem; min-width: 0; }
+      .feature-icon { grid-row: 1 / span 2; width: 40px; margin: 0; font-size: 1.85rem; line-height: 1.2; text-align: center; justify-self: center; }
+      .feature-title { margin: 0 0 .35rem; min-width: 0; line-height: 1.3; }
+      .feature-desc { width: 100%; max-width: none; min-width: 0; line-height: 1.58; }
+      .mobile-copy-break { display: block; }
+      .economy-desc-line { display: block; }
+      .step { grid-template-columns: 58px 1fr; padding: 1.35rem; }
+      .step-num { font-size: 2.25rem; }
+      .mobile-teacher-group .teach-card { width: min(78vw, 300px); flex-basis: min(78vw, 300px); }
+      .tier-price { font-size: clamp(1.8rem, 8vw, 2.2rem); }
+      .review-quote { font-size: clamp(1.35rem, 6.4vw, 1.65rem); }
+      .cta-section { padding: 4rem var(--page-gutter); }
+      footer { padding: 2.5rem var(--page-gutter); }
+      .footer-text { font-size: .86rem; line-height: 1.55; }
+    }
+
+    /* Small phones: prevent awkward orphan words and card collisions */
+    @media (max-width: 390px) {
+      :root { --page-gutter: 1.1rem; }
+      .hero-title { font-size: clamp(2.55rem, 12vw, 2.9rem); }
+      .hero-title .title-line { display: block; }
+      .hero-title .title-line:first-child::after { content: none; }
+      .hero-visual { transform: scale(.94); transform-origin: top center; margin-bottom: -1rem; }
+      .stats-strip { grid-template-columns: 1fr 1fr; }
+      .stat-label { font-size: .82rem; }
+      .section-title { font-size: 2rem; }
+    }
+
+    @media (max-width: 410px) {
+      .hero-buttons { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 350px) {
+      .feature-card { grid-template-columns: minmax(0, 1fr); row-gap: .35rem; }
+      .feature-icon { grid-row: auto; margin-bottom: .2rem; }
+      .feature-title { margin: 0; }
+      .feature-desc { max-width: none; }
+    }
+
   </style>
+  <link rel="stylesheet" href="responsive-overrides.css">
+  <link rel="stylesheet" href="site-nav.css">
 </head>
 <body>
 
 <!-- NAV -->
-<nav>
+<nav class="site-nav">
   <a class="nav-logo" href="index.html">
-    <div style="width:65px; height:32px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
-      <img src="img/mlogo.png" alt="나도" style="width:auto; height:150%; display:block;">
+    <div class="nav-logo-frame">
+      <img src="img/mlogo.png" alt="나도">
     </div>
   </a>
   <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기">☰</button>
   <ul class="nav-links" id="navLinks">
-    <li><a href="https://nadomeokgo.github.io/nado_teachers_web/index.html#dashboard" target="_blank" rel="noopener" style="font-size:0.8rem;color:var(--gray);">for teachers</a></li>
-    <li><a href="index.html">홈</a></li>
+    <li><a class="nav-for-teachers" href="https://nadomeokgo.github.io/nado_teachers_web/index.html#dashboard" target="_blank" rel="noopener">for teachers</a></li>
     <li><a href="how.html">이용 방법</a></li>
     <li><a href="#why">왜 나도인가</a></li>
     <li><a href="teachers.html">선생님 소개</a></li>
-    <li><a href="trial.html" style="color:var(--accent);font-weight:700;">체험 수업</a></li>
+    <li><a class="nav-trial" href="trial.html">체험 수업</a></li>
     <li><a href="apply.html" class="nav-cta">시작하기</a></li>
 </nav>
 
@@ -305,10 +552,10 @@
   <div class="hero-inner">
   <div class="hero-left">
     <div class="hero-tag">미국 대학생과 1:1 영어회화</div>
-    <h1 class="hero-title">진짜 영어는<br><em>만나서 합니다.</em></h1>
+    <h1 class="hero-title"><span class="title-line">진짜 영어는</span><em class="title-line">만나서 합니다.</em></h1>
     <p class="hero-sub">
-      나도에서 미국 대학생과 만나 영어로 대화해보세요.<br><br>
-      오프라인에서 나에게 딱 맞는 선생님과 1:1로 이어가는 영어회화.
+      <span class="copy-line">나도에서 미국 대학생과 만나 영어로 대화해보세요.</span>
+      <span class="copy-line">오프라인에서 나에게 딱 맞는 선생님과 1:1로 이어가는 영어회화.</span>
     </p>
     <div class="hero-buttons">
       <a class="btn-primary" href="apply.html">1분 만에 신청하기</a>
@@ -317,32 +564,8 @@
     <div class='hero-micro'>주 3회 이상 수업을 원하시면 별도로 문의해주세요.</div>
   </div>
   <div class="hero-right">
-    <div class="hero-visual">
-      <div class="hero-card card-small-1">
-        <div class="small-card-icon">📍</div>
-        <div class="small-card-title">인천 송도</div>
-        <div class="small-card-sub">오프라인 만남</div>
-      </div>
-      <div class="hero-card card-main">
-        <div class="card-label">매칭된 선생님</div>
-        <div class="avatar-row"><div class="avatar">👨</div></div>
-        <div class="card-match-name">Michael Johnson</div>
-        <div class="card-match-sub">경영학 전공 · 미국 대학생</div>
-        <div class="card-tag-row">
-          <span class="tag">비즈니스</span>
-          <span class="tag">일상회화</span>
-          <span class="tag gray">송도</span>
-        </div>
-        <div class="card-stat">
-          <span class="card-stat-num">1시간 · 2시간</span>
-          <span class="card-stat-label">원하는 수업 시간 선택</span>
-        </div>
-      </div>
-      <div class="hero-card card-small-2">
-        <div class="small-card-icon">🛡️</div>
-        <div class="small-card-title">학적 인증 완료</div>
-        <div class="small-card-sub">신원 확인된 대학생 선생님만</div>
-      </div>
+    <div class="hero-teacher-carousel-shell">
+      <div class="teacher-flip-deck" id="randomTeachers" aria-live="polite" aria-label="추천 선생님 카드"></div>
     </div>
   </div>
   </div>
@@ -360,11 +583,11 @@
   </div>
   <div class="stat-card">
     <div class="stat-num">1:1</div>
-    <div class="stat-label">맞춤 매칭, 그룹 수업 없음</div>
+    <div class="stat-label">맞춤형 수업</div>
   </div>
   <div class="stat-card">
-    <div class="stat-num">송도</div>
-    <div class="stat-label">인천 송도 오프라인 전용</div>
+    <div class="stat-num">오프라인</div>
+    <div class="stat-label">원하는 곳 어디서나</div>
   </div>
 </div>
 
@@ -399,8 +622,8 @@
 <!-- WHY -->
 <section id="why" class="why-section fade-in">
   <div class="section-label">왜 나도인가</div>
-  <h2 class="section-title">온라인으로는<br><em>안 늘더라고요.</em></h2>
-  <p class="section-sub">영어회화 앱을 수십 개 깔아봤지만, 정작 사람 앞에서는 입이 굳어버립니다.<br>나도는 다릅니다 — 진짜 사람과, 진짜 대화를 나눕니다.</p>
+  <h2 class="section-title"><span>온라인으로는</span> <em>안 늘더라고요.</em></h2>
+  <p class="section-sub"><span class="copy-sentence">영어회화 앱을 수십 개 깔아봤지만, 정작 사람 앞에서는 입이 굳어버립니다.</span><span class="copy-sentence">나도는 진짜 사람과, 진짜 대화를 나눕니다.</span></p>
   <div class="why-points">
     <div class="why-point">
       <div class="why-point-icon">🗣️</div>
@@ -409,8 +632,8 @@
     </div>
     <div class="why-point">
       <div class="why-point-icon">📍</div>
-      <div class="why-point-title">인천 송도 오프라인</div>
-      <div class="why-point-desc">가까운 카페에서, 부담 없이 만날 수 있습니다.</div>
+      <div class="why-point-title">오프라인</div>
+      <div class="why-point-desc">원하는 장소에서 영어 대화를 연습하세요.</div>
     </div>
     <div class="why-point">
       <div class="why-point-icon">🎯</div>
@@ -428,12 +651,12 @@
     <div class="step fade-in">
       <div class="step-num">01</div>
       <div class="step-title">정보 입력</div>
-      <div class="step-desc">간단한 정보를 입력하면 자동으로 최적의 선생님을 매칭해드립니다.</div>
+      <div class="step-desc"><span class="mobile-copy-break">간단한 정보를 입력하면 자동으로 최적의</span> 선생님을 매칭해드립니다.</div>
     </div>
     <div class="step fade-in">
       <div class="step-num">02</div>
       <div class="step-title">선생님 매칭</div>
-      <div class="step-desc">인증된 대학생 선생님과 매칭되어 일정과 장소를 조율합니다.</div>
+      <div class="step-desc"><span class="mobile-copy-break">인증된 대학생 선생님과 매칭되어 일정과</span> 장소를 조율합니다.</div>
     </div>
     <div class="step fade-in">
       <div class="step-num">03</div>
@@ -443,17 +666,6 @@
   </div>
   <div style="text-align: center; margin-top: 3rem;">
     <a class="btn-primary" href="how.html">자세한 이용 방법 보기</a>
-  </div>
-</section>
-
-<!-- TOP3 TEACHERS -->
-<section id="teachers" class="teachers-section">
-  <div class="section-label">Teachers for You</div>
-  <h2 class="section-title"><em>나에게 딱 맞는 영어 선생님</em></h2>
-  <p class="section-sub">목표에 맞는 선생님을 나도가 연결해드려요.</p>
-  <div class="teach-grid" id="randomTeachers" aria-live="polite"></div>
-  <div style="text-align:center;margin-top:3rem;">
-    <a class="btn-primary" href="teachers.html">선생님 전체 보기</a>
   </div>
 </section>
 
@@ -467,7 +679,7 @@
       <div class="tier-name">이코노미</div>
       <div class="tier-price">₩140,000<span style="font-size:.9rem;font-weight:600;opacity:.7;">부터</span></div>
       <div class="tier-period">한 달 · 4회</div>
-      <div class="tier-desc">영어 회화 실력이 검증된 선생님과 부담없이 시작해보세요.</div>
+      <div class="tier-desc"><span class="economy-desc-line">영어 회화 실력이 검증된 선생님과</span> 부담 없이 시작하세요.</div>
       <ul class="tier-features">
         <li>학적 인증 완료 대학생 선생님</li>
         <li>IGC인천글로벌캠퍼스 카페 · 송도 트리플스트리트 카페</li>
@@ -486,7 +698,7 @@
         <li>송도 원하는 곳 어디서든</li>
         <li>충분한 경험과 노하우가 있는 선생님</li>
         <li>전문적인 피드백 세션 10분 진행</li>
-        <li>직장인추천</li>
+        <li>직장인 추천</li>
       </ul>
       <a class="tier-cta" href="apply.html">신청하기</a>
     </div>
@@ -510,14 +722,14 @@
 <!-- REVIEW -->
 <section class="review-section fade-in">
   <div class="review-avatar">🙂</div>
-  <p class="review-quote">"영어를 말하는 것 자체가 어려웠는데,<br>1대1 수업을 통해 <span>자신감을 길렀어요.</span>"</p>
+  <p class="review-quote">"영어를 말하는 것 자체가 어려웠는데, 1대1 수업을 통해 <span>자신감을 길렀어요.</span>"</p>
   <div class="review-by">이**님</div>
 </section>
 
 <!-- FINAL CTA -->
 <section id="cta" class="cta-section">
   <div class="section-label">지금 시작하세요</div>
-  <h2 class="cta-title">나도,<br><em>할 수 있다.</em></h2>
+  <h2 class="cta-title"><span class="title-line">나도,</span> <em class="title-line">할 수 있다.</em></h2>
   <p class="cta-sub">진짜 영어는 만나서 합니다. 첫 걸음을 나도와 함께.</p>
   <a class="btn-primary" href="apply.html">1분 만에 신청하기</a>
 </section>
@@ -540,65 +752,89 @@
   </div>
 </footer>
 
+<script src="site-nav.js"></script>
 <script>
   const teachers = [
-    { name: 'Abhinay', school: 'George Mason University Korea', major: 'Business', tags: ['회화', '글쓰기'], image: 'img/abhinay.jpg' },
-    { name: 'Amelia Lee', school: 'George Mason University Korea', major: 'Conflict Analysis and Resolution', tags: ['문화', '프리토킹'], image: 'img/amelia.jpg' },
-    { name: 'Ej', school: 'George Mason Korea', major: 'Global Affairs', tags: ['맞춤 회화', '자신감'], image: 'img/ej.jpg' },
-    { name: 'Oscar', school: 'George Mason University Korea', major: 'Computational Data Science', tags: ['원어민 회화', '의사소통'], image: 'img/oscar.jpg' },
-    { name: 'Sophie Phillips', school: 'George Mason University Korea', major: 'Economics', tags: ['원어민 회화', '프리토킹'], image: 'img/sophie.jpg' },
-    { name: 'Tae Minsuk', school: 'University of Utah', major: 'Film and Media Arts', tags: ['영화', '미디어 영어'], image: 'img/tae.jpg' },
-    { name: 'Victoria Yuguy', school: 'George Mason University Korea', major: 'Global Affairs', tags: ['경력 튜터', '맞춤 회화'], image: 'img/victoria.jpg' },
-    { name: 'Vitalina Skardova', school: 'Utah University Asia Campus', major: 'Game Design', tags: ['맞춤 학습', '생활 영어'], image: 'img/vitalina.jpg' },
-    { name: '박의해 (Justina)', school: 'George Mason University', major: 'Conflict Analysis and Resolution', tags: ['실전 회화', '자연스러운 표현'], image: 'img/justina.jpg' }
+    { name: 'Abhinay', school: 'George Mason University Korea', major: 'Business', tags: ['Speaking', 'Writing'], image: 'img/abhinay.jpg', bio: 'I’m passionate about helping students build natural confidence in English conversation and writing.' },
+    { name: 'Amelia Lee', school: 'George Mason University Korea', major: 'Conflict Analysis and Resolution', tags: ['Culture', 'Free Talk'], image: 'img/amelia.jpg', bio: 'I’m a native speaker from the US, and I enjoy music, movies, and books. Let’s have fun learning and getting to know each other.' },
+    { name: 'Ej', school: 'George Mason Korea', major: 'Global Affairs', tags: ['Personalized', 'Confidence'], image: 'img/ej.jpg', bio: 'I’m here to help you on your English journey and look forward to building your confidence through comfortable conversation.' },
+    { name: 'Oscar', school: 'George Mason University Korea', major: 'Computational Data Science', tags: ['Native English', 'Communication'], image: 'img/oscar.jpg', bio: 'I’m a friendly native English speaker who enjoys helping students improve their confidence and communication skills.' },
+    { name: 'Sophie Phillips', school: 'George Mason University Korea', major: 'Economics', tags: ['Native English', 'Free Talk'], image: 'img/sophie.jpg', bio: 'I’m a native English speaker from Virginia and enjoy helping students speak naturally through relaxed conversation.' },
+    { name: 'Tae Minsuk', school: 'University of Utah', major: 'Film and Media Arts', tags: ['Film', 'Media English'], image: 'img/tae.jpg', bio: 'Let’s learn English comfortably and easily through the movies and media we enjoy.' },
+    { name: 'Victoria Yuguy', school: 'George Mason University Korea', major: 'Global Affairs', tags: ['Experienced', 'Personalized'], image: 'img/victoria.jpg', bio: 'I have been a tutor for over five years and love meeting new people. We can connect through a wide range of interests.' },
+    { name: 'Vitalina Skardova', school: 'Utah University Asia Campus', major: 'Game Design', tags: ['Tailored Learning', 'Daily English'], image: 'img/vitalina.jpg', bio: 'As a language learner myself, I understand common challenges and create lessons around each student’s interests, goals, and needs.' },
+    { name: '박의해 (Justina)', school: 'George Mason University', major: 'Conflict Analysis and Resolution', tags: ['Practical English', 'Natural Phrases'], image: 'img/justina.jpg', bio: 'My lessons focus on real conversations and natural expressions, turning the English you know into English you can use with confidence.' }
   ];
 
   const randomTeachers = document.getElementById('randomTeachers');
   if (randomTeachers) {
-    const selectedTeachers = [...teachers].sort(() => Math.random() - 0.5).slice(0, 3);
-    randomTeachers.innerHTML = selectedTeachers.map((teacher, index) => {
-      const avatar = teacher.image
-        ? `<img src="${teacher.image}" alt="${teacher.name}" style="width:100%;height:100%;object-fit:cover;">`
-        : teacher.initials;
-      return `
-        <article class="teach-card fade-in">
-          <div class="rank-badge">오늘의 추천</div>
-          <div class="teach-avatar">${avatar}</div>
-          <div class="teach-name">${teacher.name}</div>
-          <div class="teach-school">${teacher.school}</div>
-          <div class="teach-major">${teacher.major}</div>
-          <div class="teach-tags">${teacher.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
-        </article>`;
-    }).join('');
+    const selectedTeachers = [...teachers].sort(() => Math.random() - 0.5);
+    randomTeachers.innerHTML = selectedTeachers.map((teacher, index) => `
+      <article class="teach-card flip-teacher-card" data-position="${index}" role="button" tabindex="${index === 0 ? '0' : '-1'}" aria-label="${teacher.name} 선생님. 클릭하면 다음 선생님을 봅니다." aria-hidden="${index === 0 ? 'false' : 'true'}">
+        <div class="teach-avatar"><img src="${teacher.image}" alt="${teacher.name}" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="teach-name">${teacher.name}</div>
+        <div class="teach-school ${teacher.school.includes('Utah') ? 'teach-school--utah' : 'teach-school--mason'}">${teacher.school}</div>
+        <div class="teach-major">${teacher.major}</div>
+        <div class="hero-teacher-bio">${teacher.bio}</div>
+        <div class="teach-tags">${teacher.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
+        <div class="flip-teacher-hint">카드를 눌러 다른 선생님 보기 →</div>
+      </article>`).join('');
 
-    if (window.matchMedia('(max-width: 900px)').matches) {
-      const cards = Array.from(randomTeachers.children);
-      const firstGroup = document.createElement('div');
-      const secondGroup = document.createElement('div');
-      firstGroup.className = 'mobile-teacher-group';
-      secondGroup.className = 'mobile-teacher-group';
-      cards.forEach(card => firstGroup.appendChild(card));
-      cards.forEach(card => secondGroup.appendChild(card.cloneNode(true)));
-      const track = document.createElement('div');
-      track.className = 'mobile-teacher-track';
-      track.append(firstGroup, secondGroup);
-      randomTeachers.appendChild(track);
-      randomTeachers.classList.add('mobile-teacher-marquee');
-    }
+    const teacherCards = Array.from(randomTeachers.children);
+    let activeTeacherIndex = 0;
+    const updateTeacherDeck = () => {
+      teacherCards.forEach((card, index) => {
+        const position = (index - activeTeacherIndex + teacherCards.length) % teacherCards.length;
+        card.dataset.position = String(position);
+        card.tabIndex = position === 0 ? 0 : -1;
+        card.setAttribute('aria-hidden', position === 0 ? 'false' : 'true');
+      });
+    };
+    const showNextTeacher = () => {
+      activeTeacherIndex = (activeTeacherIndex + 1) % teacherCards.length;
+      updateTeacherDeck();
+      teacherCards[activeTeacherIndex].focus({ preventScroll: true });
+    };
+    randomTeachers.addEventListener('click', event => {
+      if (event.target.closest('.flip-teacher-card')) showNextTeacher();
+    });
+    randomTeachers.addEventListener('keydown', event => {
+      if ((event.key === 'Enter' || event.key === ' ') && event.target.matches('.flip-teacher-card[data-position="0"]')) {
+        event.preventDefault();
+        showNextTeacher();
+      }
+    });
+    updateTeacherDeck();
   }
 
-  const navToggle = document.getElementById('navToggle');
-  if (navToggle) {
-    navToggle.addEventListener('click', () => {
-      document.getElementById('navLinks').classList.toggle('mobile-open');
-      navToggle.textContent = document.getElementById('navLinks').classList.contains('mobile-open') ? '✕' : '☰';
+  const whyTitle = document.querySelector('#why .section-title');
+  const centerWhyTitle = (behavior = 'smooth') => {
+    if (!whyTitle) return;
+    if (!window.matchMedia('(max-width: 900px)').matches) {
+      whyTitle.scrollIntoView({ behavior, block: 'center', inline: 'nearest' });
+      return;
+    }
+
+    const titleTop = whyTitle.getBoundingClientRect().top + window.scrollY;
+    const centeredTop = titleTop - ((window.innerHeight - whyTitle.offsetHeight) / 2);
+    window.scrollTo({ top: Math.max(0, centeredTop), behavior });
+  };
+
+  document.querySelectorAll('a[href="#why"]').forEach(link => {
+    link.addEventListener('click', event => {
+      event.preventDefault();
+      window.history.pushState(null, '', '#why');
+      window.requestAnimationFrame(() => window.requestAnimationFrame(() => centerWhyTitle()));
     });
-    document.querySelectorAll('#navLinks a').forEach(link => {
-  link.addEventListener('click', () => {
-    document.getElementById('navLinks').classList.remove('mobile-open');
-    if (navToggle) navToggle.textContent = '☰';
   });
-});
+
+  if (window.location.hash === '#why') {
+    const centerWhyOnArrival = () => {
+      window.requestAnimationFrame(() => centerWhyTitle('instant'));
+    };
+    centerWhyOnArrival();
+    window.addEventListener('load', centerWhyOnArrival, { once: true });
+    window.addEventListener('pageshow', centerWhyOnArrival, { once: true });
   }
 
   const observer = new IntersectionObserver((entries) => {
@@ -620,6 +856,7 @@ s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
 <!--End of Tawk.to Script-->
+<script src="chat-mobile.js"></script>
   
 </body>
 </html>

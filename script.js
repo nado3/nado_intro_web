@@ -17,7 +17,7 @@ function calcPrice(tier, idx, freq){
 const steps = [
   {
     key: 'tier', type: 'tier', required: true,
-    title: '어떤 플랜를 원하시나요?',
+    title: '어떤 플랜을 원하시나요?',
     sub: '수업 시간은 다음 단계에서 선택하실 수 있어요.',
     options: [
       {
@@ -181,10 +181,10 @@ function renderStep(){
   let sub = step.sub;
   const isEconomy = answers.tier === '이코노미';
   const RANK_OPTIONS = isEconomy
-    ? ['IGC인천글로벌캠퍼스 카페에서 만나고 싶어요', '송도 트리플스트리트 카페에서 만나고 싶어요']
-    : ['IGC인천글로벌캠퍼스 카페에서 만나고 싶어요', '송도 트리플스트리트 카페에서 만나고 싶어요', '선생님과 협의할게요'];
+    ? ['IGC인천글로벌캠퍼스 내에서 만나고 싶어요', '송도 트리플스트리트 내에서 만나고 싶어요']
+    : ['IGC인천글로벌캠퍼스 내에서 만나고 싶어요', '송도 트리플스트리트 내에서 만나고 싶어요', '선생님과 협의할게요'];
   if (step.type === 'rank') {
-    title = isEconomy ? '이코노미는 정해진 두 곳 중에서 진행돼요' : '송도에서 어떻게 진행하고 싶으신가요?';
+    title = isEconomy ? '이코노미는 정해진 두 곳 중에서 진행돼요' : '원하는 수업 장소를 선택해주세요.';
     sub = isEconomy
       ? '선택하신 곳을 우선 배치해드리지만, 선생님 일정에 따라 조율될 수 있어요.'
       : '선택하신 순위대로 우선 배치해드리지만, 선생님 일정에 따라 조율될 수 있어요.';
@@ -243,8 +243,7 @@ if (step.type === 'tier'){
         + '</div>'
         + '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:1.2rem 0 .8rem;">'
         + '<span style="font-size:.85rem;color:var(--gray);font-weight:600;">' + (answers.frequency === '체험 1회' ? '체험 1회 기준' : (answers.frequency + ' · 월 ' + (answers.frequency === '주 2회' ? '8' : '4') + '회 기준')) + '</span>'        + '<span id="durPrice" style="font-size:1.1rem;font-weight:800;"><span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + price.toLocaleString() + '</span>'
-        + '</div>'
-        + '<div style="font-size:.75rem;color:var(--ink);border-top:1px solid var(--line);padding-top:.8rem;">모든 플랜에서 1시간 또는 2시간 수업을 선택할 수 있어요.</div>';
+        + '</div>';
     } else if (step.type === 'date'){
       const today = new Date().toISOString().split('T')[0];
       const val = answers[step.key] || today;

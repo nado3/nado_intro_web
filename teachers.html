@@ -142,6 +142,8 @@
       border: 1px solid var(--border);
       border-radius: 1.5rem;
       padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
       transition: transform 0.3s, box-shadow 0.3s;
       cursor: pointer;
     }
@@ -172,13 +174,28 @@
       font-weight: 700;
       margin-bottom: 0.5rem;
       color: var(--black);
+      text-align: center;
     }
     .teacher-major {
+      min-height: 3.4rem;
       font-size: 0.9rem;
-      color: var(--accent);
-      font-weight: 600;
+      line-height: 1.55;
+      text-align: center;
       margin-bottom: 1.5rem;
+      word-break: keep-all;
     }
+    .teacher-field {
+      display: block;
+      color: var(--black);
+      font-weight: 650;
+      margin-bottom: 0.2rem;
+    }
+    .teacher-school {
+      display: block;
+      font-weight: 650;
+    }
+    .teacher-school--mason { color: #006633; }
+    .teacher-school--utah { color: #cc0000; }
     .teacher-bio {
       font-size: 0.9rem;
       color: var(--dark-gray);
@@ -190,6 +207,7 @@
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
+      margin-top: auto;
     }
     @media (max-width: 1000px) {
       .teachers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -263,9 +281,10 @@
       background: var(--accent);
       color: var(--white);
       text-align: center;
-      padding: 5rem 3rem;
+      max-width: 680px;
+      padding: 3.75rem 2.5rem;
       border-radius: 2rem;
-      margin: 4rem 5rem;
+      margin: 4rem auto;
     }
     .cta-title {
       font-family: 'Pretendard', sans-serif;
@@ -366,22 +385,25 @@
       .cta-section { margin: 2rem 1.2rem; padding: 3rem 1.5rem; }
     }
   </style>
+  <link rel="stylesheet" href="responsive-overrides.css">
+  <link rel="stylesheet" href="site-nav.css">
 </head>
-<body>
+<body class="subpage">
 
 <!-- NAV -->
-<nav>
+<nav class="site-nav">
   <a class="nav-logo" href="index.html">
-    <div style="width:65px; height:32px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
-      <img src="img/mlogo.png" alt="나도" style="width:auto; height:150%; display:block;">
+    <div class="nav-logo-frame">
+      <img src="img/mlogo.png" alt="나도">
     </div>
   </a>
   <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기">☰</button>
   <ul class="nav-links" id="navLinks">
-  <li><a href="index.html">홈</a></li>
+  <li><a class="nav-for-teachers" href="https://nadomeokgo.github.io/nado_teachers_web/index.html#dashboard" target="_blank" rel="noopener">for teachers</a></li>
   <li><a href="how.html">이용 방법</a></li>
   <li><a href="index.html#why">왜 나도인가</a></li>
   <li><a href="teachers.html">선생님 소개</a></li>
+  <li><a class="nav-trial" href="trial.html">체험 수업</a></li>
   <li><a href="apply.html" class="nav-cta">시작하기</a></li>
   </ul>
 </nav>
@@ -402,18 +424,11 @@
     </p>
   </div>
 
-  <div class="info-box fade-in">
-    <div class="info-title">💡 맞춤형 매칭 시스템</div>
-    <div class="info-text">
-      <strong>나도</strong>는 여러분의 수준, 목표, 비용, 관심사에 맞게 최적의 선생님을 자동으로 매칭해드립니다.
-    </div>
-  </div>
-
   <div class="teachers-grid">
     <div class="teacher-card fade-in">
       <div class="teach-avatar"><img src="img/abhinay.jpg" alt="Abhinay" style="width:100%;height:100%;object-fit:cover;"></div>
       <div class="teacher-name">Abhinay</div>
-      <div class="teacher-major">Business<br> · George Mason University Korea</div>
+      <div class="teacher-major"><span class="teacher-field">Business</span><span class="teacher-school teacher-school--mason">George Mason University Korea</span></div>
       <div class="teacher-bio">Hello Guys!! My name is Abhinay. I’m passionate about helping students build natural confidence in English conversation and writing.</div>
       <div class="teacher-tags"><span class="tag">회화</span><span class="tag">글쓰기</span></div>
     </div>
@@ -421,7 +436,7 @@
     <div class="teacher-card fade-in">
       <div class="teach-avatar"><img src="img/amelia.jpg" alt="Amelia Lee" style="width:100%;height:100%;object-fit:cover;"></div>
       <div class="teacher-name">Amelia Lee</div>
-      <div class="teacher-major">Conflict Analysis and Resolution<br> · George Mason University Korea</div>
+      <div class="teacher-major"><span class="teacher-field">Conflict Analysis and Resolution</span><span class="teacher-school teacher-school--mason">George Mason University Korea</span></div>
       <div class="teacher-bio">Hi, My name is Amelia! I’m a native speaker from the US, and I'm interested in a wide variety of music, movies, and books. Let’s have fun learning and getting to know each other!</div>
       <div class="teacher-tags"><span class="tag">문화</span><span class="tag">프리토킹</span></div>
     </div>
@@ -429,7 +444,7 @@
     <div class="teacher-card fade-in">
       <div class="teach-avatar"><img src="img/ej.jpg" alt="Ej" style="width:100%;height:100%;object-fit:cover;"></div>
       <div class="teacher-name">Ej</div>
-      <div class="teacher-major">Global Affairs<br> · George Mason Korea</div>
+      <div class="teacher-major"><span class="teacher-field">Global Affairs</span><span class="teacher-school teacher-school--mason">George Mason Korea</span></div>
       <div class="teacher-bio">Hello, I'm Ej here to help you on your English journey. Looking forward to working with you.</div>
       <div class="teacher-tags"><span class="tag">맞춤 회화</span><span class="tag">자신감</span></div>
     </div>
@@ -437,7 +452,7 @@
     <div class="teacher-card fade-in">
       <div class="teach-avatar"><img src="img/oscar.jpg" alt="Oscar" style="width:100%;height:100%;object-fit:cover;"></div>
       <div class="teacher-name">Oscar</div>
-      <div class="teacher-major">Computational Data Science<br> · George Mason University Korea</div>
+      <div class="teacher-major"><span class="teacher-field">Computational Data Science</span><span class="teacher-school teacher-school--mason">George Mason University Korea</span></div>
       <div class="teacher-bio">Hi! I'm Oscar, a friendly native English speaker who enjoys helping students improve their confidence and communication skills. I look forward to learning with you!</div>
       <div class="teacher-tags"><span class="tag">원어민 회화</span><span class="tag">의사소통</span></div>
     </div>
@@ -445,7 +460,7 @@
     <div class="teacher-card fade-in">
       <div class="teach-avatar"><img src="img/sophie.jpg" alt="Sophie Phillips" style="width:100%;height:100%;object-fit:cover;"></div>
       <div class="teacher-name">Sophie Phillips</div>
-      <div class="teacher-major">Economics<br> · George Mason University Korea</div>
+      <div class="teacher-major"><span class="teacher-field">Economics</span><span class="teacher-school teacher-school--mason">George Mason University Korea</span></div>
       <div class="teacher-bio">Hi! My name is Sophie, and I am a native English speaker from Virginia!</div>
       <div class="teacher-tags"><span class="tag">원어민 회화</span><span class="tag">프리토킹</span></div>
     </div>
@@ -453,7 +468,7 @@
     <div class="teacher-card fade-in">
       <div class="teach-avatar"><img src="img/tae.jpg" alt="Tae Minsuk" style="width:100%;height:100%;object-fit:cover;"></div>
       <div class="teacher-name">Tae Minsuk</div>
-      <div class="teacher-major">Film and Media Arts<br> · University of Utah</div>
+      <div class="teacher-major"><span class="teacher-field">Film and Media Arts</span><span class="teacher-school teacher-school--utah">University of Utah</span></div>
       <div class="teacher-bio">Let’s learn English comfortably and easily through the movies and media we enjoy!</div>
       <div class="teacher-tags"><span class="tag">영화</span><span class="tag">미디어 영어</span></div>
     </div>
@@ -461,7 +476,7 @@
     <div class="teacher-card fade-in">
       <div class="teach-avatar"><img src="img/victoria.jpg" alt="Victoria Yuguy" style="width:100%;height:100%;object-fit:cover;"></div>
       <div class="teacher-name">Victoria Yuguy</div>
-      <div class="teacher-major">Global Affairs<br> · George Mason University Korea</div>
+      <div class="teacher-major"><span class="teacher-field">Global Affairs</span><span class="teacher-school teacher-school--mason">George Mason University Korea</span></div>
       <div class="teacher-bio">Hi! I'm Victoria Yuguy. I've been a tutor for over 5 years and love to meet new people. I have a lot of different interests, so hopefully we can connect. :)</div>
       <div class="teacher-tags"><span class="tag">경력 튜터</span><span class="tag">맞춤 회화</span></div>
     </div>
@@ -469,7 +484,7 @@
     <div class="teacher-card fade-in">
       <div class="teach-avatar"><img src="img/vitalina.jpg" alt="Vitalina Skardova" style="width:100%;height:100%;object-fit:cover;"></div>
       <div class="teacher-name">Vitalina Skardova</div>
-      <div class="teacher-major">Game Design<br> · Utah University Asia Campus</div>
+      <div class="teacher-major"><span class="teacher-field">Game Design</span><span class="teacher-school teacher-school--utah">Utah University Asia Campus</span></div>
       <div class="teacher-bio">Having learned multiple foreign languages myself, I understand the challenges language learners face. I strive to develop a unique teaching approach based on each student’s interests, goals, and needs.</div>
       <div class="teacher-tags"><span class="tag">맞춤 학습</span><span class="tag">생활 영어</span></div>
     </div>
@@ -477,7 +492,7 @@
     <div class="teacher-card fade-in">
       <div class="teach-avatar"><img src="img/justina.jpg" alt="박의해" style="width:100%;height:100%;object-fit:cover;"></div>
       <div class="teacher-name">박의해 (Justina)</div>
-      <div class="teacher-major">Conflict Analysis and Resolution<br> · George Mason University</div>
+      <div class="teacher-major"><span class="teacher-field">Conflict Analysis and Resolution</span><span class="teacher-school teacher-school--mason">George Mason University</span></div>
       <div class="teacher-bio">Born and raised in Korea, I speak English fluently and naturally. My lessons focus on real conversations and natural expressions, helping you turn the English you know into English you can actually use with confidence! :)</div>
       <div class="teacher-tags"><span class="tag">실전 회화</span><span class="tag">자연스러운 표현</span></div>
     </div>
@@ -509,14 +524,9 @@
   </div>
 </footer>
 
+<script src="site-nav.js"></script>
+<script src="teacher-carousel.js"></script>
 <script>
-  const navToggle = document.getElementById('navToggle');
-  if (navToggle) {
-    navToggle.addEventListener('click', () => {
-      document.getElementById('navLinks').classList.toggle('mobile-open');
-      navToggle.textContent = document.getElementById('navLinks').classList.contains('mobile-open') ? '✕' : '☰';
-    });
-  }
   // Fade-in on scroll
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
@@ -524,20 +534,7 @@
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
   const teachersGrid = document.querySelector('.teachers-grid');
-  if (teachersGrid && window.matchMedia('(max-width: 900px)').matches) {
-    const cards = Array.from(teachersGrid.children);
-    const firstGroup = document.createElement('div');
-    const secondGroup = document.createElement('div');
-    firstGroup.className = 'mobile-teacher-group';
-    secondGroup.className = 'mobile-teacher-group';
-    cards.forEach(card => firstGroup.appendChild(card));
-    cards.forEach(card => secondGroup.appendChild(card.cloneNode(true)));
-    const track = document.createElement('div');
-    track.className = 'mobile-teacher-track';
-    track.append(firstGroup, secondGroup);
-    teachersGrid.appendChild(track);
-    teachersGrid.classList.add('mobile-teacher-marquee');
-  }
+  setupTeacherCarousel(teachersGrid);
 </script>
 
 <!--Start of Tawk.to Script-->
@@ -553,6 +550,7 @@ s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
 <!--End of Tawk.to Script-->
+<script src="chat-mobile.js"></script>
 
 </body>
 </html>

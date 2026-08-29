@@ -1,0 +1,157 @@
+:root {
+  --site-nav-height: 66px;
+  --site-nav-accent: #4A90E2;
+  --site-nav-accent-deep: #2E6DC2;
+  --site-nav-ink: #111;
+  --site-nav-muted: #444;
+  --site-nav-bg: #fafbfc;
+  --site-nav-border: rgba(74, 144, 226, 0.15);
+  --site-nav-gutter: clamp(1.25rem, 4vw, 3.5rem);
+}
+
+.site-nav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100;
+  min-height: var(--site-nav-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.05rem var(--site-nav-gutter);
+  background: rgba(250, 251, 252, 0.95);
+  border-bottom: 1px solid var(--site-nav-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.site-nav .nav-logo {
+  display: block;
+  flex: 0 0 auto;
+  color: var(--site-nav-ink);
+  text-decoration: none;
+}
+
+.site-nav .nav-logo-frame {
+  width: 65px;
+  height: 32px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.site-nav .nav-logo-frame img {
+  width: auto;
+  height: 150%;
+  display: block;
+}
+
+.site-nav .nav-links {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.15rem, 2vw, 2rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-nav .nav-links a {
+  color: var(--site-nav-muted);
+  font: 400 clamp(.9rem, .25vw + .82rem, 1rem)/1.4 'Pretendard', sans-serif;
+  letter-spacing: .02em;
+  text-decoration: none;
+  transition: color .2s;
+}
+
+.site-nav .nav-links a:hover { color: var(--site-nav-accent); }
+.site-nav .nav-links .nav-for-teachers {
+  color: #888;
+  font-size: .9rem;
+}
+
+.site-nav .nav-links .nav-trial {
+  color: var(--site-nav-accent);
+  font-weight: 700;
+}
+
+.site-nav .nav-links .nav-cta {
+  display: inline-block;
+  padding: .65rem 1.4rem;
+  border-radius: 2rem;
+  background: var(--site-nav-accent);
+  color: #fff;
+  font-size: .95rem;
+  font-weight: 700;
+}
+
+.site-nav .nav-links .nav-cta:hover {
+  background: var(--site-nav-accent-deep);
+  color: #fff;
+}
+
+.site-nav .nav-toggle {
+  display: none;
+  position: relative;
+  z-index: 101;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--site-nav-ink);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+body.legal-page .wrap { padding-top: calc(var(--site-nav-height) + 3rem); }
+
+@media (max-width: 900px) {
+  .site-nav { padding: 1rem 1.5rem; }
+  .site-nav .nav-links { display: none; }
+  .site-nav .nav-toggle { display: block; }
+  .site-nav .nav-links.mobile-open {
+    display: flex !important;
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    width: 100%;
+    height: 100vh;
+    padding: 6rem 2rem 2rem;
+    overflow-y: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--site-nav-bg);
+  }
+  .site-nav .nav-links.mobile-open li { border-bottom: 1px solid var(--site-nav-border); }
+  .site-nav .nav-links.mobile-open li:has(.nav-trial) { margin-top: 1rem; border-bottom: 0; }
+  .site-nav .nav-links.mobile-open li:last-child { margin-top: .75rem; border-bottom: 0; }
+  .site-nav .nav-links.mobile-open a:not(.nav-cta) {
+    display: block;
+    padding: 1.4rem .2rem;
+    color: var(--site-nav-ink);
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .site-nav .nav-links.mobile-open a.nav-for-teachers {
+    color: #8b95a1;
+    font-weight: 600;
+  }
+  .site-nav .nav-links.mobile-open a.nav-trial {
+    padding: 1.05rem 1.2rem;
+    border: 1.5px solid rgba(74, 144, 226, .3);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--site-nav-accent);
+    text-align: center;
+  }
+  .site-nav .nav-links.mobile-open .nav-cta {
+    display: block;
+    padding: 1.2rem;
+    text-align: center;
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root { --site-nav-gutter: 1.2rem; }
+  .site-nav { padding-inline: var(--site-nav-gutter); }
+}

@@ -32,11 +32,26 @@
   .placeholder{color:#C0392B;font-weight:700;background:#FDECEA;padding:.05rem .3rem;border-radius:.3rem;}
   .back-link{display:inline-block;margin-bottom:1.5rem;font-size:.85rem;color:var(--accent);text-decoration:none;font-weight:700;}
 </style>
+<link rel="stylesheet" href="responsive-overrides.css">
+<link rel="stylesheet" href="site-nav.css">
 </head>
-<body>
+<body class="legal-page">
+<nav class="site-nav">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-frame"><img src="img/mlogo.png" alt="나도"></div>
+  </a>
+  <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기">☰</button>
+  <ul class="nav-links" id="navLinks">
+    <li><a class="nav-for-teachers" href="https://nadomeokgo.github.io/nado_teachers_web/index.html#dashboard" target="_blank" rel="noopener">for teachers</a></li>
+    <li><a href="how.html">이용 방법</a></li>
+    <li><a href="index.html#why">왜 나도인가</a></li>
+    <li><a href="teachers.html">선생님 소개</a></li>
+    <li><a class="nav-trial" href="trial.html">체험 수업</a></li>
+    <li><a class="nav-cta" href="apply.html">시작하기</a></li>
+  </ul>
+</nav>
 <div class="wrap">
-  <a class="back-link" href="index-final.html">← 나도 홈으로</a>
-  <div class="doc-title">나도 이용약관</div>
+  <h1 class="doc-title">나도 이용약관</h1>
   <div class="doc-meta">시행일 : 2026년 7월 30일</div>
 
   <div class="doc-card">
@@ -176,5 +191,6 @@
     <p>본 약관은 2026년 7월 30일부터 시행합니다.</p>
   </div>
 </div>
+<script src="site-nav.js"></script>
 </body>
 </html>
