@@ -6,6 +6,7 @@ const PRICE_TABLE = {
 };
 const KID_SURCHARGE = 1500;
 const FREQ_MULTIPLIER = { '주 1회': 1, '주 2회': 2, '체험 1회': 0.25 };
+const TRIAL_DEPOSIT = 20000;
 function durationLabel(idx){
   return DURATIONS[idx] || DURATIONS[0];
 }
@@ -106,7 +107,7 @@ const steps = [
   }
 ];
 const TRIAL_MODE = document.body.dataset.mode === 'trial';
-const activeSteps = steps.filter(s => !(TRIAL_MODE && (s.key === 'tier' || s.key === 'payment')));
+const activeSteps = steps.filter(s => !(TRIAL_MODE && s.key === 'tier'));
 
 let current = 0;
 const answers = { frequency: TRIAL_MODE ? '체험 1회' : '주 1회' };
@@ -197,6 +198,10 @@ function renderStep(){
   if (TRIAL_MODE && step.type === 'duration') {
     title = '무료 체험 수업 안내';
     sub = '이코노미 플랜으로 1시간 동안 무료 체험 수업을 진행해드려요.';
+  }
+  if (TRIAL_MODE && step.type === 'payment') {
+    title = '노쇼 방지 보증금 안내';
+    sub = '체험 수업 자체는 무료이지만, 노쇼 방지를 위해 소정의 보증금을 받고 있어요.';
   }
 
   let inner = '<div class="qcard"><div class="qtitle">' + title + '</div>';
@@ -361,21 +366,41 @@ if (step.type === 'tier'){
       + '</div>'
       + '</div>';
   } else if (step.type === 'payment'){
-    const tierName = answers.tier || '-';
-    const d = answers.duration || { index: 0 };
-    const price = PRICE_TABLE[answers.tier] ? calcPrice(answers.tier, d.index, answers.frequency) : 0;    inner += ''
-      + '<div class="pay-box">'
-      + '<div class="pay-row"><span>선택 플랜</span><strong>' + tierName + '</strong></div>'
-      + '<div class="pay-row"><span>수업 빈도</span><strong>' + answers.frequency + '</strong></div>'
-      + '<div class="pay-row"><span>수업 시간</span><strong>' + durationLabel(d.index, answers.tier) + '</strong></div>'
-      + '<div class="pay-row"><span>결제 금액</span><strong>₩' + price.toLocaleString() + '</strong></div>'
-      + '</div>'
-      + '<div class="consent-box">'
-      + '<label class="consent-row">'
-      + '<input type="checkbox" id="paymentAckCheck" ' + (answers.payment ? 'checked' : '') + '>'
-      + '<span>위 결제 금액 안내를 확인했습니다 <span class="required-mark">(필수)</span></span>'
-      + '</label>'
-      + '</div>';
+    if (TRIAL_MODE) {
+      inner += ''
+        + '<div class="pay-box">'
+        + '<div class="pay-row"><span>선택 플랜</span><strong>이코노미(체험)</strong></div>'
+        + '<div class="pay-row"><span>수업 시간</span><strong>1시간</strong></div>'
+        + '<div class="pay-row"><span>노쇼 방지 보증금</span><strong>₩' + TRIAL_DEPOSIT.toLocaleString() + '</strong></div>'
+        + '</div>'
+        + '<div class="qsub" style="margin-top:-.4rem;">'
+        + '<strong style="color:var(--ink);">수업에 참석하시면 보증금은 전액 환불</strong>됩니다. 다만 사전 연락 없이 노쇼하실 경우 환불되지 않아요.<br>'
+        + '매칭이 완료되면 카카오톡으로 입금 계좌를 안내해드려요.'
+        + '</div>'
+        + '<div class="consent-box">'
+        + '<label class="consent-row">'
+        + '<input type="checkbox" id="paymentAckCheck" ' + (answers.payment ? 'checked' : '') + '>'
+        + '<span>위 보증금 안내를 확인했습니다 <span class="required-mark">(필수)</span></span>'
+        + '</label>'
+        + '</div>';
+    } else {
+      const tierName = answers.tier || '-';
+      const d = answers.duration || { index: 0 };
+      const price = PRICE_TABLE[answers.tier] ? calcPrice(answers.tier, d.index, answers.frequency) : 0;
+      inner += ''
+        + '<div class="pay-box">'
+        + '<div class="pay-row"><span>선택 플랜</span><strong>' + tierName + '</strong></div>'
+        + '<div class="pay-row"><span>수업 빈도</span><strong>' + answers.frequency + '</strong></div>'
+        + '<div class="pay-row"><span>수업 시간</span><strong>' + durationLabel(d.index, answers.tier) + '</strong></div>'
+        + '<div class="pay-row"><span>결제 금액</span><strong>₩' + price.toLocaleString() + '</strong></div>'
+        + '</div>'
+        + '<div class="consent-box">'
+        + '<label class="consent-row">'
+        + '<input type="checkbox" id="paymentAckCheck" ' + (answers.payment ? 'checked' : '') + '>'
+        + '<span>위 결제 금액 안내를 확인했습니다 <span class="required-mark">(필수)</span></span>'
+        + '</label>'
+        + '</div>';
+    }
   }
 
   inner += '</div>';
@@ -648,7 +673,7 @@ async function submitToJotform(a) {
   (a.goals || []).forEach(g => params.append('submission[8][]', g));  // 학습 목표 (다중)
   (a.place || []).forEach(p => params.append('submission[29][]', p)); // 진행방식 (다중)
   params.append('submission[30]', TRIAL_MODE ? '이코노미(체험)' : (a.tier || ''));  // 선택 플랜
-  params.append('submission[31]', TRIAL_MODE ? '결제 불필요(무료)' : (a.payment ? '완료' : ''));  // 결제확인
+  params.append('submission[31]', TRIAL_MODE ? (a.payment ? '보증금 안내 확인' : '') : (a.payment ? '완료' : ''));  // 결제확인
   params.append(
     'submission[32]',
     (a.schedule || []).join(', ')
