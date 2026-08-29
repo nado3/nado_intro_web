@@ -195,8 +195,8 @@ function renderStep(){
       : '선택하신 순위대로 우선 배치해드리지만, 선생님 일정에 따라 조율될 수 있어요.';
   }
   if (TRIAL_MODE && step.type === 'duration') {
-    title = '무료 체험 수업 시간을 선택해주세요';
-    sub = '이코노미 플랜(30분~50분) 중 원하시는 시간을 골라주세요. 체험 수업은 무료로 진행돼요.';
+    title = '무료 체험 수업 안내';
+    sub = '이코노미 플랜으로 1시간 동안 무료 체험 수업을 진행해드려요.';
   }
 
   let inner = '<div class="qcard"><div class="qtitle">' + title + '</div>';
@@ -244,19 +244,28 @@ if (step.type === 'tier'){
       if (TRIAL_MODE) v = { index: 0 };
       answers.duration = v;
       const price = calcPrice(tier, v.index, answers.frequency);
-      inner += ''
-        + '<div class="duration-options">'
-        + '<button type="button" class="duration-opt ' + (v.index === 0 ? 'selected' : '') + '" data-index="0">'
-        + '<span class="duration-opt-time">1시간</span><span class="duration-opt-desc">꾸준히 집중해서 배우기</span></button>'
-        + (TRIAL_MODE ? '' :
-          '<button type="button" class="duration-opt ' + (v.index === 1 ? 'selected' : '') + '" data-index="1">'
-          + '<span class="duration-opt-time">2시간</span><span class="duration-opt-desc">한 번에 깊이 있게 배우기</span></button>')
-        + '</div>'
-        + (TRIAL_MODE ? '<div style="font-size:.75rem;color:var(--gray);margin-top:.6rem;">무료 체험은 1시간으로 진행돼요.</div>' : '')
-        + '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:1.2rem 0 .8rem;">'
-        + '<span style="font-size:.85rem;color:var(--gray);font-weight:600;">' + (answers.frequency === '체험 1회' ? '무료 체험 기준' : (answers.frequency + ' · 월 ' + (answers.frequency === '주 2회' ? '8' : '4') + '회 기준')) + '</span>'
-        + '<span id="durPrice" style="font-size:1.1rem;font-weight:800;">' + (TRIAL_MODE ? '<span style="color:var(--accent-deep);">무료</span>' : '<span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + price.toLocaleString()) + '</span>'
-        + '</div>';
+      if (TRIAL_MODE) {
+        inner += ''
+          + '<div style="background:var(--accent-light);border-radius:1.1rem;padding:1.4rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;">'
+          + '<div>'
+          + '<div style="font-size:1.15rem;font-weight:800;color:var(--accent-deep);">1시간 무료 체험 수업</div>'
+          + '<div style="font-size:.82rem;color:var(--dark-gray,var(--gray));margin-top:.25rem;">부담 없이 꾸준히 집중해서 배워보세요.</div>'
+          + '</div>'
+          + '<div style="font-size:1.2rem;font-weight:900;color:var(--accent-deep);white-space:nowrap;">무료</div>'
+          + '</div>';
+      } else {
+        inner += ''
+          + '<div class="duration-options">'
+          + '<button type="button" class="duration-opt ' + (v.index === 0 ? 'selected' : '') + '" data-index="0">'
+          + '<span class="duration-opt-time">1시간</span><span class="duration-opt-desc">꾸준히 집중해서 배우기</span></button>'
+          + '<button type="button" class="duration-opt ' + (v.index === 1 ? 'selected' : '') + '" data-index="1">'
+          + '<span class="duration-opt-time">2시간</span><span class="duration-opt-desc">한 번에 깊이 있게 배우기</span></button>'
+          + '</div>'
+          + '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:1.2rem 0 .8rem;">'
+          + '<span style="font-size:.85rem;color:var(--gray);font-weight:600;">' + (answers.frequency + ' · 월 ' + (answers.frequency === '주 2회' ? '8' : '4') + '회 기준') + '</span>'
+          + '<span id="durPrice" style="font-size:1.1rem;font-weight:800;"><span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + price.toLocaleString() + '</span>'
+          + '</div>';
+      }
     } else if (step.type === 'date'){
       const today = new Date().toISOString().split('T')[0];
       const val = answers[step.key] || today;
