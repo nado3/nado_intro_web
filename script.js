@@ -10,8 +10,12 @@ function durationLabel(idx){
   return DURATIONS[idx] || DURATIONS[0];
 }
 function calcPrice(tier, idx, freq){
+  if (TRIAL_MODE) return 0;
   const raw = PRICE_TABLE[tier][idx] * FREQ_MULTIPLIER[freq];
-  return freq === '체험 1회' ? Math.ceil(raw / 100) * 100 : raw;
+  return raw;
+}
+function freqLabel(freq){
+  return freq === '체험 1회' ? '1회 무료 체험' : freq;
 }
 
 const steps = [
@@ -102,9 +106,11 @@ const steps = [
   }
 ];
 const TRIAL_MODE = document.body.dataset.mode === 'trial';
+const activeSteps = steps.filter(s => !(TRIAL_MODE && (s.key === 'tier' || s.key === 'payment')));
 
 let current = 0;
 const answers = { frequency: TRIAL_MODE ? '체험 1회' : '주 1회' };
+if (TRIAL_MODE) answers.tier = '이코노미';
 const historyEl = document.getElementById('history');
 const qcardWrap = document.getElementById('qcardWrap');
 const progressFill = document.getElementById('progressFill');
@@ -116,10 +122,9 @@ document.addEventListener('mouseup', () => { dragState.isDragging = false; });
 let scheduleActiveDay = '월';
 
 function updateProgress(){
-  const pct = Math.round((current / steps.length) * 100);
+  const pct = Math.round((current / activeSteps.length) * 100);
   progressFill.style.width = pct + '%';
 }
-
 function labelFor(step, value){
   if (step.type === 'multi') return Array.isArray(value) && value.length ? value.join(', ') : '';
   if (step.type === 'rank') return Array.isArray(value) && value.length ? value.map((v,i)=>(i+1)+'.'+v).join(', ') : '';
@@ -132,7 +137,7 @@ function labelFor(step, value){
 function renderHistory(){
   historyEl.innerHTML = '';
   for (let i = 0; i < current; i++){
-    const step = steps[i];
+    const step = activeSteps[i];
     const val = answers[step.key];
     const text = labelFor(step, val);
     if (!text) continue;
@@ -166,13 +171,13 @@ function setNextState(step){
   const valid = checkValid(step);
   nextBtn.classList.toggle('active', valid);
   nextBtn.disabled = !valid;
-  nextBtn.textContent = current === steps.length - 1 ? '제출하기' : '다음';
+  nextBtn.textContent = current === activeSteps.length - 1 ? '제출하기' : '다음';
   skipBtn.style.display = step.required ? 'none' : 'block';
 }
 
 function renderStep(){
-  if (current >= steps.length){ showSuccess(); return; }
-  const step = steps[current];
+  if (current >= activeSteps.length){ showSuccess(); return; }
+  const step = activeSteps[current];
   updateProgress();
   renderHistory();
   backBtn.style.visibility = current === 0 ? 'hidden' : 'visible';
@@ -184,10 +189,14 @@ function renderStep(){
     ? ['IGC인천글로벌캠퍼스 내에서 만나고 싶어요', '송도 트리플스트리트 내에서 만나고 싶어요']
     : ['IGC인천글로벌캠퍼스 내에서 만나고 싶어요', '송도 트리플스트리트 내에서 만나고 싶어요', '선생님과 협의할게요'];
   if (step.type === 'rank') {
-    title = isEconomy ? '이코노미는 정해진 두 곳 중에서 진행돼요' : '원하는 수업 장소를 선택해주세요.';
+    title = isEconomy ? '이코노미는 정해진 두 곳 중에서 진행돼요' : '송도에서 어떻게 진행하고 싶으신가요?';
     sub = isEconomy
       ? '선택하신 곳을 우선 배치해드리지만, 선생님 일정에 따라 조율될 수 있어요.'
       : '선택하신 순위대로 우선 배치해드리지만, 선생님 일정에 따라 조율될 수 있어요.';
+  }
+  if (TRIAL_MODE && step.type === 'duration') {
+    title = '무료 체험 수업 시간을 선택해주세요';
+    sub = '이코노미 플랜(30분~50분) 중 원하시는 시간을 골라주세요. 체험 수업은 무료로 진행돼요.';
   }
 
   let inner = '<div class="qcard"><div class="qtitle">' + title + '</div>';
@@ -242,7 +251,8 @@ if (step.type === 'tier'){
         + '<span class="duration-opt-time">2시간</span><span class="duration-opt-desc">한 번에 깊이 있게 배우기</span></button>'
         + '</div>'
         + '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:1.2rem 0 .8rem;">'
-        + '<span style="font-size:.85rem;color:var(--gray);font-weight:600;">' + (answers.frequency === '체험 1회' ? '체험 1회 기준' : (answers.frequency + ' · 월 ' + (answers.frequency === '주 2회' ? '8' : '4') + '회 기준')) + '</span>'        + '<span id="durPrice" style="font-size:1.1rem;font-weight:800;"><span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + price.toLocaleString() + '</span>'
+        + '<span style="font-size:.85rem;color:var(--gray);font-weight:600;">' + (answers.frequency === '체험 1회' ? '무료 체험 기준' : (answers.frequency + ' · 월 ' + (answers.frequency === '주 2회' ? '8' : '4') + '회 기준')) + '</span>'
+        + '<span id="durPrice" style="font-size:1.1rem;font-weight:800;">' + (TRIAL_MODE ? '<span style="color:var(--accent-deep);">무료</span>' : '<span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + price.toLocaleString()) + '</span>'
         + '</div>';
     } else if (step.type === 'date'){
       const today = new Date().toISOString().split('T')[0];
@@ -397,7 +407,7 @@ if (step.type === 'tier'){
         answers.duration = { index: idx };
           qcardWrap.querySelectorAll('.duration-opt').forEach(el => el.classList.remove('selected'));
           option.classList.add('selected');
-          document.getElementById('durPrice').innerHTML = '<span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + calcPrice(answers.tier, idx, answers.frequency).toLocaleString();
+          document.getElementById('durPrice').innerHTML = TRIAL_MODE ? '<span style="color:var(--accent-deep);">무료</span>' : '<span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' + calcPrice(answers.tier, idx, answers.frequency).toLocaleString();
           setNextState(step);
         });
       });
@@ -595,9 +605,9 @@ if (step.type === 'tier'){
 }
 
 nextBtn.addEventListener('click', () => {
-  const step = steps[current];
+  const step = activeSteps[current];
   if (!checkValid(step)) return;
-  if (current === steps.length - 1) {
+  if (current === activeSteps.length - 1) {
     if (nextBtn.dataset.submitted) return;
     nextBtn.dataset.submitted = '1';
   }
@@ -625,8 +635,8 @@ async function submitToJotform(a) {
   params.append('submission[7]', a.level);                            // 영어 수준
   (a.goals || []).forEach(g => params.append('submission[8][]', g));  // 학습 목표 (다중)
   (a.place || []).forEach(p => params.append('submission[29][]', p)); // 진행방식 (다중)
-  params.append('submission[30]', a.tier || '');                      // 선택 플랜
-  params.append('submission[31]', a.payment ? '완료' : '');           // 결제확인
+  params.append('submission[30]', TRIAL_MODE ? '이코노미(체험)' : (a.tier || ''));  // 선택 플랜
+  params.append('submission[31]', TRIAL_MODE ? '결제 불필요(무료)' : (a.payment ? '완료' : ''));  // 결제확인
   params.append(
     'submission[32]',
     (a.schedule || []).join(', ')
@@ -667,7 +677,8 @@ function showSuccess(){
 
   const a = answers;
 document.getElementById('summaryBox').innerHTML = ''
-    + '<strong>선택 플랜</strong> · ' + (a.tier || '-') + ' · ' + (a.frequency || '-') + ' · ' + (a.duration ? durationLabel(a.duration.index, a.tier) : '-') + '<br>'    + '<strong>나이대</strong> · ' + (a.ageGroup || '-') + '<br>'
+    + '<strong>선택 플랜</strong> · ' + (a.tier || '-') + ' · ' + freqLabel(a.frequency || '-') + ' · ' + (a.duration ? durationLabel(a.duration.index, a.tier) : '-') + '<br>'
+    + '<strong>나이대</strong> · ' + (a.ageGroup || '-') + '<br>'
     + '<strong>영어 수준</strong> · ' + (a.level || '-') + '<br>'
     + '<strong>학습 목표</strong> · ' + ((a.goals||[]).map(g => g === '기타' && a.goalsOther ? '기타(' + a.goalsOther + ')' : g).join(', ') || '-') + '<br>'
     + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).join(', ') || '-') + '<br>'
