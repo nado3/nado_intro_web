@@ -117,14 +117,15 @@
     }
 
     /* TEACHERS SECTION */
-    .teachers-section {
+    body.subpage section.teachers-section {
       padding: 5rem;
+      padding-bottom: 2rem;
       max-width: 1400px;
       margin: 0 auto;
     }
     .section-intro {
       text-align: center;
-      margin-bottom: 4rem;
+      margin-bottom: 2rem;
     }
     .section-label {
       font-size: 1.5rem;
@@ -261,6 +262,8 @@
     .more-dots span:nth-child(1) { opacity: 1; }
     .more-dots span:nth-child(2) { opacity: 0.5; }
     .more-dots span:nth-child(3) { opacity: 0.15; }
+    .teacher-list-more-dots { margin: 0 auto; }
+    .teacher-list-more-dots span { width: 10px; height: 10px; }
 
     /* INFO BOX */
     .info-box {
@@ -290,25 +293,27 @@
     }
 
     /* CTA SECTION */
-    .cta-section {
+    body.subpage section.cta-section {
       background: var(--accent);
       color: var(--white);
       text-align: center;
       max-width: 680px;
       padding: 3.75rem 2.5rem;
       border-radius: 2rem;
-      margin: 4rem auto;
+      margin: 1.5rem auto 4rem;
     }
     .cta-title {
       font-family: 'Pretendard', sans-serif;
       font-size: 2rem;
       font-weight: 900;
       margin-bottom: 1rem;
+      word-break: keep-all;
     }
     .cta-text {
       font-size: 1rem;
       color: rgba(255,255,255,0.9);
       margin-bottom: 2rem;
+      word-break: keep-all;
     }
     .btn-primary {
       background: var(--white);
@@ -375,14 +380,15 @@
       .nav-links.mobile-open li:last-child { border-bottom: none; margin-top: 1.5rem; }
       .nav-links.mobile-open .nav-cta { display: block; text-align: center; padding: 1.2rem; font-size: 1.05rem; }
       .page-header { padding: 8rem 1.5rem 4rem; }
-      .teachers-section { padding: 3rem 1.5rem; }
+      body.subpage section.teachers-section { padding: 3rem 1.5rem 1.5rem; }
       .teachers-grid.mobile-teacher-marquee { display: block; overflow: hidden; margin-left: -1.5rem; margin-right: -1.5rem; }
+      body.subpage .teachers-grid.mobile-teacher-carousel { margin-bottom: 20px; }
       .mobile-teacher-track { display: flex; width: max-content; animation: teacherMarquee 42s linear infinite; }
       .mobile-teacher-group { display: flex; gap: 1rem; padding-right: 1rem; }
       .mobile-teacher-group .teacher-card { width: 280px; flex: 0 0 280px; }
       .mobile-teacher-group .teach-avatar { width: 130px; height: 130px; }
       .mobile-teacher-group .fade-in { opacity: 1; transform: none; }
-      .cta-section { margin: 3rem 1.5rem; padding: 4rem 2rem; }
+      body.subpage section.cta-section { margin: 1rem auto 3rem; padding: 4rem 2rem; }
       footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem 1.5rem; }
     }
     @keyframes teacherMarquee { to { transform: translateX(-50%); } }
@@ -395,7 +401,8 @@
       .teacher-card { padding: 1.8rem; }
       .teacher-avatar, .teach-avatar { width: 112px; height: 112px; font-size: 2rem; }
       .info-box { padding: 1.8rem; }
-      .cta-section { margin: 2rem 1.2rem; padding: 3rem 1.5rem; }
+      body.subpage section.cta-section { margin: 1rem auto 2rem; padding: 3rem 1.5rem; }
+      .cta-title { font-size: 1.7rem; }
     }
   </style>
   <link rel="stylesheet" href="responsive-overrides.css">
@@ -497,7 +504,7 @@
     <div class="teacher-card fade-in">
       <div class="teach-avatar"><img src="img/vitalina.jpg" alt="Vitalina Skardova" style="width:100%;height:100%;object-fit:cover;"></div>
       <div class="teacher-name">Vitalina Skardova</div>
-      <div class="teacher-major"><span class="teacher-field">Game Design</span><span class="teacher-school teacher-school--utah">Utah University Asia Campus</span></div>
+      <div class="teacher-major"><span class="teacher-field">Game Design</span><span class="teacher-school teacher-school--utah">University of Utah</span></div>
       <div class="teacher-bio">Having learned multiple foreign languages myself, I understand the challenges language learners face. I strive to develop a unique teaching approach based on each student’s interests, goals, and needs.</div>
       <div class="teacher-tags"><span class="tag">맞춤 학습</span><span class="tag">생활 영어</span></div>
     </div>
@@ -510,13 +517,14 @@
       <div class="teacher-tags"><span class="tag">실전 회화</span><span class="tag">자연스러운 표현</span></div>
     </div>
   </div>
+  <div class="more-dots teacher-list-more-dots fade-in" aria-hidden="true"><span></span><span></span><span></span></div>
 </section>
 
 <!-- CTA -->
-<section class="cta-section fade-in">
-  <h2 class="cta-title">나도와 함께 시작하세요</h2>
-  <p class="cta-text">지금 신청하면 자동으로 최적의 선생님을 매칭해드립니다.</p>
-  <a href="index.html#cta" class="btn-primary">지금 시작하기</a>
+<section class="cta-section fade-in" id="more-teachers">
+  <h2 class="cta-title">더 많은 선생님을 지금 바로 만나보세요</h2>
+  <p class="cta-text">간단한 신청 후 나에게 꼭 맞는 선생님을 연결해드려요.</p>
+  <a href="apply.html" class="btn-primary">선생님 매칭 신청하기</a>
 </section>
 
 <!-- FOOTER -->
@@ -563,7 +571,7 @@ s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
 <!--End of Tawk.to Script-->
-<script src="chat-mobile.js"></script>
+<script src="chat-mobile.js?v=20260829-4"></script>
 
 </body>
 </html>

@@ -1,10 +1,16 @@
 (function () {
   const mobileQuery = window.matchMedia('(max-width: 599px)');
-  const TAWK_REVEAL_DELAY = 15000;
-  const TAWK_SCROLL_THRESHOLD = 0.3;
+  const getRevealDelay = () => mobileQuery.matches ? 5000 : 10000;
+  const getScrollThreshold = () => mobileQuery.matches ? 0.3 : 0.4;
   let revealed = false;
 
   window.Tawk_API = window.Tawk_API || {};
+
+  const previousOnBeforeLoad = window.Tawk_API.onBeforeLoad;
+  window.Tawk_API.onBeforeLoad = function () {
+    if (typeof previousOnBeforeLoad === 'function') previousOnBeforeLoad();
+    if (typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget();
+  };
 
   const revealChatButton = () => {
     if (revealed || typeof window.Tawk_API.showWidget !== 'function') return;
@@ -15,7 +21,7 @@
 
   const handleScroll = () => {
     const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-    if (scrollable > 0 && window.scrollY / scrollable >= TAWK_SCROLL_THRESHOLD) {
+    if (scrollable > 0 && window.scrollY / scrollable >= getScrollThreshold()) {
       revealChatButton();
       window.removeEventListener('scroll', handleScroll);
     }
@@ -25,15 +31,8 @@
   window.Tawk_API.onLoad = function () {
     if (typeof previousOnLoad === 'function') previousOnLoad();
 
-    const hasOngoingChat = typeof window.Tawk_API.isChatOngoing === 'function' && window.Tawk_API.isChatOngoing();
-    if (hasOngoingChat) {
-      revealed = true;
-      window.Tawk_API.showWidget();
-      return;
-    }
-
     window.Tawk_API.hideWidget();
-    window.setTimeout(revealChatButton, TAWK_REVEAL_DELAY);
+    window.setTimeout(revealChatButton, getRevealDelay());
     window.addEventListener('scroll', handleScroll, { passive: true });
   };
 
@@ -46,7 +45,7 @@
       const rect = frame.getBoundingClientRect();
       if (rect.width > 160 || rect.height > 160) return;
 
-      const scale = mobileQuery.matches ? '0.72' : '0.82';
+      const scale = '0.8';
       if (frame.style.getPropertyValue('transform') === `scale(${scale})`) return;
       frame.style.setProperty('transform', `scale(${scale})`, 'important');
       frame.style.setProperty('transform-origin', 'bottom right', 'important');
@@ -57,4 +56,5 @@
   observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
   resizeChat();
   window.addEventListener('load', resizeChat, { once: true });
+  mobileQuery.addEventListener('change', resizeChat);
 })();
