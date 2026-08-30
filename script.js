@@ -195,6 +195,10 @@ function renderStep(){
       ? '선택하신 곳을 우선 배치해드리지만, 선생님 일정에 따라 조율될 수 있어요.'
       : '선택하신 순위대로 우선 배치해드리지만, 선생님 일정에 따라 조율될 수 있어요.';
   }
+  
+  if (TRIAL_MODE && step.type === 'rank') {
+  sub += '<br><br>추후 정식 수업에서 스탠다드 또는 프리미엄 플랜으로 전환하시면 송도 내 원하는 장소에서 수업을 진행할 수 있어요.';
+  }
   if (TRIAL_MODE && step.type === 'duration') {
     title = '무료 체험 수업 안내';
     sub = '이코노미 플랜으로 1시간 동안 무료 체험 수업을 진행해드려요.';
@@ -254,7 +258,6 @@ if (step.type === 'tier'){
           + '<div style="background:var(--accent-light);border-radius:1.1rem;padding:1.4rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;">'
           + '<div>'
           + '<div style="font-size:1.15rem;font-weight:800;color:var(--accent-deep);">1시간 무료 체험 수업</div>'
-          + '<div style="font-size:.82rem;color:var(--dark-gray,var(--gray));margin-top:.25rem;">부담 없이 꾸준히 집중해서 배워보세요.</div>'
           + '</div>'
           + '<div style="font-size:1.2rem;font-weight:900;color:var(--accent-deep);white-space:nowrap;">무료</div>'
           + '</div>';
