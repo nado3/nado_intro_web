@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>계정 설정 | NADO</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="img/clogo.png" />
+  <link rel="stylesheet" href="member.css" />
+</head>
+<body>
+  <main class="member-auth-page">
+    <section class="member-auth-brand">
+      <a href="index.html"><img class="member-auth-logo" src="img/mlogo.png" alt="NADO" /></a>
+      <div class="member-auth-copy">
+        <p>WELCOME TO NADO</p>
+        <h1>학생 계정을<br />완성해주세요.</h1>
+        <p>이 비밀번호는 앞으로 NADO 자료실과 담당 선생님 공유 공간에 로그인할 때 사용됩니다.</p>
+      </div>
+    </section>
+    <section class="member-auth-panel">
+      <div class="member-auth-card">
+        <a href="index.html"><img class="mobile-logo" src="img/mlogo.png" alt="NADO" /></a>
+        <p class="member-eyebrow">ACCOUNT SETUP</p>
+        <h2>비밀번호 설정</h2>
+        <p id="welcomeDescription" class="member-auth-description">8자 이상의 새로운 비밀번호를 설정해주세요.</p>
+        <form id="passwordSetupForm" class="member-form">
+          <label>새 비밀번호
+            <input id="newPassword" type="password" minlength="8" autocomplete="new-password" required />
+          </label>
+          <label>비밀번호 확인
+            <input id="confirmPassword" type="password" minlength="8" autocomplete="new-password" required />
+          </label>
+          <p id="setupError" class="member-inline-error" role="alert"></p>
+          <button id="setupButton" class="member-button primary" type="submit">계정 설정 완료</button>
+        </form>
+      </div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/member-config.js"></script>
+  <script src="js/member-common.js"></script>
+  <script src="js/member-welcome.js"></script>
+</body>
+</html>

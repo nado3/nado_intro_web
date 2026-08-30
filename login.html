@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>학생 로그인 | NADO</title>
+  <meta name="description" content="초대받은 NADO 학생을 위한 로그인 페이지" />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="img/clogo.png" />
+  <link rel="stylesheet" href="member.css" />
+</head>
+<body>
+  <main class="member-auth-page">
+    <section class="member-auth-brand" aria-label="NADO 학생 포털 소개">
+      <a href="index.html"><img class="member-auth-logo" src="img/mlogo.png" alt="NADO" /></a>
+      <div class="member-auth-copy">
+        <p>NADO STUDENT PORTAL</p>
+        <h1>수업 밖에서도<br />배움은 이어져요.</h1>
+        <p>담당 선생님과 자료를 안전하게 공유하고, NADO 회원 전용 영어 자료를 한곳에서 확인하세요.</p>
+      </div>
+    </section>
+    <section class="member-auth-panel">
+      <div class="member-auth-card">
+        <a href="index.html"><img class="mobile-logo" src="img/mlogo.png" alt="NADO" /></a>
+        <p class="member-eyebrow">MEMBER ONLY</p>
+        <h2>학생 로그인</h2>
+        <p class="member-auth-description">NADO에서 초대받은 이메일과 설정한 비밀번호를 입력해주세요.</p>
+        <form id="memberLoginForm" class="member-form">
+          <label>이메일
+            <input id="memberEmail" type="email" autocomplete="email" placeholder="student@example.com" required />
+          </label>
+          <label>비밀번호
+            <input id="memberPassword" type="password" autocomplete="current-password" minlength="8" placeholder="비밀번호 입력" required />
+          </label>
+          <p id="loginError" class="member-inline-error" role="alert"></p>
+          <button id="loginButton" class="member-button primary" type="submit">로그인</button>
+        </form>
+        <p class="member-help">
+          비밀번호를 잊으셨나요? <button id="resetPasswordButton" class="member-text-button" type="button">재설정 이메일 받기</button><br />
+          계정은 NADO 운영팀의 초대를 통해서만 생성됩니다. <a href="https://open.kakao.com/o/sCZAMCGi">문의하기</a>
+        </p>
+      </div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/member-config.js"></script>
+  <script src="js/member-common.js"></script>
+  <script src="js/member-login.js"></script>
+</body>
+</html>

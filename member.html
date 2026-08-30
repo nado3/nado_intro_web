@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>내 학습공간 | NADO</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="img/clogo.png" />
+  <link rel="stylesheet" href="member.css" />
+</head>
+<body>
+  <div class="mobile-member-header">
+    <img src="img/mlogo.png" alt="NADO" />
+    <button id="mobileLogoutButton" type="button">로그아웃</button>
+  </div>
+  <div class="member-app">
+    <aside class="member-sidebar">
+      <a href="index.html"><img class="member-sidebar-logo" src="img/mlogo.png" alt="NADO" /></a>
+      <nav class="member-nav" aria-label="학생 포털 메뉴">
+        <button class="active" data-member-view="dashboard" type="button">⌂ 대시보드</button>
+        <button data-member-view="resources" type="button">▤ 회원 자료실</button>
+        <button data-member-view="classroom" type="button">↗ 선생님 공유 공간</button>
+        <a href="index.html">← 공개 홈페이지</a>
+      </nav>
+      <div class="member-sidebar-foot">
+        <strong id="sidebarStudentName">학생</strong>
+        <span id="sidebarStudentEmail">-</span>
+        <button id="logoutButton" type="button">로그아웃</button>
+      </div>
+    </aside>
+    <main class="member-main">
+      <header class="member-topbar">
+        <div><h1 id="pageTitle">안녕하세요!</h1><p id="pageSubtitle">오늘도 NADO와 함께 편하게 영어를 시작해보세요.</p></div>
+        <span id="accountStatus" class="member-status">이용 중</span>
+      </header>
+      <div class="member-content">
+        <section id="view-dashboard" class="member-view active">
+          <div class="member-grid">
+            <article class="member-card half">
+              <div class="member-card-head"><div><h2>내 선생님</h2><p>NADO Teachers에서 확정된 담당 선생님입니다.</p></div></div>
+              <div id="teacherProfile" class="empty-box">배정 정보를 불러오는 중입니다.</div>
+            </article>
+            <article class="member-card half">
+              <div class="member-card-head"><div><h2>내 수업 정보</h2><p>현재 이용 중인 플랜과 수업 일정입니다.</p></div></div>
+              <div id="lessonMetrics" class="member-metrics"></div>
+            </article>
+            <article class="member-card">
+              <div class="member-card-head"><div><h2>최근 공유 파일</h2><p>선생님과 최근에 주고받은 자료입니다.</p></div><button class="member-button secondary" data-open-view="classroom" type="button">전체 보기</button></div>
+              <div id="recentFileList" class="file-list"><div class="empty-box">파일을 불러오는 중입니다.</div></div>
+            </article>
+          </div>
+        </section>
+        <section id="view-resources" class="member-view">
+          <article class="member-card">
+            <div class="member-card-head"><div><h2>NADO 회원 자료실</h2><p>활성 학생만 이용할 수 있는 수업·복습 자료입니다.</p></div></div>
+            <div id="resourceGrid" class="resource-grid"><div class="empty-box">자료를 불러오는 중입니다.</div></div>
+          </article>
+        </section>
+        <section id="view-classroom" class="member-view">
+          <article class="member-card">
+            <div class="member-card-head"><div><h2>선생님 공유 공간</h2><p id="classroomDescription">배정된 선생님과 파일을 안전하게 공유합니다.</p></div></div>
+            <form id="studentFileForm" class="file-upload">
+              <label>업로드할 파일
+                <input id="studentFileInput" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.mp3,.m4a,.wav" required />
+              </label>
+              <button id="studentUploadButton" class="member-button primary" type="submit">파일 업로드</button>
+            </form>
+            <div id="classroomFileList" class="file-list"><div class="empty-box">파일을 불러오는 중입니다.</div></div>
+          </article>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/member-config.js"></script>
+  <script src="js/member-common.js"></script>
+  <script src="js/member.js"></script>
+</body>
+</html>

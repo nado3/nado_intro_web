@@ -74,6 +74,11 @@
   font-weight: 700;
 }
 
+.site-nav .nav-links .nav-member-login {
+  color: var(--site-nav-accent-deep);
+  font-weight: 750;
+}
+
 .site-nav .nav-links .nav-cta {
   display: inline-block;
   padding: .65rem 1.4rem;
@@ -142,6 +147,9 @@ body.legal-page .wrap { padding-top: calc(var(--site-nav-height) + 3rem); }
     background: #fff;
     color: var(--site-nav-accent);
     text-align: center;
+  }
+  .site-nav .nav-links.mobile-open a.nav-member-login {
+    color: var(--site-nav-accent-deep);
   }
   .site-nav .nav-links.mobile-open .nav-cta {
     display: block;

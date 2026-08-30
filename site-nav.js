@@ -6,6 +6,13 @@
   navToggle.dataset.siteNavReady = 'true';
   navToggle.setAttribute('aria-expanded', 'false');
 
+  if (!navLinks.querySelector('.nav-member-login')) {
+    const loginItem = document.createElement('li');
+    loginItem.innerHTML = '<a class="nav-member-login" href="login.html">학생 로그인</a>';
+    const trialItem = navLinks.querySelector('.nav-trial')?.closest('li');
+    navLinks.insertBefore(loginItem, trialItem || navLinks.lastElementChild);
+  }
+
   const closeMenu = () => {
     navLinks.classList.remove('mobile-open');
     navToggle.textContent = '☰';
