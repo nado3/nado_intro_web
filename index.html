@@ -311,6 +311,15 @@
       .nav-links.mobile-open li a:not(.nav-cta) { display: block; padding: 1.4rem 0.2rem; font-size: 1.15rem; font-weight: 700; color: var(--black); }
       .nav-links.mobile-open li:last-child { border-bottom: none; margin-top: 1.5rem; }
       .nav-links.mobile-open .nav-cta { display: block; text-align: center; padding: 1.2rem; font-size: 1.15rem !important; }
+      .nav-links.mobile-open li:has(.nav-cta) {
+        order: 1;
+        margin-top: 1rem;
+      }
+      
+      .nav-links.mobile-open li:has(.nav-trial) {
+        order: 2;
+        margin-top: 0.75rem;
+      }
       .hero { padding: 7rem 1.25rem 3.25rem; }
       .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
       .hero-left { padding: 0; }
