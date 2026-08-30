@@ -190,14 +190,18 @@ function renderStep(){
     ? ['IGC인천글로벌캠퍼스 내에서 만나고 싶어요', '송도 트리플스트리트 내에서 만나고 싶어요']
     : ['IGC인천글로벌캠퍼스 내에서 만나고 싶어요', '송도 트리플스트리트 내에서 만나고 싶어요', '선생님과 협의할게요'];
   if (step.type === 'rank') {
-    title = isEconomy ? '이코노미는 정해진 두 곳 중에서 진행돼요' : '송도에서 어떻게 진행하고 싶으신가요?';
-    sub = isEconomy
-      ? '선택하신 곳을 우선 배치해드리지만, 선생님 일정에 따라 조율될 수 있어요.'
-      : '선택하신 순위대로 우선 배치해드리지만, 선생님 일정에 따라 조율될 수 있어요.';
-  }
+    if (TRIAL_MODE && isEconomy) {
+      title = '무료 체험 장소를 선택해주세요';
+      sub = '두 장소 중 한 곳을 선택해주세요. 선생님 일정에 따라 조율될 수 있어요.';
+    } else {
+      title = isEconomy
+        ? '이코노미는 정해진 두 곳 중에서 진행돼요'
+        : '송도에서 어떻게 진행하고 싶으신가요?';
   
-  if (TRIAL_MODE && step.type === 'rank') {
-  sub += '<br><br>추후 정식 수업에서 스탠다드 또는 프리미엄 플랜으로 전환하시면 송도 내 원하는 장소에서 수업을 진행할 수 있어요.';
+      sub = isEconomy
+        ? '선택하신 곳을 우선 배치해드리지만, 선생님 일정에 따라 조율될 수 있어요.'
+        : '선택하신 순위대로 우선 배치해드리지만, 선생님 일정에 따라 조율될 수 있어요.';
+    }
   }
   if (TRIAL_MODE && step.type === 'duration') {
     title = '무료 체험 수업 안내';
@@ -287,6 +291,13 @@ if (step.type === 'tier'){
         inner += '<div class="opt rank ' + (isSel?'selected':'') + '" data-value="' + opt + '"><div class="opt-rank-badge">' + (isSel ? (rankIdx+1) : '') + '</div><div class="opt-label">' + opt + '</div></div>';
       });
       inner += '</div>';
+    if (TRIAL_MODE) {
+    inner += ''
+      + '<div class="trial-place-note">'
+      + '정식 수업은 스탠다드·프리미엄 플랜 선택 시<br>'
+      + '송도 내 원하는 장소에서 진행할 수 있어요.'
+      + '</div>';
+  }
 
       const negotiateSelected = selected.includes('선생님과 협의할게요');
       inner += ''
