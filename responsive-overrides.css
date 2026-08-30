@@ -269,3 +269,41 @@ body.legal-page table { font-size: .92rem; }
   body.how-page .step-details { padding: 1.15rem; }
   body.how-page .step-details-list li { padding-left: 1.3rem; }
 }
+
+.trial-place-note {
+  margin-top: 0.85rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.8rem;
+  background: var(--accent-light);
+  color: var(--accent-deep);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+@media (max-width: 480px) {
+  body.form-page .qcard {
+    padding: 1.35rem 1.1rem;
+  }
+
+  body.form-page .qtitle {
+    font-size: 1.2rem;
+    line-height: 1.35;
+    margin-bottom: 0.45rem;
+  }
+
+  body.form-page .qsub {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  body.form-page .opt {
+    padding: 0.9rem 1rem;
+  }
+
+  body.form-page .opt-label {
+    font-size: 0.92rem;
+    line-height: 1.4;
+  }
+}
