@@ -106,6 +106,12 @@ const steps = [
   },
 
   {
+    key: 'place',
+    type: 'rank',
+    required: true
+  },
+  
+  {
     key: 'ageGroup',
     type: 'single',
     required: true,
@@ -167,11 +173,6 @@ const steps = [
       '선생님 일정에 따라, 희망하신 날짜보다 첫 수업이 조금 늦어지거나 빨라질 수 있어요.'
   },
 
-  {
-    key: 'place',
-    type: 'rank',
-    required: true
-  },
 
   {
     key: 'notes',
