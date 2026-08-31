@@ -17,30 +17,19 @@ const FREQ_MULTIPLIER = {
 const TRIAL_DEPOSIT = 20000;
 const ECONOMY_SONGDO_DISCOUNT = 20000;
 
+
+/* =========================================================
+   BASIC HELPERS
+========================================================= */
+
 function durationLabel(idx) {
   return DURATIONS[idx] || DURATIONS[0];
 }
 
-function calcPrice(tier, idx, freq) {
-  if (TRIAL_MODE) return 0;
-
-  if (!PRICE_TABLE[tier]) return 0;
-
-  let raw = PRICE_TABLE[tier][idx] * FREQ_MULTIPLIER[freq];
-
-  const songdoDiscountSelected =
-    tier === '이코노미' &&
-    answers.placeType === '송도 지정 장소';
-
-  if (songdoDiscountSelected) {
-    raw -= ECONOMY_SONGDO_DISCOUNT;
-  }
-
-  return Math.max(raw, 0);
-}
-
 function freqLabel(freq) {
-  return freq === '체험 1회' ? '1회 무료 체험' : freq;
+  return freq === '체험 1회'
+    ? '1회 무료 체험'
+    : freq;
 }
 
 
@@ -66,6 +55,7 @@ const steps = [
           '· 일상 영어회화 중심<br>' +
           '· 송도 지정 장소 선택 시 월 2만원 할인'
       },
+
       {
         name: '스탠다드',
         badge: 'Most Popular',
@@ -78,6 +68,7 @@ const steps = [
           '· 해외 대학 + 영어회화 교육 경험이 많은 선생님<br>' +
           '· 학적 인증 완료 대학생 선생님'
       },
+
       {
         name: '프리미엄',
         desc: '나도 최우수 선생님 3명 중 선택',
@@ -105,18 +96,29 @@ const steps = [
     sub: '1시간 또는 2시간을 선택하면 플랜·빈도에 따른 가격을 바로 확인할 수 있어요.'
   },
 
+  /*
+    장소는 가격에 영향을 주므로
+    수업 시간 바로 다음에 배치
+  */
   {
     key: 'place',
     type: 'rank',
     required: true
   },
-  
+
   {
     key: 'ageGroup',
     type: 'single',
     required: true,
     title: '나이대가 어떻게 되시나요?',
-    options: ['초등학생', '중고등학생', '20대', '30대', '40대', '50대 이상']
+    options: [
+      '초등학생',
+      '중고등학생',
+      '20대',
+      '30대',
+      '40대',
+      '50대 이상'
+    ]
   },
 
   {
@@ -124,7 +126,11 @@ const steps = [
     type: 'single',
     required: true,
     title: '성별이 어떻게 되시나요?',
-    options: ['남성', '여성', '응답하지 않음']
+    options: [
+      '남성',
+      '여성',
+      '응답하지 않음'
+    ]
   },
 
   {
@@ -172,7 +178,6 @@ const steps = [
       '희망하시는 첫 수업 날짜를 선택해주세요.<br>' +
       '선생님 일정에 따라, 희망하신 날짜보다 첫 수업이 조금 늦어지거나 빨라질 수 있어요.'
   },
-
 
   {
     key: 'notes',
@@ -225,75 +230,169 @@ const steps = [
    BASIC STATE
 ========================================================= */
 
-const TRIAL_MODE = document.body.dataset.mode === 'trial';
+const TRIAL_MODE =
+  document.body.dataset.mode === 'trial';
 
-const activeSteps = steps.filter(
-  s => !(TRIAL_MODE && s.key === 'tier')
-);
+const activeSteps =
+  steps.filter(
+    step =>
+      !(
+        TRIAL_MODE &&
+        step.key === 'tier'
+      )
+  );
 
 let current = 0;
 
 const answers = {
-  frequency: TRIAL_MODE ? '체험 1회' : '주 1회'
+  frequency:
+    TRIAL_MODE
+      ? '체험 1회'
+      : '주 1회'
 };
 
 if (TRIAL_MODE) {
   answers.tier = '이코노미';
 }
 
-const historyEl = document.getElementById('history');
-const qcardWrap = document.getElementById('qcardWrap');
-const progressFill = document.getElementById('progressFill');
-const nextBtn = document.getElementById('nextBtn');
-const skipBtn = document.getElementById('skipBtn');
-const backBtn = document.getElementById('backBtn');
+const historyEl =
+  document.getElementById('history');
+
+const qcardWrap =
+  document.getElementById('qcardWrap');
+
+const progressFill =
+  document.getElementById('progressFill');
+
+const nextBtn =
+  document.getElementById('nextBtn');
+
+const skipBtn =
+  document.getElementById('skipBtn');
+
+const backBtn =
+  document.getElementById('backBtn');
 
 const dragState = {
   isDragging: false,
   mode: true
 };
 
-document.addEventListener('mouseup', () => {
-  dragState.isDragging = false;
-});
+document.addEventListener(
+  'mouseup',
+  () => {
+    dragState.isDragging = false;
+  }
+);
 
 let scheduleActiveDay = '월';
 
 
 /* =========================================================
-   HELPERS
+   PRICE
+========================================================= */
+
+function calcPrice(tier, idx, freq) {
+  if (TRIAL_MODE) {
+    return 0;
+  }
+
+  if (!PRICE_TABLE[tier]) {
+    return 0;
+  }
+
+  const multiplier =
+    FREQ_MULTIPLIER[freq] || 1;
+
+  let raw =
+    PRICE_TABLE[tier][idx] *
+    multiplier;
+
+  const songdoDiscountSelected =
+    tier === '이코노미' &&
+    answers.placeType ===
+      '송도 지정 장소';
+
+  if (songdoDiscountSelected) {
+    raw -=
+      ECONOMY_SONGDO_DISCOUNT;
+  }
+
+  return Math.max(
+    raw,
+    0
+  );
+}
+
+
+/* =========================================================
+   PROGRESS / HISTORY
 ========================================================= */
 
 function updateProgress() {
-  const pct = Math.round(
-    (current / activeSteps.length) * 100
-  );
+  const pct =
+    Math.round(
+      (
+        current /
+        activeSteps.length
+      ) *
+      100
+    );
 
-  progressFill.style.width = pct + '%';
+  progressFill.style.width =
+    pct + '%';
 }
+
 
 function labelFor(step, value) {
   if (step.type === 'multi') {
-    return Array.isArray(value) && value.length
+    return Array.isArray(value) &&
+      value.length
       ? value.join(', ')
       : '';
   }
 
   if (step.type === 'rank') {
-    return Array.isArray(value) && value.length
-      ? value.join(', ')
-      : '';
+    if (
+      !Array.isArray(value) ||
+      !value.length
+    ) {
+      return '';
+    }
+
+    if (
+      answers.tier ===
+        '이코노미' &&
+      answers.placeType ===
+        '송도 지정 장소' &&
+      answers.songdoPlace
+    ) {
+      return (
+        '송도 지정 장소 · ' +
+        answers.songdoPlace
+      );
+    }
+
+    return value.join(', ');
   }
 
   if (step.type === 'gridtime') {
-    return Array.isArray(value) && value.length
-      ? value.length + '개 시간대 선택'
+    return Array.isArray(value) &&
+      value.length
+      ? value.length +
+          '개 시간대 선택'
       : '';
   }
 
   if (step.type === 'contact') {
-    return value && value.name
-      ? value.name + ' · ' + (value.phone || '')
+    return value &&
+      value.name
+      ? value.name +
+          ' · ' +
+          (
+            value.phone ||
+            ''
+          )
       : '';
   }
 
@@ -305,25 +404,47 @@ function labelFor(step, value) {
 
   if (step.type === 'duration') {
     return value
-      ? durationLabel(value.index)
+      ? durationLabel(
+          value.index
+        )
       : '';
   }
 
   return value || '';
 }
 
+
 function renderHistory() {
   historyEl.innerHTML = '';
 
-  for (let i = 0; i < current; i++) {
-    const step = activeSteps[i];
-    const val = answers[step.key];
-    const text = labelFor(step, val);
+  for (
+    let i = 0;
+    i < current;
+    i++
+  ) {
+    const step =
+      activeSteps[i];
 
-    if (!text) continue;
+    const val =
+      answers[step.key];
 
-    const item = document.createElement('div');
-    item.className = 'history-item';
+    const text =
+      labelFor(
+        step,
+        val
+      );
+
+    if (!text) {
+      continue;
+    }
+
+    const item =
+      document.createElement(
+        'div'
+      );
+
+    item.className =
+      'history-item';
 
     item.innerHTML =
       '<div class="history-bubble">' +
@@ -333,16 +454,28 @@ function renderHistory() {
       i +
       '">수정</button>';
 
-    historyEl.appendChild(item);
+    historyEl.appendChild(
+      item
+    );
   }
 
   historyEl
-    .querySelectorAll('.history-edit')
+    .querySelectorAll(
+      '.history-edit'
+    )
     .forEach(btn => {
-      btn.addEventListener('click', () => {
-        current = parseInt(btn.dataset.idx);
-        renderStep();
-      });
+      btn.addEventListener(
+        'click',
+        () => {
+          current =
+            parseInt(
+              btn.dataset.idx,
+              10
+            );
+
+          renderStep();
+        }
+      );
     });
 }
 
@@ -352,27 +485,54 @@ function renderHistory() {
 ========================================================= */
 
 function checkValid(step) {
-  const v = answers[step.key];
+  const v =
+    answers[step.key];
 
-  if (!step.required) return true;
-
-  if (step.type === 'single') return !!v;
-
-  if (step.type === 'tier') return !!v;
-
-  if (step.type === 'multi') {
-    return Array.isArray(v) && v.length > 0;
+  if (!step.required) {
+    return true;
   }
 
-  if (step.type === 'rank') {
-    if (!Array.isArray(v) || v.length === 0) {
+  if (
+    step.type === 'single'
+  ) {
+    return !!v;
+  }
+
+  if (
+    step.type === 'tier'
+  ) {
+    return !!v;
+  }
+
+  if (
+    step.type === 'multi'
+  ) {
+    return (
+      Array.isArray(v) &&
+      v.length > 0
+    );
+  }
+
+  if (
+    step.type === 'rank'
+  ) {
+    if (
+      !Array.isArray(v) ||
+      v.length === 0
+    ) {
       return false;
     }
 
+    /*
+      Economy 송도 지정 장소는
+      IGC / 트스까지 골라야 다음 가능
+    */
     if (
       !TRIAL_MODE &&
-      answers.tier === '이코노미' &&
-      answers.placeType === '송도 지정 장소'
+      answers.tier ===
+        '이코노미' &&
+      answers.placeType ===
+        '송도 지정 장소'
     ) {
       return !!answers.songdoPlace;
     }
@@ -380,19 +540,40 @@ function checkValid(step) {
     return true;
   }
 
-  if (step.type === 'date') return !!v;
-
-  if (step.type === 'gridtime') {
-    return Array.isArray(v) && v.length > 0;
+  if (
+    step.type === 'date'
+  ) {
+    return !!v;
   }
 
-  if (step.type === 'duration') {
-    return v && typeof v.index === 'number';
+  if (
+    step.type === 'gridtime'
+  ) {
+    return (
+      Array.isArray(v) &&
+      v.length > 0
+    );
   }
 
-  if (step.type === 'text') return true;
+  if (
+    step.type === 'duration'
+  ) {
+    return (
+      v &&
+      typeof v.index ===
+        'number'
+    );
+  }
 
-  if (step.type === 'contact') {
+  if (
+    step.type === 'text'
+  ) {
+    return true;
+  }
+
+  if (
+    step.type === 'contact'
+  ) {
     return (
       v &&
       v.name &&
@@ -402,21 +583,31 @@ function checkValid(step) {
     );
   }
 
-  if (step.type === 'payment') {
+  if (
+    step.type === 'payment'
+  ) {
     return v === true;
   }
 
   return false;
 }
 
-function setNextState(step) {
-  const valid = checkValid(step);
 
-  nextBtn.classList.toggle('active', valid);
-  nextBtn.disabled = !valid;
+function setNextState(step) {
+  const valid =
+    checkValid(step);
+
+  nextBtn.classList.toggle(
+    'active',
+    valid
+  );
+
+  nextBtn.disabled =
+    !valid;
 
   nextBtn.textContent =
-    current === activeSteps.length - 1
+    current ===
+    activeSteps.length - 1
       ? '제출하기'
       : '다음';
 
@@ -428,16 +619,20 @@ function setNextState(step) {
 
 
 /* =========================================================
-   RENDER STEP
+   RENDER
 ========================================================= */
 
 function renderStep() {
-  if (current >= activeSteps.length) {
+  if (
+    current >=
+    activeSteps.length
+  ) {
     showSuccess();
     return;
   }
 
-  const step = activeSteps[current];
+  const step =
+    activeSteps[current];
 
   updateProgress();
   renderHistory();
@@ -447,8 +642,20 @@ function renderStep() {
       ? 'hidden'
       : 'visible';
 
-  let title = step.title;
-  let sub = step.sub;
+  let title =
+    step.title;
+
+  let sub =
+    step.sub;
+
+  const isEconomy =
+    answers.tier ===
+    '이코노미';
+
+
+  /* =========================================================
+     TRIAL GOALS
+  ========================================================= */
 
   if (
     TRIAL_MODE &&
@@ -458,13 +665,10 @@ function renderStep() {
       '중복 선택 가능해요. 무료 체험에서는 비즈니스 영어가 제공되지 않습니다.';
   }
 
-  const isEconomy =
-    answers.tier === '이코노미';
 
-
-  /* =========================
+  /* =========================================================
      PLACE OPTIONS
-  ========================= */
+  ========================================================= */
 
   let RANK_OPTIONS = [];
 
@@ -473,32 +677,43 @@ function renderStep() {
       'IGC 인천글로벌캠퍼스',
       '송도 트리플스트리트'
     ];
-  } else if (isEconomy) {
+  }
+
+  else if (isEconomy) {
     RANK_OPTIONS = [
       '서울·인천 일반 장소',
       '송도 지정 장소'
     ];
-  } else {
+  }
+
+  else {
     RANK_OPTIONS = [
       '서울',
       '인천'
     ];
   }
 
-  if (step.type === 'rank') {
+
+  if (
+    step.type === 'rank'
+  ) {
     if (TRIAL_MODE) {
       title =
         '무료 체험 장소를 선택해주세요';
 
       sub =
         '무료 체험은 IGC 인천글로벌캠퍼스 또는 송도 트리플스트리트에서 진행됩니다.';
-    } else if (isEconomy) {
+    }
+
+    else if (isEconomy) {
       title =
         '수업 장소를 선택해주세요';
 
       sub =
         '일반 장소는 월 14만원, 송도 지정 장소를 선택하면 월 2만원 할인됩니다.';
-    } else {
+    }
+
+    else {
       title =
         '수업 지역을 선택해주세요';
 
@@ -508,13 +723,14 @@ function renderStep() {
   }
 
 
-  /* =========================
+  /* =========================================================
      TRIAL TITLES
-  ========================= */
+  ========================================================= */
 
   if (
     TRIAL_MODE &&
-    step.type === 'duration'
+    step.type ===
+      'duration'
   ) {
     title =
       '무료 체험 수업 안내';
@@ -523,9 +739,11 @@ function renderStep() {
       '이코노미 플랜으로 1시간 동안 무료 체험 수업을 진행해드려요.';
   }
 
+
   if (
     TRIAL_MODE &&
-    step.type === 'payment'
+    step.type ===
+      'payment'
   ) {
     title =
       '노쇼 방지 보증금 안내';
@@ -534,6 +752,10 @@ function renderStep() {
       '체험 수업 자체는 무료이지만, 노쇼 방지를 위해 소정의 보증금을 받고 있어요.';
   }
 
+
+  /* =========================================================
+     CARD START
+  ========================================================= */
 
   let inner =
     '<div class="qcard">' +
@@ -553,44 +775,68 @@ function renderStep() {
      TIER
   ========================================================= */
 
-  if (step.type === 'tier') {
+  if (
+    step.type === 'tier'
+  ) {
     if (!TRIAL_MODE) {
       inner +=
         '<div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">' +
-        '<button type="button" id="freqToggle" ' +
-        'style="background:var(--navy);color:#fff;border:none;padding:.5rem 1.1rem;border-radius:2rem;font-weight:800;font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:.35rem;">' +
+        '<button type="button" id="freqToggle" style="background:var(--navy);color:#fff;border:none;padding:.5rem 1.1rem;border-radius:2rem;font-weight:800;font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:.35rem;">' +
         answers.frequency +
         '<span style="font-size:.68rem;opacity:.75;">↻ 변경</span>' +
         '</button>' +
         '</div>';
-    } else {
-      inner +=
-        '<div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">' +
-        '<span style="background:var(--accent-light);color:var(--accent-deep);padding:.5rem 1.1rem;border-radius:2rem;font-weight:800;font-size:.85rem;">' +
-        '체험 1회' +
-        '</span>' +
-        '</div>';
     }
 
-    inner += '<div class="opt-list">';
+    inner +=
+      '<div class="opt-list">';
 
     step.options.forEach(
       (opt, idx) => {
         const businessSelected =
-          (answers.goals || [])
-            .includes('비즈니스');
+          (
+            answers.goals ||
+            []
+          ).includes(
+            '비즈니스'
+          );
 
         const isDisabled =
           businessSelected &&
-          opt.name === '이코노미';
+          opt.name ===
+            '이코노미';
 
         const isSel =
-          answers.tier === opt.name;
+          answers.tier ===
+          opt.name;
+
+        /*
+          플랜 카드에서는
+          Economy가 송도 장소를 이미 선택했다 하더라도
+          기본 시작가격 140,000을 보여주도록 별도 계산
+        */
+        const tierDisplayPrice =
+          PRICE_TABLE[
+            opt.name
+          ][0] *
+          (
+            FREQ_MULTIPLIER[
+              answers.frequency
+            ] || 1
+          );
 
         inner +=
           '<div class="tier-opt ' +
-          (isSel ? 'selected ' : '') +
-          (isDisabled ? 'disabled' : '') +
+          (
+            isSel
+              ? 'selected '
+              : ''
+          ) +
+          (
+            isDisabled
+              ? 'disabled'
+              : ''
+          ) +
           '" data-value="' +
           opt.name +
           '" data-disabled="' +
@@ -612,11 +858,7 @@ function renderStep() {
           '</div>' +
 
           '<div class="tier-opt-price">₩' +
-          calcPrice(
-            opt.name,
-            0,
-            answers.frequency
-          ).toLocaleString() +
+          tierDisplayPrice.toLocaleString() +
           '~</div>' +
 
           '</div>' +
@@ -627,14 +869,16 @@ function renderStep() {
 
           (
             isDisabled
-              ? '<div style="margin-top:.45rem;color:#E85C5C;font-size:.8rem;font-weight:700;">' +
-                '비즈니스 영어는 스탠다드 이상에서 이용할 수 있어요.' +
-                '</div>'
+              ? '<div style="margin-top:.45rem;color:#E85C5C;font-size:.8rem;font-weight:700;">비즈니스 영어는 스탠다드 이상에서 이용할 수 있어요.</div>'
               : ''
           ) +
 
           '<div class="tier-more ' +
-          (isSel ? 'open' : '') +
+          (
+            isSel
+              ? 'open'
+              : ''
+          ) +
           '" id="tierMore' +
           idx +
           '">' +
@@ -657,13 +901,9 @@ function renderStep() {
     inner += '</div>';
 
     inner +=
-      TRIAL_MODE
-        ? '<div style="font-size:.75rem;color:var(--gray);margin-top:.5rem;">' +
-          '체험 수업은 1회만 진행돼요. 마음에 드셨다면 정규 수업은 매칭 후 안내해드릴게요.' +
-          '</div>'
-        : '<div style="font-size:.75rem;color:var(--gray);margin-top:.5rem;">' +
-          '주 3회 이상 수업을 원하시면 홈페이지 우측 하단 상담 채팅으로 문의해주세요.' +
-          '</div>';
+      '<div style="font-size:.75rem;color:var(--gray);margin-top:.5rem;">' +
+      '주 3회 이상 수업을 원하시면 홈페이지 우측 하단 상담 채팅으로 문의해주세요.' +
+      '</div>';
   }
 
 
@@ -671,8 +911,11 @@ function renderStep() {
      DURATION
   ========================================================= */
 
-  else if (step.type === 'duration') {
-    const tier = answers.tier;
+  else if (
+    step.type === 'duration'
+  ) {
+    const tier =
+      answers.tier;
 
     let v =
       answers.duration || {
@@ -681,7 +924,8 @@ function renderStep() {
 
     if (
       v.index < 0 ||
-      v.index >= DURATIONS.length
+      v.index >=
+        DURATIONS.length
     ) {
       v = {
         index: 0
@@ -696,44 +940,78 @@ function renderStep() {
 
     answers.duration = v;
 
-    const price =
-      calcPrice(
-        tier,
-        v.index,
-        answers.frequency
-      );
+    /*
+      장소 선택 전이므로
+      duration 화면에서는
+      기본 가격 표시
+    */
+    const basePrice =
+      TRIAL_MODE
+        ? 0
+        : (
+            PRICE_TABLE[
+              tier
+            ]
+              ? PRICE_TABLE[
+                  tier
+                ][v.index] *
+                (
+                  FREQ_MULTIPLIER[
+                    answers.frequency
+                  ] || 1
+                )
+              : 0
+          );
+
 
     if (TRIAL_MODE) {
       inner +=
         '<div style="background:var(--accent-light);border-radius:1.1rem;padding:1.4rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;">' +
+
         '<div>' +
         '<div style="font-size:1.15rem;font-weight:800;color:var(--accent-deep);">' +
         '1시간 무료 체험 수업' +
         '</div>' +
         '</div>' +
-        '<div style="font-size:1.2rem;font-weight:900;color:var(--accent-deep);white-space:nowrap;">' +
-        '무료' +
-        '</div>' +
+
+        '<div style="font-size:1.2rem;font-weight:900;color:var(--accent-deep);white-space:nowrap;">무료</div>' +
+
         '</div>';
-    } else {
+    }
+
+    else {
       inner +=
         '<div class="duration-options">' +
 
         '<button type="button" class="duration-opt ' +
-        (v.index === 0 ? 'selected' : '') +
+        (
+          v.index === 0
+            ? 'selected'
+            : ''
+        ) +
         '" data-index="0">' +
+
         '<span class="duration-opt-time">1시간</span>' +
         '<span class="duration-opt-desc">꾸준히 집중해서 배우기</span>' +
+
         '</button>' +
 
+
         '<button type="button" class="duration-opt ' +
-        (v.index === 1 ? 'selected' : '') +
+        (
+          v.index === 1
+            ? 'selected'
+            : ''
+        ) +
         '" data-index="1">' +
+
         '<span class="duration-opt-time">2시간</span>' +
         '<span class="duration-opt-desc">한 번에 깊이 있게 배우기</span>' +
+
         '</button>' +
 
         '</div>' +
+
 
         '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:1.2rem 0 .8rem;">' +
 
@@ -741,20 +1019,29 @@ function renderStep() {
         answers.frequency +
         ' · 월 ' +
         (
-          answers.frequency === '주 2회'
+          answers.frequency ===
+          '주 2회'
             ? '8'
             : '4'
         ) +
-        '회 기준' +
-        '</span>' +
+        '회 기준</span>' +
 
         '<span id="durPrice" style="font-size:1.1rem;font-weight:800;">' +
         '<span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>' +
         '₩' +
-        price.toLocaleString() +
+        basePrice.toLocaleString() +
         '</span>' +
 
         '</div>';
+
+      if (
+        tier === '이코노미'
+      ) {
+        inner +=
+          '<div style="font-size:.78rem;color:var(--accent-deep);font-weight:700;margin-top:.4rem;">' +
+          '송도 지정 장소를 선택하면 월 2만원 할인됩니다.' +
+          '</div>';
+      }
     }
   }
 
@@ -763,19 +1050,28 @@ function renderStep() {
      DATE
   ========================================================= */
 
-  else if (step.type === 'date') {
-    const today =
-      new Date()
+  else if (
+    step.type === 'date'
+  ) {
+    const now =
+      new Date();
+
+    const localToday =
+      new Date(
+        now.getTime() -
+        now.getTimezoneOffset() *
+        60000
+      )
         .toISOString()
         .split('T')[0];
 
     const val =
       answers[step.key] ||
-      today;
+      localToday;
 
     inner +=
       '<input type="date" id="dateInput" min="' +
-      today +
+      localToday +
       '" value="' +
       val +
       '">';
@@ -786,69 +1082,131 @@ function renderStep() {
      PLACE
   ========================================================= */
 
-  else if (step.type === 'rank') {
-    inner +=
-      '<div class="opt-list">';
-
+  else if (
+    step.type === 'rank'
+  ) {
     const selected =
       answers[step.key] || [];
 
-    RANK_OPTIONS.forEach(opt => {
-      const isSel =
-        selected.includes(opt);
+    inner +=
+      '<div class="opt-list">';
 
-      let extra = '';
 
-      if (
-        !TRIAL_MODE &&
-        isEconomy
-      ) {
+    RANK_OPTIONS.forEach(
+      opt => {
+        const isSel =
+          selected.includes(
+            opt
+          );
+
+        let extra = '';
+
+
+        /*
+          Economy 일반 장소
+        */
         if (
+          !TRIAL_MODE &&
+          isEconomy &&
           opt ===
-          '서울·인천 일반 장소'
+            '서울·인천 일반 장소'
         ) {
+          const normalPrice =
+            PRICE_TABLE[
+              '이코노미'
+            ][
+              answers.duration
+                ? answers.duration.index
+                : 0
+            ] *
+            (
+              FREQ_MULTIPLIER[
+                answers.frequency
+              ] || 1
+            );
+
           extra =
             '<div style="font-size:.82rem;color:var(--gray);margin-top:.3rem;">' +
-            '세부 장소는 선생님과 조율 · 월 140,000원' +
+            '세부 장소는 선생님과 조율 · ₩' +
+            normalPrice.toLocaleString() +
             '</div>';
         }
 
+
+        /*
+          Economy 송도 할인 장소
+        */
         if (
+          !TRIAL_MODE &&
+          isEconomy &&
           opt ===
-          '송도 지정 장소'
+            '송도 지정 장소'
         ) {
+          const discountedPrice =
+            Math.max(
+              (
+                PRICE_TABLE[
+                  '이코노미'
+                ][
+                  answers.duration
+                    ? answers.duration.index
+                    : 0
+                ] *
+                (
+                  FREQ_MULTIPLIER[
+                    answers.frequency
+                  ] || 1
+                )
+              ) -
+              ECONOMY_SONGDO_DISCOUNT,
+              0
+            );
+
           extra =
             '<div style="font-size:.82rem;color:var(--accent-deep);font-weight:700;margin-top:.3rem;">' +
-            'IGC 또는 트리플스트리트 · 월 120,000원 · 2만원 할인' +
-            '</div>';
+            'IGC 또는 트리플스트리트 · ₩' +
+            discountedPrice.toLocaleString() +
+            ' · 2만원 할인</div>';
         }
+
+
+        inner +=
+          '<div class="opt rank ' +
+          (
+            isSel
+              ? 'selected'
+              : ''
+          ) +
+          '" data-value="' +
+          opt +
+          '">' +
+
+          '<div class="opt-rank-badge">' +
+          (
+            isSel
+              ? '✓'
+              : ''
+          ) +
+          '</div>' +
+
+          '<div class="opt-label">' +
+          opt +
+          extra +
+          '</div>' +
+
+          '</div>';
       }
-
-      inner +=
-        '<div class="opt rank ' +
-        (isSel ? 'selected' : '') +
-        '" data-value="' +
-        opt +
-        '">' +
-
-        '<div class="opt-rank-badge">' +
-        (isSel ? '✓' : '') +
-        '</div>' +
-
-        '<div class="opt-label">' +
-        opt +
-        extra +
-        '</div>' +
-
-        '</div>';
-    });
-
-    inner += '</div>';
+    );
 
 
-    /* Economy 송도 선택 시
-       세부 장소 표시 */
+    inner +=
+      '</div>';
 
+
+    /*
+      Economy에서 송도 지정 장소 선택 후
+      IGC / 트스 선택
+    */
     if (
       !TRIAL_MODE &&
       isEconomy &&
@@ -858,40 +1216,38 @@ function renderStep() {
       inner +=
         '<div id="songdoPlaceWrap" style="margin-top:1.2rem;">' +
 
-        '<div class="field-label">' +
-        '송도 지정 장소를 선택해주세요' +
-        '</div>' +
+        '<div class="field-label">송도 지정 장소를 선택해주세요</div>' +
 
         '<div class="opt-list">' +
+
 
         '<div class="opt songdo-sub-place ' +
         (
           answers.songdoPlace ===
-          'IGC 인천글로벌캠퍼스'
+            'IGC 인천글로벌캠퍼스'
             ? 'selected'
             : ''
         ) +
         '" data-value="IGC 인천글로벌캠퍼스">' +
 
         '<div class="opt-dot"></div>' +
-        '<div class="opt-label">' +
-        'IGC 인천글로벌캠퍼스' +
+        '<div class="opt-label">IGC 인천글로벌캠퍼스</div>' +
+
         '</div>' +
-        '</div>' +
+
 
         '<div class="opt songdo-sub-place ' +
         (
           answers.songdoPlace ===
-          '송도 트리플스트리트'
+            '송도 트리플스트리트'
             ? 'selected'
             : ''
         ) +
         '" data-value="송도 트리플스트리트">' +
 
         '<div class="opt-dot"></div>' +
-        '<div class="opt-label">' +
-        '송도 트리플스트리트' +
-        '</div>' +
+        '<div class="opt-label">송도 트리플스트리트</div>' +
+
         '</div>' +
 
         '</div>' +
@@ -917,13 +1273,11 @@ function renderStep() {
     step.type === 'single' ||
     step.type === 'multi'
   ) {
-    inner +=
-      '<div class="opt-list">';
-
     const selected =
       answers[step.key] ||
       (
-        step.type === 'multi'
+        step.type ===
+        'multi'
           ? []
           : null
       );
@@ -933,47 +1287,70 @@ function renderStep() {
       step.key === 'goals'
         ? step.options.filter(
             opt =>
-              opt !== '비즈니스'
+              opt !==
+              '비즈니스'
           )
         : step.options;
 
-    visibleOptions.forEach(opt => {
-      const isSel =
-        step.type === 'multi'
-          ? selected.includes(opt)
-          : selected === opt;
 
-      inner +=
-        '<div class="opt ' +
-        (
-          step.type === 'multi'
-            ? 'multi'
-            : ''
-        ) +
-        ' ' +
-        (
-          isSel
-            ? 'selected'
-            : ''
-        ) +
-        '" data-value="' +
-        opt +
-        '">' +
-        '<div class="opt-dot"></div>' +
-        '<div class="opt-label">' +
-        opt +
-        '</div>' +
-        '</div>';
-    });
+    inner +=
+      '<div class="opt-list">';
 
-    inner += '</div>';
 
+    visibleOptions.forEach(
+      opt => {
+        const isSel =
+          step.type ===
+          'multi'
+            ? selected.includes(
+                opt
+              )
+            : selected ===
+              opt;
+
+        inner +=
+          '<div class="opt ' +
+          (
+            step.type ===
+            'multi'
+              ? 'multi'
+              : ''
+          ) +
+          ' ' +
+          (
+            isSel
+              ? 'selected'
+              : ''
+          ) +
+          '" data-value="' +
+          opt +
+          '">' +
+
+          '<div class="opt-dot"></div>' +
+          '<div class="opt-label">' +
+          opt +
+          '</div>' +
+
+          '</div>';
+      }
+    );
+
+
+    inner +=
+      '</div>';
+
+
+    /*
+      Referral Other
+    */
     if (
       step.key ===
       'referral'
     ) {
       const showOther =
-        selected.includes('기타');
+        selected.includes(
+          '기타'
+        );
 
       inner +=
         '<div id="referralOtherWrap" style="margin-top:.8rem;' +
@@ -984,8 +1361,7 @@ function renderStep() {
         ) +
         '">' +
 
-        '<input type="text" id="referralOtherInput" ' +
-        'placeholder="어떻게 알게 되셨는지 적어주세요" value="' +
+        '<input type="text" id="referralOtherInput" placeholder="어떻게 알게 되셨는지 적어주세요" value="' +
         (
           answers.referralOther ||
           ''
@@ -995,12 +1371,18 @@ function renderStep() {
         '</div>';
     }
 
+
+    /*
+      Goals Other
+    */
     if (
       step.key ===
       'goals'
     ) {
       const showOther =
-        selected.includes('기타');
+        selected.includes(
+          '기타'
+        );
 
       inner +=
         '<div id="goalsOtherWrap" style="margin-top:.8rem;' +
@@ -1011,8 +1393,7 @@ function renderStep() {
         ) +
         '">' +
 
-        '<input type="text" id="goalsOtherInput" ' +
-        'placeholder="원하시는 목표를 적어주세요" value="' +
+        '<input type="text" id="goalsOtherInput" placeholder="원하시는 목표를 적어주세요" value="' +
         (
           answers.goalsOther ||
           ''
@@ -1025,7 +1406,7 @@ function renderStep() {
 
 
   /* =========================================================
-     SCHEDULE
+     GRID TIME
   ========================================================= */
 
   else if (
@@ -1048,8 +1429,13 @@ function renderStep() {
       h < 24;
       h++
     ) {
-      slots.push(h + ':00');
-      slots.push(h + ':30');
+      slots.push(
+        h + ':00'
+      );
+
+      slots.push(
+        h + ':30'
+      );
     }
 
     slots.push('24:00');
@@ -1057,75 +1443,86 @@ function renderStep() {
     const selectedArr =
       answers[step.key] || [];
 
-    const activeDay =
-      scheduleActiveDay;
-
     inner +=
       '<div class="day-tabs" id="dayTabs">';
 
-    days.forEach(d => {
-      const count =
-        selectedArr.filter(
-          v =>
-            v.indexOf(
-              d + ' '
-            ) === 0
-        ).length;
 
-      inner +=
-        '<button type="button" class="day-tab ' +
-        (
-          d === activeDay
-            ? 'active'
-            : ''
-        ) +
-        '" data-day="' +
-        d +
-        '">' +
+    days.forEach(
+      d => {
+        const count =
+          selectedArr.filter(
+            v =>
+              v.indexOf(
+                d + ' '
+              ) === 0
+          ).length;
 
-        d +
+        inner +=
+          '<button type="button" class="day-tab ' +
+          (
+            d ===
+            scheduleActiveDay
+              ? 'active'
+              : ''
+          ) +
+          '" data-day="' +
+          d +
+          '">' +
 
-        (
-          count > 0
-            ? '<span class="day-tab-badge">' +
-              count +
-              '</span>'
-            : ''
-        ) +
+          d +
 
-        '</button>';
-    });
+          (
+            count > 0
+              ? '<span class="day-tab-badge">' +
+                count +
+                '</span>'
+              : ''
+          ) +
 
-    inner += '</div>';
+          '</button>';
+      }
+    );
+
+
+    inner +=
+      '</div>';
+
 
     inner +=
       '<div class="time-slot-grid" id="timeSlotGrid">';
 
-    slots.forEach(t => {
-      const key =
-        activeDay +
-        ' ' +
-        t;
 
-      const isSel =
-        selectedArr.indexOf(key) >
-        -1;
+    slots.forEach(
+      t => {
+        const key =
+          scheduleActiveDay +
+          ' ' +
+          t;
 
-      inner +=
-        '<div class="time-slot ' +
-        (
-          isSel
-            ? 'selected'
-            : ''
-        ) +
-        '" data-key="' +
-        key +
-        '">' +
-        t +
-        '</div>';
-    });
+        const isSel =
+          selectedArr.indexOf(
+            key
+          ) > -1;
 
-    inner += '</div>';
+        inner +=
+          '<div class="time-slot ' +
+          (
+            isSel
+              ? 'selected'
+              : ''
+          ) +
+          '" data-key="' +
+          key +
+          '">' +
+          t +
+          '</div>';
+      }
+    );
+
+
+    inner +=
+      '</div>';
+
 
     inner +=
       '<div class="field-label" style="margin-top:1rem;">' +
@@ -1184,13 +1581,19 @@ function renderStep() {
       '<div class="field-label">이름</div>' +
 
       '<input type="text" id="nameInput" placeholder="홍길동" value="' +
-      v.name +
+      (
+        v.name ||
+        ''
+      ) +
       '">' +
 
       '<div class="field-label">연락처</div>' +
 
       '<input type="tel" id="phoneInput" placeholder="010-0000-0000" value="' +
-      v.phone +
+      (
+        v.phone ||
+        ''
+      ) +
       '">' +
 
       '<div class="consent-box">' +
@@ -1211,13 +1614,11 @@ function renderStep() {
 
       '</label>' +
 
-      '<button type="button" class="consent-toggle" id="consentToggle">' +
-      '자세히 보기' +
-      '</button>' +
+      '<button type="button" class="consent-toggle" id="consentToggle">자세히 보기</button>' +
 
       '<div class="consent-detail" id="consentDetail" style="display:none;">' +
 
-      '<strong>수집 항목</strong> 이름, 연락처, 영어 수준, 학습 목표, 희망 시간대, 진행 방식, 문의사항<br>' +
+      '<strong>수집 항목</strong> 이름, 연락처, 영어 수준, 학습 목표, 희망 시간대, 수업 지역, 문의사항<br>' +
 
       '<strong>수집 목적</strong> 선생님 매칭 및 상담을 위한 연락<br>' +
 
@@ -1247,10 +1648,15 @@ function renderStep() {
   else if (
     step.type === 'payment'
   ) {
+    /*
+      무료 체험
+    */
     if (TRIAL_MODE) {
       const trialPlace =
-        (answers.place || [])
-          .join(', ') ||
+        (
+          answers.place ||
+          []
+        ).join(', ') ||
         '-';
 
       inner +=
@@ -1284,18 +1690,13 @@ function renderStep() {
 
         '<div class="qsub" style="margin-top:-.4rem;">' +
 
-        '<strong style="color:var(--ink);">' +
-        '수업에 참석하시면 보증금은 전액 환불' +
-        '</strong>됩니다. ' +
-
+        '<strong style="color:var(--ink);">수업에 참석하시면 보증금은 전액 환불</strong>됩니다. ' +
         '다만 사전 연락 없이 노쇼하실 경우 환불되지 않아요.<br>' +
-
         '매칭이 완료되면 카카오톡으로 입금 계좌를 안내해드려요.' +
 
         '</div>' +
 
         '<div class="consent-box">' +
-
         '<label class="consent-row">' +
 
         '<input type="checkbox" id="paymentAckCheck" ' +
@@ -1306,14 +1707,16 @@ function renderStep() {
         ) +
         '>' +
 
-        '<span>위 보증금 안내를 확인했습니다 ' +
-        '<span class="required-mark">(필수)</span>' +
-        '</span>' +
+        '<span>위 보증금 안내를 확인했습니다 <span class="required-mark">(필수)</span></span>' +
 
         '</label>' +
         '</div>';
     }
 
+
+    /*
+      정규 수업
+    */
     else {
       const tierName =
         answers.tier || '-';
@@ -1324,16 +1727,15 @@ function renderStep() {
         };
 
       const price =
-        PRICE_TABLE[answers.tier]
-          ? calcPrice(
-              answers.tier,
-              d.index,
-              answers.frequency
-            )
-          : 0;
+        calcPrice(
+          answers.tier,
+          d.index,
+          answers.frequency
+        );
 
 
       let placeText = '-';
+
 
       if (
         answers.tier ===
@@ -1349,7 +1751,9 @@ function renderStep() {
               answers.songdoPlace ||
               '-'
             );
-        } else {
+        }
+
+        else {
           placeText =
             '서울·인천 일반 장소';
         }
@@ -1385,7 +1789,9 @@ function renderStep() {
         '<div class="pay-row">' +
         '<span>수업 시간</span>' +
         '<strong>' +
-        durationLabel(d.index) +
+        durationLabel(
+          d.index
+        ) +
         '</strong>' +
         '</div>' +
 
@@ -1405,8 +1811,8 @@ function renderStep() {
 
             ? '<div class="pay-row">' +
               '<span>장소 할인</span>' +
-              '<strong style="color:var(--accent-deep);">' +
-              '-₩20,000' +
+              '<strong style="color:var(--accent-deep);">-₩' +
+              ECONOMY_SONGDO_DISCOUNT.toLocaleString() +
               '</strong>' +
               '</div>'
 
@@ -1425,7 +1831,6 @@ function renderStep() {
 
 
         '<div class="consent-box">' +
-
         '<label class="consent-row">' +
 
         '<input type="checkbox" id="paymentAckCheck" ' +
@@ -1436,15 +1841,17 @@ function renderStep() {
         ) +
         '>' +
 
-        '<span>위 결제 금액 안내를 확인했습니다 ' +
-        '<span class="required-mark">(필수)</span>' +
-        '</span>' +
+        '<span>위 결제 금액 안내를 확인했습니다 <span class="required-mark">(필수)</span></span>' +
 
         '</label>' +
         '</div>';
     }
   }
 
+
+  /* =========================================================
+     CARD END
+  ========================================================= */
 
   inner += '</div>';
 
@@ -1474,6 +1881,11 @@ function renderStep() {
               ? '주 2회'
               : '주 1회';
 
+          /*
+            빈도 변경 시
+            기존 장소를 유지해도 되지만
+            가격이 달라지므로 화면 다시 렌더링
+          */
           renderStep();
         }
       );
@@ -1481,7 +1893,9 @@ function renderStep() {
 
 
     qcardWrap
-      .querySelectorAll('.tier-opt')
+      .querySelectorAll(
+        '.tier-opt'
+      )
       .forEach(el => {
         el.addEventListener(
           'click',
@@ -1500,6 +1914,7 @@ function renderStep() {
               answers.place = [];
               answers.placeType = '';
               answers.songdoPlace = '';
+              answers.payment = false;
             }
 
             answers.tier =
@@ -1526,6 +1941,7 @@ function renderStep() {
                 }
               });
 
+
             el.classList.add(
               'selected'
             );
@@ -1548,7 +1964,9 @@ function renderStep() {
 
 
     qcardWrap
-      .querySelectorAll('.tip-icon')
+      .querySelectorAll(
+        '.tip-icon'
+      )
       .forEach(tip => {
         tip.addEventListener(
           'click',
@@ -1595,12 +2013,19 @@ function renderStep() {
           () => {
             const idx =
               parseInt(
-                option.dataset.index
+                option.dataset.index,
+                10
               );
 
             answers.duration = {
               index: idx
             };
+
+            /*
+              수업시간이 바뀌면
+              장소 가격표시도 달라질 수 있으므로
+              기존 장소 선택은 유지
+            */
 
             qcardWrap
               .querySelectorAll(
@@ -1616,21 +2041,29 @@ function renderStep() {
               'selected'
             );
 
+
             const durPrice =
               document.getElementById(
                 'durPrice'
               );
 
-            if (durPrice) {
+            if (
+              durPrice &&
+              !TRIAL_MODE
+            ) {
+              const basePrice =
+                PRICE_TABLE[
+                  answers.tier
+                ][idx] *
+                (
+                  FREQ_MULTIPLIER[
+                    answers.frequency
+                  ] || 1
+                );
+
               durPrice.innerHTML =
-                TRIAL_MODE
-                  ? '<span style="color:var(--accent-deep);">무료</span>'
-                  : '<span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' +
-                    calcPrice(
-                      answers.tier,
-                      idx,
-                      answers.frequency
-                    ).toLocaleString();
+                '<span style="font-size:.72rem;color:var(--gray);font-weight:600;margin-right:3px;">총액</span>₩' +
+                basePrice.toLocaleString();
             }
 
             setNextState(step);
@@ -1641,44 +2074,15 @@ function renderStep() {
 
 
   /* =========================================================
-     EVENT — DATE
-  ========================================================= */
-
-  else if (
-    step.type === 'date'
-  ) {
-    const dateInput =
-      document.getElementById(
-        'dateInput'
-      );
-
-    if (!answers[step.key]) {
-      answers[step.key] =
-        dateInput.value;
-    }
-
-    dateInput.addEventListener(
-      'input',
-      () => {
-        answers[step.key] =
-          dateInput.value;
-
-        setNextState(step);
-      }
-    );
-  }
-
-
-  /* =========================================================
      EVENT — PLACE
   ========================================================= */
 
   else if (
     step.type === 'rank'
   ) {
-
-    /* Main place */
-
+    /*
+      메인 장소
+    */
     qcardWrap
       .querySelectorAll(
         '.opt.rank'
@@ -1690,11 +2094,18 @@ function renderStep() {
             const val =
               el.dataset.value;
 
+            /*
+              장소는 하나만 선택
+            */
             answers[step.key] = [
               val
             ];
 
 
+            /*
+              Economy일 경우
+              장소 유형 별도 저장
+            */
             if (
               !TRIAL_MODE &&
               answers.tier ===
@@ -1703,6 +2114,10 @@ function renderStep() {
               answers.placeType =
                 val;
 
+              /*
+                일반 장소로 돌아가면
+                이전 IGC / 트스 선택 제거
+              */
               if (
                 val !==
                 '송도 지정 장소'
@@ -1713,39 +2128,12 @@ function renderStep() {
             }
 
 
-            qcardWrap
-              .querySelectorAll(
-                '.opt.rank'
-              )
-              .forEach(o => {
-                const sel =
-                  o.dataset.value ===
-                  val;
-
-                o.classList.toggle(
-                  'selected',
-                  sel
-                );
-
-                const badge =
-                  o.querySelector(
-                    '.opt-rank-badge'
-                  );
-
-                if (badge) {
-                  badge.textContent =
-                    sel
-                      ? '✓'
-                      : '';
-                }
-              });
-
+            answers.payment = false;
 
             /*
-              송도 지정 장소를 누르면
-              IGC / 트스 선택창을
-              바로 보여줘야 하므로
-              다시 render
+              송도 지정 장소 클릭 후
+              IGC / 트스 UI를 바로 띄워야 하므로
+              전체 장소 단계 다시 렌더링
             */
             renderStep();
           }
@@ -1753,8 +2141,9 @@ function renderStep() {
       });
 
 
-    /* Songdo sub-place */
-
+    /*
+      Economy 송도 세부장소
+    */
     qcardWrap
       .querySelectorAll(
         '.songdo-sub-place'
@@ -1780,10 +2169,43 @@ function renderStep() {
               'selected'
             );
 
+            answers.payment = false;
+
             setNextState(step);
           }
         );
       });
+  }
+
+
+  /* =========================================================
+     EVENT — DATE
+  ========================================================= */
+
+  else if (
+    step.type === 'date'
+  ) {
+    const dateInput =
+      document.getElementById(
+        'dateInput'
+      );
+
+    if (
+      !answers[step.key]
+    ) {
+      answers[step.key] =
+        dateInput.value;
+    }
+
+    dateInput.addEventListener(
+      'input',
+      () => {
+        answers[step.key] =
+          dateInput.value;
+
+        setNextState(step);
+      }
+    );
   }
 
 
@@ -1796,7 +2218,9 @@ function renderStep() {
     step.type === 'multi'
   ) {
     qcardWrap
-      .querySelectorAll('.opt')
+      .querySelectorAll(
+        '.opt'
+      )
       .forEach(el => {
         el.addEventListener(
           'click',
@@ -1805,6 +2229,9 @@ function renderStep() {
               el.dataset.value;
 
 
+            /*
+              Single
+            */
             if (
               step.type ===
               'single'
@@ -1828,13 +2255,18 @@ function renderStep() {
             }
 
 
+            /*
+              Multi
+            */
             else {
               const arr =
                 answers[step.key] ||
                 [];
 
               const idx =
-                arr.indexOf(val);
+                arr.indexOf(
+                  val
+                );
 
               if (idx > -1) {
                 arr.splice(
@@ -1844,7 +2276,9 @@ function renderStep() {
               }
 
               else {
-                arr.push(val);
+                arr.push(
+                  val
+                );
               }
 
               answers[step.key] =
@@ -1856,8 +2290,9 @@ function renderStep() {
             }
 
 
-            /* Referral Other */
-
+            /*
+              Referral Other
+            */
             if (
               step.key ===
               'referral'
@@ -1887,6 +2322,11 @@ function renderStep() {
                     : 'none';
               }
 
+              if (!show) {
+                answers.referralOther =
+                  '';
+              }
+
               if (
                 input &&
                 !input.dataset.bound
@@ -1905,17 +2345,18 @@ function renderStep() {
             }
 
 
-            /* Goals */
-
+            /*
+              Goals
+            */
             if (
-              step.key === 'goals'
+              step.key ===
+              'goals'
             ) {
-
               /*
-                Economy 선택 후
-                Business를 선택한 경우
+                Economy인데 비즈니스 선택 시
+                Economy 선택 취소 후
+                플랜 단계로 이동
               */
-
               if (
                 !TRIAL_MODE &&
                 (
@@ -1931,15 +2372,13 @@ function renderStep() {
                 answers.place = [];
                 answers.placeType = '';
                 answers.songdoPlace = '';
-
-                /*
-                  플랜 화면으로 자동 이동
-                */
+                answers.payment = false;
 
                 const tierIndex =
                   activeSteps.findIndex(
                     s =>
-                      s.key === 'tier'
+                      s.key ===
+                      'tier'
                   );
 
                 if (
@@ -1979,6 +2418,11 @@ function renderStep() {
                     : 'none';
               }
 
+              if (!show) {
+                answers.goalsOther =
+                  '';
+              }
+
               if (
                 input &&
                 !input.dataset.bound
@@ -2014,6 +2458,7 @@ function renderStep() {
     const selectedArr =
       answers[step.key] || [];
 
+
     const buildSlots = () => {
       const slots = [];
 
@@ -2031,7 +2476,9 @@ function renderStep() {
         );
       }
 
-      slots.push('24:00');
+      slots.push(
+        '24:00'
+      );
 
       return slots;
     };
@@ -2166,18 +2613,20 @@ function renderStep() {
               'mouseenter',
               () => {
                 if (
-                  dragState.isDragging
+                  !dragState.isDragging
                 ) {
-                  cell.classList.toggle(
-                    'selected',
-                    dragState.mode
-                  );
-
-                  applySlot(
-                    cell.dataset.key,
-                    dragState.mode
-                  );
+                  return;
                 }
+
+                cell.classList.toggle(
+                  'selected',
+                  dragState.mode
+                );
+
+                applySlot(
+                  cell.dataset.key,
+                  dragState.mode
+                );
               }
             );
 
@@ -2264,6 +2713,7 @@ function renderStep() {
         );
       });
 
+
     bindSlotEvents();
   }
 
@@ -2280,20 +2730,22 @@ function renderStep() {
         'textInput'
       );
 
-    ta.addEventListener(
-      'input',
-      () => {
-        answers[step.key] =
-          ta.value;
-      }
-    );
+    if (ta) {
+      ta.addEventListener(
+        'input',
+        () => {
+          answers[step.key] =
+            ta.value;
+        }
+      );
+    }
 
     const qf =
       document.getElementById(
         'quickFillBtn'
       );
 
-    if (qf) {
+    if (qf && ta) {
       qf.addEventListener(
         'click',
         () => {
@@ -2415,15 +2867,17 @@ function renderStep() {
         'paymentAckCheck'
       );
 
-    ack.addEventListener(
-      'change',
-      () => {
-        answers.payment =
-          ack.checked;
+    if (ack) {
+      ack.addEventListener(
+        'change',
+        () => {
+          answers.payment =
+            ack.checked;
 
-        setNextState(step);
-      }
-    );
+          setNextState(step);
+        }
+      );
+    }
   }
 
 
@@ -2501,32 +2955,35 @@ async function submitToJotform(a) {
   const API_KEY =
     '32abecc4b70bf065c8adf25c9b02b7cb';
 
-
   const params =
     new URLSearchParams();
 
 
   params.append(
     'submission[3]',
-    a.contact.name
+    a.contact
+      ? a.contact.name
+      : ''
   );
 
 
   params.append(
     'submission[4][full]',
-    a.contact.phone
+    a.contact
+      ? a.contact.phone
+      : ''
   );
 
 
   params.append(
     'submission[5]',
-    a.ageGroup
+    a.ageGroup || ''
   );
 
 
   params.append(
     'submission[7]',
-    a.level
+    a.level || ''
   );
 
 
@@ -2541,6 +2998,10 @@ async function submitToJotform(a) {
   });
 
 
+  /*
+    기존 Jotform 29번 필드에도
+    메인 장소 선택값 저장
+  */
   (
     a.place ||
     []
@@ -2589,31 +3050,54 @@ async function submitToJotform(a) {
 
 
   /*
-    장소 정보
-
-    Economy 송도:
-    송도 지정 장소 / IGC...
-
-    Economy 일반:
-    서울·인천 일반 장소
-
-    Standard/Premium:
-    서울 / 인천
+    전체 장소 정보
   */
+  let jotformPlace =
+    '';
 
-  params.append(
-    'submission[33]',
-    [
+
+  if (TRIAL_MODE) {
+    jotformPlace =
       (
         a.place ||
         []
-      ).join(', '),
+      ).join(', ');
+  }
 
-      a.songdoPlace ||
-      ''
-    ]
-      .filter(Boolean)
-      .join(' / ')
+  else if (
+    a.tier ===
+    '이코노미'
+  ) {
+    if (
+      a.placeType ===
+      '송도 지정 장소'
+    ) {
+      jotformPlace =
+        '송도 지정 장소 / ' +
+        (
+          a.songdoPlace ||
+          ''
+        );
+    }
+
+    else {
+      jotformPlace =
+        '서울·인천 일반 장소';
+    }
+  }
+
+  else {
+    jotformPlace =
+      (
+        a.place ||
+        []
+      ).join(', ');
+  }
+
+
+  params.append(
+    'submission[33]',
+    jotformPlace
   );
 
 
@@ -2683,10 +3167,9 @@ async function submitToJotform(a) {
 
 
   /*
-    기존 협의 희망 위치 필드를
-    송도 세부 장소 저장용으로 사용
+    기존 44번 필드는
+    송도 세부장소 저장용으로 재사용
   */
-
   params.append(
     'submission[44]',
     a.songdoPlace || ''
@@ -2694,13 +3177,11 @@ async function submitToJotform(a) {
 
 
   /*
-    ★ Jotform에
-    "결제 예정 금액"
-    새 필드를 만들면 아래 사용.
+    결제 예정 금액 Jotform 필드를
+    새로 만든 뒤 실제 ID를 알게 되면
+    아래 코드를 활성화하면 됨.
 
-    예를 들어 새 필드 ID가
-    45라면:
-
+    예:
     const finalPrice =
       TRIAL_MODE
         ? 0
@@ -2713,12 +3194,9 @@ async function submitToJotform(a) {
           );
 
     params.append(
-      'submission[45]',
+      'submission[실제ID]',
       finalPrice.toString()
     );
-
-    ※ 45는 예시.
-       실제 Jotform Question ID 확인 후 사용.
   */
 
 
@@ -2775,10 +3253,15 @@ function showSuccess() {
     'none';
 
 
-  document.querySelector(
-    '.topbar'
-  ).style.display =
-    'none';
+  const topbar =
+    document.querySelector(
+      '.topbar'
+    );
+
+  if (topbar) {
+    topbar.style.display =
+      'none';
+  }
 
 
   const wrap =
@@ -2794,9 +3277,9 @@ function showSuccess() {
     answers;
 
 
-  /*
-    장소 표시
-  */
+  /* =========================================================
+     SUCCESS PLACE
+  ========================================================= */
 
   let successPlace =
     '-';
@@ -2812,7 +3295,8 @@ function showSuccess() {
   }
 
   else if (
-    a.tier === '이코노미'
+    a.tier ===
+    '이코노미'
   ) {
     if (
       a.placeType ===
@@ -2884,6 +3368,39 @@ function showSuccess() {
     '<br>' +
 
 
+    '<strong>수업 장소</strong> · ' +
+    successPlace +
+    '<br>' +
+
+
+    (
+      TRIAL_MODE
+
+        ? '<strong>노쇼 방지 보증금</strong> · ₩' +
+          TRIAL_DEPOSIT.toLocaleString() +
+          '<br>'
+
+        : (
+            (
+              a.tier ===
+                '이코노미' &&
+              a.placeType ===
+                '송도 지정 장소'
+            )
+
+              ? '<strong>장소 할인</strong> · -₩' +
+                ECONOMY_SONGDO_DISCOUNT.toLocaleString() +
+                '<br>'
+
+              : ''
+          ) +
+
+          '<strong>예정 금액</strong> · ₩' +
+          finalPrice.toLocaleString() +
+          '<br>'
+    ) +
+
+
     '<strong>나이대</strong> · ' +
     (
       a.ageGroup ||
@@ -2906,15 +3423,20 @@ function showSuccess() {
         a.goals ||
         []
       )
-        .map(
-          g =>
+        .map(g => {
+          if (
             g === '기타' &&
             a.goalsOther
-              ? '기타(' +
-                a.goalsOther +
-                ')'
-              : g
-        )
+          ) {
+            return (
+              '기타(' +
+              a.goalsOther +
+              ')'
+            );
+          }
+
+          return g;
+        })
         .join(', ') ||
       '-'
     ) +
@@ -2932,21 +3454,12 @@ function showSuccess() {
     '<br>' +
 
 
-    '<strong>수업 장소</strong> · ' +
-    successPlace +
-    '<br>' +
-
-
+    '<strong>희망 시작일</strong> · ' +
     (
-      TRIAL_MODE
-        ? '<strong>노쇼 방지 보증금</strong> · ₩' +
-          TRIAL_DEPOSIT.toLocaleString() +
-          '<br>'
-
-        : '<strong>예정 금액</strong> · ₩' +
-          finalPrice.toLocaleString() +
-          '<br>'
+      a.startDate ||
+      '-'
     ) +
+    '<br>' +
 
 
     '<strong>유입 경로</strong> · ' +
@@ -2963,9 +3476,11 @@ function showSuccess() {
     '<strong>연락처</strong> · ' +
     (
       a.contact
-        ? a.contact.name +
-          ' · ' +
-          a.contact.phone
+        ? (
+            a.contact.name +
+            ' · ' +
+            a.contact.phone
+          )
         : '-'
     );
 
