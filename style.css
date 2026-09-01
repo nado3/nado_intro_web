@@ -71,19 +71,14 @@ main{max-width:640px;margin:0 auto;padding:5.2rem 1.2rem 7rem;min-height:100vh;}
   color:#fff;
 }
 .preferred-place-wrap{
-  margin-top:1rem;
-  padding:1rem;
+  padding:.85rem;
   border:1px solid var(--line);
   border-radius:1rem;
   background:var(--bg);
 }
-.preferred-place-wrap .field-label{
-  display:block;
-  margin:0 0 .55rem;
-  color:var(--ink);
-}
 .preferred-place-wrap input{
   background:var(--white);
+  padding:.85rem 1rem;
 }
 .preferred-place-help{
   margin-top:.5rem;
@@ -94,7 +89,7 @@ main{max-width:640px;margin:0 auto;padding:5.2rem 1.2rem 7rem;min-height:100vh;}
 }
 
 @media (max-width:480px){
-  .preferred-place-wrap{padding:.9rem;}
+  .preferred-place-wrap{padding:.75rem;}
   .place-option-meta{font-size:.75rem;}
   .place-discount-badge{font-size:.73rem;}
 }

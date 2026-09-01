@@ -917,10 +917,10 @@ function renderStep() {
     if (TRIAL_MODE) {
 
       title =
-        '무료 체험 장소를 선택해주세요';
+        '무료 체험 장소 선택';
 
       sub =
-        '인천·서울은 희망 장소를 대략 알려주세요. 최종 장소는 선생님과 조율하며, 송도는 지정 장소에서 진행됩니다.';
+        '인천·서울은 희망 장소를 입력하고, 송도는 지정 장소를 선택해주세요.';
     }
 
 
@@ -1362,7 +1362,7 @@ function renderStep() {
 
             optionMeta =
               '<div class="place-option-meta">' +
-              '대략적인 위치 입력 · 최종 장소는 추후 조율' +
+              '대략적인 장소 입력 · 추후 조율' +
               '</div>';
           }
 
@@ -1373,7 +1373,7 @@ function renderStep() {
 
             optionMeta =
               '<div class="place-option-meta">' +
-              '대략적인 위치 입력 · 최종 장소는 추후 조율' +
+              '대략적인 장소 입력 · 추후 조율' +
               '</div>';
           }
 
@@ -1518,56 +1518,54 @@ function renderStep() {
 
 
           '</div>';
+
+
+        if (
+          TRIAL_MODE &&
+          isSel &&
+          (
+            opt === '인천 원하는 장소' ||
+            opt === '서울 원하는 장소'
+          )
+        ) {
+
+          const preferredCity =
+            opt === '인천 원하는 장소'
+              ? '인천'
+              : '서울';
+
+          const preferredPlaceholder =
+            preferredCity === '인천'
+              ? '예: 부평역 근처 카페'
+              : '예: 홍대입구역 근처 카페';
+
+
+          inner +=
+            '<div class="preferred-place-wrap">' +
+
+            '<label class="sr-only" for="preferredPlaceInput">' +
+            preferredCity +
+            ' 희망 장소' +
+            '</label>' +
+
+            '<input type="text" id="preferredPlaceInput" placeholder="' +
+            preferredPlaceholder +
+            '" value="' +
+            (answers.preferredPlace || '') +
+            '">' +
+
+            '<div class="preferred-place-help">' +
+            '최종 장소는 선생님과 조율해요.' +
+            '</div>' +
+
+            '</div>';
+        }
       }
     );
 
 
     inner +=
       '</div>';
-
-
-    if (
-      TRIAL_MODE &&
-      (
-        answers.placeType ===
-          '인천 원하는 장소' ||
-        answers.placeType ===
-          '서울 원하는 장소'
-      )
-    ) {
-
-      const preferredCity =
-        answers.placeType ===
-          '인천 원하는 장소'
-          ? '인천'
-          : '서울';
-
-      const preferredPlaceholder =
-        preferredCity === '인천'
-          ? '예: 부평역 근처 카페, 구월동 로데오거리 주변'
-          : '예: 홍대입구역 근처 카페, 강남역 주변';
-
-
-      inner +=
-        '<div class="preferred-place-wrap">' +
-
-        '<label class="field-label" for="preferredPlaceInput">' +
-        preferredCity +
-        '에서 희망하는 장소를 대략 적어주세요' +
-        '</label>' +
-
-        '<input type="text" id="preferredPlaceInput" placeholder="' +
-        preferredPlaceholder +
-        '" value="' +
-        (answers.preferredPlace || '') +
-        '">' +
-
-        '<div class="preferred-place-help">' +
-        '정확한 주소가 아니어도 괜찮아요. 최종 장소는 선생님과 조율합니다.' +
-        '</div>' +
-
-        '</div>';
-    }
 
 
     /*
