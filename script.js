@@ -30,6 +30,22 @@ function freqLabel(freq) {
     : freq;
 }
 
+function placeLabel(a) {
+  if (a.placeType === '송도 할인 장소') {
+    return '송도 할인 장소' +
+      (a.songdoPlace ? ' · ' + a.songdoPlace : '');
+  }
+
+  if (
+    a.placeType === '인천 원하는 장소' ||
+    a.placeType === '서울 원하는 장소'
+  ) {
+    return a.placeType;
+  }
+
+  return (a.place || []).join(', ') || '-';
+}
+
 
 /* =========================================================
    STEPS
@@ -446,9 +462,7 @@ function labelFor(step, value) {
 
 
     if (
-      !TRIAL_MODE &&
-      answers.tier ===
-        '이코노미' &&
+      (TRIAL_MODE || answers.tier === '이코노미') &&
       answers.placeType ===
         '송도 할인 장소' &&
       answers.songdoPlace
@@ -650,9 +664,7 @@ function checkValid(step) {
       골라야 다음 버튼 활성화
     */
     if (
-      !TRIAL_MODE &&
-      answers.tier ===
-        '이코노미' &&
+      (TRIAL_MODE || answers.tier === '이코노미') &&
       answers.placeType ===
         '송도 할인 장소'
     ) {
@@ -818,13 +830,14 @@ function renderStep() {
   /*
     무료체험
 
-    처음부터 IGC / 트스
+    인천/서울 원하는 장소 또는 송도 할인 장소
   */
   if (TRIAL_MODE) {
 
     RANK_OPTIONS = [
-      'IGC 인천글로벌캠퍼스',
-      '송도 트리플스트리트'
+      '인천 원하는 장소',
+      '서울 원하는 장소',
+      '송도 할인 장소'
     ];
   }
 
@@ -871,7 +884,7 @@ function renderStep() {
         '무료 체험 장소를 선택해주세요';
 
       sub =
-        '무료 체험은 IGC 인천글로벌캠퍼스 또는 송도 트리플스트리트에서 진행됩니다.';
+        '인천·서울의 원하는 장소에서 진행하거나, 송도 지정 장소를 선택할 수 있어요. 송도 선택 시 정규 수업 등록 후 월 2만원 할인됩니다.';
     }
 
 
@@ -1432,15 +1445,13 @@ function renderStep() {
 
 
     /*
-      정규 Economy
+      무료체험 또는 정규 Economy
 
       송도 할인 장소 선택 후
-      무료체험에서 사용하는
-      두 장소 중 선택
+      두 지정 장소 중 선택
     */
     if (
-      !TRIAL_MODE &&
-      isEconomy &&
+      (TRIAL_MODE || isEconomy) &&
       answers.placeType ===
         '송도 할인 장소'
     ) {
@@ -1456,7 +1467,9 @@ function renderStep() {
 
 
         '<div class="qsub" style="margin-top:-.2rem;">' +
-        '송도 할인은 아래 두 지정 장소에서 진행할 때 적용됩니다.' +
+        (TRIAL_MODE
+          ? '무료 체험 장소를 아래 두 곳 중에서 선택해주세요. 정규 수업 등록 후에도 이 장소를 이용하면 월 2만원 할인됩니다.'
+          : '송도 할인은 아래 두 지정 장소에서 진행할 때 적용됩니다.') +
         '</div>' +
 
 
@@ -1521,9 +1534,9 @@ function renderStep() {
       inner +=
         '<div class="trial-place-note">' +
 
-        '무료 체험은 이코노미 플랜으로 진행되며,<br>' +
+        '무료 체험은 이코노미 플랜으로 1시간 진행됩니다.<br>' +
 
-        'IGC 또는 송도 트리플스트리트에서만 가능합니다.' +
+        '인천·서울은 원하는 장소에서, 송도는 지정 장소에서 진행됩니다.' +
 
         '</div>';
     }
@@ -2050,12 +2063,7 @@ function renderStep() {
     if (TRIAL_MODE) {
 
 
-      const trialPlace =
-        (
-          answers.place ||
-          []
-        ).join(', ') ||
-        '-';
+      const trialPlace = placeLabel(answers);
 
 
       inner +=
@@ -2070,6 +2078,17 @@ function renderStep() {
         '<strong>이코노미(체험)</strong>' +
 
         '</div>' +
+
+        (
+          answers.placeType === '송도 할인 장소'
+            ? '<div class="pay-row">' +
+              '<span>정규 수업 등록 시 할인</span>' +
+              '<strong style="color:var(--accent-deep);">월 -₩' +
+              ECONOMY_SONGDO_DISCOUNT.toLocaleString() +
+              '</strong>' +
+              '</div>'
+            : ''
+        ) +
 
 
         '<div class="pay-row">' +
@@ -2653,12 +2672,11 @@ function renderStep() {
 
 
             /*
-              REGULAR ECONOMY
+              FREE TRIAL / REGULAR ECONOMY
             */
             if (
-              !TRIAL_MODE &&
-              answers.tier ===
-                '이코노미'
+              TRIAL_MODE ||
+              answers.tier === '이코노미'
             ) {
 
 
@@ -2667,7 +2685,7 @@ function renderStep() {
 
 
               /*
-                송도 → 인천으로 바꾸면
+                송도 → 인천/서울로 바꾸면
                 기존 IGC / 트스 삭제
               */
               if (
@@ -3861,11 +3879,7 @@ async function submitToJotform(a) {
   if (TRIAL_MODE) {
 
 
-    jotformPlace =
-      (
-        a.place ||
-        []
-      ).join(', ');
+    jotformPlace = placeLabel(a).replace(' · ', ' / ');
   }
 
 
@@ -4016,14 +4030,11 @@ async function submitToJotform(a) {
   }
 
 
-  else if (TRIAL_MODE) {
+  else if (TRIAL_MODE && a.placeType === '송도 할인 장소') {
 
 
     detailedSongdoPlace =
-      (
-        a.place ||
-        []
-      ).join(', ');
+      a.songdoPlace || '';
   }
 
 
@@ -4160,12 +4171,7 @@ function showSuccess() {
   if (TRIAL_MODE) {
 
 
-    successPlace =
-      (
-        a.place ||
-        []
-      ).join(', ') ||
-      '-';
+    successPlace = placeLabel(a);
   }
 
 
@@ -4282,7 +4288,11 @@ function showSuccess() {
 
         ? '<strong>노쇼 방지 보증금</strong> · ₩' +
           TRIAL_DEPOSIT.toLocaleString() +
-          '<br>'
+          '<br>' +
+          (a.placeType === '송도 할인 장소'
+            ? '<strong>정규 수업 등록 시 송도 할인</strong> · 월 -₩' +
+              ECONOMY_SONGDO_DISCOUNT.toLocaleString() + '<br>'
+            : '')
 
 
         : (
