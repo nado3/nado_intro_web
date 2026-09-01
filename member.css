@@ -187,12 +187,26 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .member-auth-card .mobile-logo { display: block; }
   .member-app { display: block; }
   .member-sidebar { display: none; }
-  .mobile-member-header { position: sticky; z-index: 60; top: 0; display: flex; min-height: 70px; padding: 12px 20px; align-items: center; justify-content: space-between; color: #fff; background: var(--member-navy); }
-  .mobile-member-nav { position: static; z-index: 59; top: auto; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 8px 10px; border-bottom: 1px solid var(--member-line); background: rgba(255,255,255,.98); box-shadow: 0 8px 22px rgba(16,42,67,.08); backdrop-filter: blur(14px); }
+  .mobile-member-header {
+    position: sticky;
+    z-index: 60;
+    top: 0;
+    height: 56px;
+    min-height: 56px;
+    padding: 7px 16px;
+    align-items: center;
+    justify-content: space-between;
+    color: #fff;
+    background: var(--member-navy);
+  }
+  .mobile-member-nav { position: sticky; z-index: 59; top: 56px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 8px 10px; border-bottom: 1px solid var(--member-line); background: rgba(255,255,255,.98); box-shadow: 0 8px 22px rgba(16,42,67,.08); backdrop-filter: blur(14px); }
   .mobile-member-nav button { min-width: 0; min-height: 54px; padding: 5px 3px; border: 0; border-radius: 12px; color: #526174; background: transparent; cursor: pointer; font-size: 11px; font-weight: 850; line-height: 1.1; display: grid; place-items: center; align-content: center; gap: 3px; }
   .mobile-member-nav button span:first-child { font-size: 17px; line-height: 1; }
   .mobile-member-nav button.active { color: #fff; background: var(--member-blue); box-shadow: 0 8px 18px rgba(11,117,255,.22); }
-  .mobile-member-header img { width: 88px; filter: brightness(0) invert(1); }
+  .mobile-member-header img {
+    width: 72px;
+    filter: brightness(0) invert(1);
+  }
   .mobile-member-header button { border: 0; color: #fff; background: transparent; font-weight: 800; }
   .member-main { padding-top: 24px; padding-bottom: 40px; }
   .member-card.half, .member-card.third { grid-column: span 12; }
