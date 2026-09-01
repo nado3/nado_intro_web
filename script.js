@@ -51,17 +51,14 @@ function placeLabel(a) {
     return (
       city +
       ' 희망 장소' +
-      (
-        preferredPlace
-          ? ' · ' + preferredPlace
-          : ''
-      ) +
+      (preferredPlace ? ' · ' + preferredPlace : '') +
       ' (최종 장소 추후 조율)'
     );
   }
 
   return (a.place || []).join(', ') || '-';
 }
+
 
 /* =========================================================
    STEPS
@@ -349,7 +346,6 @@ const answers = {
     TRIAL_MODE
       ? '체험 1회'
       : '주 1회',
-
   preferredPlace: ''
 };
 
@@ -470,31 +466,37 @@ function labelFor(step, value) {
 
 
   if (step.type === 'rank') {
+
     if (
       !Array.isArray(value) ||
       !value.length
     ) {
       return '';
     }
-  
+
+
     if (TRIAL_MODE) {
       return placeLabel(answers);
     }
-  
+
+
     if (
       answers.tier === '이코노미' &&
       answers.placeType ===
         '송도 할인 장소' &&
       answers.songdoPlace
     ) {
+
       return (
         '송도 할인 장소 · ' +
         answers.songdoPlace
       );
     }
-  
+
+
     return value.join(', ');
   }
+
 
   if (step.type === 'gridtime') {
 
@@ -670,6 +672,23 @@ function checkValid(step) {
       v.length === 0
     ) {
       return false;
+    }
+
+
+    if (
+      TRIAL_MODE &&
+      (
+        answers.placeType ===
+          '인천 원하는 장소' ||
+        answers.placeType ===
+          '서울 원하는 장소'
+      )
+    ) {
+
+      return !!(
+        answers.preferredPlace &&
+        answers.preferredPlace.trim()
+      );
     }
 
 
@@ -901,7 +920,7 @@ function renderStep() {
         '무료 체험 장소를 선택해주세요';
 
       sub =
-        '인천·서울의 원하는 장소에서 진행하거나, 송도 지정 장소를 선택할 수 있어요. 송도 선택 시 정규 수업 등록 후 월 2만원 할인됩니다.';
+        '인천·서울은 희망 장소를 대략 알려주세요. 최종 장소는 선생님과 조율하며, 송도는 지정 장소에서 진행됩니다.';
     }
 
 
@@ -1329,6 +1348,50 @@ function renderStep() {
 
         let extra = '';
 
+        let optionTitle =
+          opt;
+
+        let optionMeta = '';
+
+
+        if (TRIAL_MODE) {
+
+          if (opt === '인천 원하는 장소') {
+            optionTitle =
+              '인천에서 희망하는 장소';
+
+            optionMeta =
+              '<div class="place-option-meta">' +
+              '대략적인 위치 입력 · 최종 장소는 추후 조율' +
+              '</div>';
+          }
+
+
+          else if (opt === '서울 원하는 장소') {
+            optionTitle =
+              '서울에서 희망하는 장소';
+
+            optionMeta =
+              '<div class="place-option-meta">' +
+              '대략적인 위치 입력 · 최종 장소는 추후 조율' +
+              '</div>';
+          }
+
+
+          else if (opt === '송도 할인 장소') {
+            optionTitle =
+              '송도 지정 장소';
+
+            optionMeta =
+              '<div class="place-option-meta">' +
+              'IGC·트리플스트리트' +
+              '</div>' +
+              '<div class="place-discount-badge">' +
+              '정규 등록 시 월 2만원 할인' +
+              '</div>';
+          }
+        }
+
 
         /*
           Economy
@@ -1445,7 +1508,9 @@ function renderStep() {
 
           '<div class="opt-label">' +
 
-          opt +
+          optionTitle +
+
+          optionMeta +
 
           extra +
 
@@ -1459,6 +1524,50 @@ function renderStep() {
 
     inner +=
       '</div>';
+
+
+    if (
+      TRIAL_MODE &&
+      (
+        answers.placeType ===
+          '인천 원하는 장소' ||
+        answers.placeType ===
+          '서울 원하는 장소'
+      )
+    ) {
+
+      const preferredCity =
+        answers.placeType ===
+          '인천 원하는 장소'
+          ? '인천'
+          : '서울';
+
+      const preferredPlaceholder =
+        preferredCity === '인천'
+          ? '예: 부평역 근처 카페, 구월동 로데오거리 주변'
+          : '예: 홍대입구역 근처 카페, 강남역 주변';
+
+
+      inner +=
+        '<div class="preferred-place-wrap">' +
+
+        '<label class="field-label" for="preferredPlaceInput">' +
+        preferredCity +
+        '에서 희망하는 장소를 대략 적어주세요' +
+        '</label>' +
+
+        '<input type="text" id="preferredPlaceInput" placeholder="' +
+        preferredPlaceholder +
+        '" value="' +
+        (answers.preferredPlace || '') +
+        '">' +
+
+        '<div class="preferred-place-help">' +
+        '정확한 주소가 아니어도 괜찮아요. 최종 장소는 선생님과 조율합니다.' +
+        '</div>' +
+
+        '</div>';
+    }
 
 
     /*
@@ -1543,20 +1652,6 @@ function renderStep() {
     }
 
 
-    /*
-      무료체험
-    */
-    if (TRIAL_MODE) {
-
-      inner +=
-        '<div class="trial-place-note">' +
-
-        '무료 체험은 이코노미 플랜으로 1시간 진행됩니다.<br>' +
-
-        '인천·서울은 원하는 장소에서, 송도는 지정 장소에서 진행됩니다.' +
-
-        '</div>';
-    }
   }
 
 
@@ -2681,6 +2776,9 @@ function renderStep() {
             const val =
               el.dataset.value;
 
+            const previousPlaceType =
+              answers.placeType;
+
 
             answers[step.key] =
               [
@@ -2699,6 +2797,16 @@ function renderStep() {
 
               answers.placeType =
                 val;
+
+
+              if (
+                TRIAL_MODE &&
+                previousPlaceType !== val
+              ) {
+
+                answers.preferredPlace =
+                  '';
+              }
 
 
               /*
@@ -2777,6 +2885,30 @@ function renderStep() {
           }
         );
       });
+
+
+    const preferredPlaceInput =
+      document.getElementById(
+        'preferredPlaceInput'
+      );
+
+
+    if (preferredPlaceInput) {
+
+      preferredPlaceInput.addEventListener(
+        'input',
+        () => {
+
+          answers.preferredPlace =
+            preferredPlaceInput.value;
+
+          answers.payment =
+            false;
+
+          setNextState(step);
+        }
+      );
+    }
   }
 
 
@@ -3896,7 +4028,7 @@ async function submitToJotform(a) {
   if (TRIAL_MODE) {
 
 
-    jotformPlace = placeLabel(a).replace(' · ', ' / ');
+    jotformPlace = placeLabel(a).replace(/ · /g, ' / ');
   }
 
 
