@@ -32,7 +32,7 @@ function freqLabel(freq) {
 
 function placeLabel(a) {
   if (a.placeType === '송도 할인 장소') {
-    return '송도 할인 장소' +
+    return '송도 지정 장소' +
       (a.songdoPlace ? ' · ' + a.songdoPlace : '');
   }
 
@@ -40,12 +40,28 @@ function placeLabel(a) {
     a.placeType === '인천 원하는 장소' ||
     a.placeType === '서울 원하는 장소'
   ) {
-    return a.placeType;
+    const city =
+      a.placeType === '인천 원하는 장소'
+        ? '인천'
+        : '서울';
+
+    const preferredPlace =
+      (a.preferredPlace || '').trim();
+
+    return (
+      city +
+      ' 희망 장소' +
+      (
+        preferredPlace
+          ? ' · ' + preferredPlace
+          : ''
+      ) +
+      ' (최종 장소 추후 조율)'
+    );
   }
 
   return (a.place || []).join(', ') || '-';
 }
-
 
 /* =========================================================
    STEPS
@@ -332,7 +348,9 @@ const answers = {
   frequency:
     TRIAL_MODE
       ? '체험 1회'
-      : '주 1회'
+      : '주 1회',
+
+  preferredPlace: ''
 };
 
 if (TRIAL_MODE) {
@@ -452,32 +470,31 @@ function labelFor(step, value) {
 
 
   if (step.type === 'rank') {
-
     if (
       !Array.isArray(value) ||
       !value.length
     ) {
       return '';
     }
-
-
+  
+    if (TRIAL_MODE) {
+      return placeLabel(answers);
+    }
+  
     if (
-      (TRIAL_MODE || answers.tier === '이코노미') &&
+      answers.tier === '이코노미' &&
       answers.placeType ===
         '송도 할인 장소' &&
       answers.songdoPlace
     ) {
-
       return (
         '송도 할인 장소 · ' +
         answers.songdoPlace
       );
     }
-
-
+  
     return value.join(', ');
   }
-
 
   if (step.type === 'gridtime') {
 
