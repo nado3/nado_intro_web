@@ -188,6 +188,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .member-app { display: block; }
   .member-sidebar { display: none; }
   .mobile-member-header {
+    display: flex;
     position: sticky;
     z-index: 60;
     top: 0;
