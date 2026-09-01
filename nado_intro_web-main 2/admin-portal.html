@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>운영 관리자 | NADO</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="img/clogo.png" />
+  <link rel="stylesheet" href="member.css" />
+</head>
+<body>
+  <div class="mobile-member-header"><img src="img/mlogo.png" alt="NADO" /><button id="mobileAdminLogout" type="button">로그아웃</button></div>
+  <nav class="mobile-member-nav" aria-label="관리자 모바일 메뉴">
+    <button class="active" data-admin-view="overview" type="button">현황</button><button data-admin-view="students" type="button">학생</button><button data-admin-view="assignments" type="button">배정</button><button data-admin-view="files" type="button">파일</button><button data-admin-view="audio" type="button">음성</button>
+  </nav>
+  <div class="member-app">
+    <aside class="member-sidebar">
+      <a href="index.html"><img class="member-sidebar-logo" src="img/mlogo.png" alt="NADO" /></a>
+      <nav class="member-nav" aria-label="관리자 메뉴">
+        <button class="active" data-admin-view="overview" type="button">⌂ 운영 현황</button>
+        <button data-admin-view="students" type="button">◎ 학생 계정</button>
+        <button data-admin-view="assignments" type="button">⇄ 전체 배정</button>
+        <button data-admin-view="files" type="button">▤ 공유 파일</button>
+        <button data-admin-view="audio" type="button">◉ 음성 연습 현황</button>
+        <a id="teachersAdminLink" href="https://nadomeokgo.github.io/nado_teachers_web/admin.html">⚙ 배정 관리 열기</a>
+        <a href="index.html">← 공개 홈페이지</a>
+      </nav>
+      <div class="member-sidebar-foot"><strong id="adminName">관리자</strong><span id="adminEmail">-</span><button id="adminLogout" type="button">로그아웃</button></div>
+    </aside>
+    <main class="member-main">
+      <header class="member-topbar"><div><h1 id="adminPageTitle">NADO 운영 현황</h1><p>학생 계정, 선생님 배정과 공유 파일 상태를 한곳에서 확인합니다.</p></div><span class="member-status">ADMIN</span></header>
+      <div class="member-content">
+        <section id="admin-view-overview" class="member-view active">
+          <div class="member-grid">
+            <article class="member-card third"><div class="member-card-head"><div><p>활성 학생</p><h2 id="activeStudentCount">-</h2></div></div></article>
+            <article class="member-card third"><div class="member-card-head"><div><p>현재 배정</p><h2 id="activeAssignmentCount">-</h2></div></div></article>
+            <article class="member-card third"><div class="member-card-head"><div><p>공유 파일</p><h2 id="sharedFileCount">-</h2></div></div></article>
+            <article class="member-card third"><div class="member-card-head"><div><p>음성 제출</p><h2 id="adminAudioCount">-</h2></div></div></article>
+            <article class="member-card third"><div class="member-card-head"><div><p>피드백 대기</p><h2 id="adminAudioPendingCount">-</h2></div></div></article>
+            <article class="member-card third"><div class="member-card-head"><div><p>AI 처리 오류</p><h2 id="adminAudioFailedCount">-</h2></div></div></article>
+            <article class="member-card third"><div class="member-card-head"><div><p>누적 녹음 시간</p><h2 id="adminAudioMinutes">-</h2></div></div></article>
+            <article class="member-card third"><div class="member-card-head"><div><p>AI 처리 호출</p><h2 id="adminAiCallCount">-</h2></div></div></article>
+            <article class="member-card">
+              <div class="member-card-head"><div><h2>최근 학생 계정</h2><p>초대와 이용 상태를 확인할 수 있습니다.</p></div><a class="member-button secondary" href="https://nadomeokgo.github.io/nado_teachers_web/admin.html">새 학생 배정</a></div>
+              <div id="recentStudentTable" class="admin-table-wrap"></div>
+            </article>
+          </div>
+        </section>
+        <section id="admin-view-students" class="member-view"><article class="member-card"><div class="member-card-head"><div><h2>학생 계정 관리</h2><p>이용 정지·재활성화·종료를 관리합니다.</p></div></div><div id="studentTable" class="admin-table-wrap"></div></article></section>
+        <section id="admin-view-assignments" class="member-view"><article class="member-card"><div class="member-card-head"><div><h2>전체 학생 배정</h2><p>NADO Teachers에서 생성된 배정이 자동 반영됩니다.</p></div><a class="member-button primary" href="https://nadomeokgo.github.io/nado_teachers_web/admin.html">배정 관리</a></div><div id="assignmentTable" class="admin-table-wrap"></div></article></section>
+        <section id="admin-view-files" class="member-view"><article class="member-card"><div class="member-card-head"><div><h2>전체 공유 파일</h2><p>모든 학생–선생님 공간의 파일을 확인합니다.</p></div></div><div id="adminFileList" class="file-list"></div></article></section>
+        <section id="admin-view-audio" class="member-view"><article class="member-card"><div class="member-card-head"><div><h2>전체 음성 연습 현황</h2><p>모든 학생의 제출·AI 처리·선생님 피드백 상태와 90일 보관을 관리합니다.</p></div><div class="table-actions"><button id="adminRefreshAudio" class="member-button secondary" type="button">새로고침</button><button id="adminCleanupAudio" class="member-button danger" type="button">만료 원본 정리</button></div></div><div id="adminAudioList" class="audio-list"><div class="empty-box">음성 제출물을 불러오는 중입니다.</div></div></article></section>
+      </div>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/member-config.js"></script>
+  <script src="js/member-common.js"></script>
+  <script src="js/admin-portal.js"></script>
+  <script src="js/admin-audio.js"></script>
+</body>
+</html>
