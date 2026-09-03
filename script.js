@@ -894,6 +894,15 @@ function trackFormEvent(eventName, extraParams) {
   }, extraParams || {}));
 }
 
+function trackGoogleAdsApplication() {
+  if (typeof window.gtag !== 'function') return;
+  window.gtag('event', 'conversion', {
+    send_to: 'AW-18355423972/rMOMCLz4vO0cEOSVxrBE',
+    value: 1,
+    currency: 'KRW'
+  });
+}
+
 function showSubmitError() {
   current = Math.max(0, activeSteps.length - 1);
   renderStep();
@@ -930,6 +939,7 @@ async function showSuccess(){
   alreadySubmitted = true;
   trackFormEvent('form_submit');
   trackFormEvent('generate_lead', { currency: 'KRW', value: 1 });
+  trackGoogleAdsApplication();
   document.getElementById('formMain').style.display = 'none';
   document.getElementById('bottombar').style.display = 'none';
   document.querySelector('.topbar').style.display = 'none';
