@@ -12,19 +12,19 @@
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>나도 | 미국 대학생 1:1 영어회화</title>
-<meta name="description" content="나도는 미국 대학생 선생님과 직접 만나 진행하는 1:1 맞춤 영어회화 서비스입니다. 목표에 맞는 선생님을 연결해드려요.">
+  <title>나도 | 송도 미국 대학생 1:1 영어회화</title>
+<meta name="description" content="나도는 인천 송도에서 미국 대학생 선생님과 직접 만나 진행하는 1:1 맞춤 영어회화 서비스입니다. 목표에 맞는 선생님을 연결해드려요.">
 <link rel="canonical" href="https://hellonado.com/">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="나도">
-<meta property="og:title" content="나도 | 미국 대학생 1:1 영어회화">
-<meta property="og:description" content="나도는 미국 대학생 선생님과 직접 만나 진행하는 1:1 맞춤 영어회화 서비스입니다. 목표에 맞는 선생님을 연결해드려요.">
+<meta property="og:title" content="나도 | 송도 미국 대학생 1:1 영어회화">
+<meta property="og:description" content="나도는 인천 송도에서 미국 대학생 선생님과 직접 만나 진행하는 1:1 맞춤 영어회화 서비스입니다. 목표에 맞는 선생님을 연결해드려요.">
 <meta property="og:url" content="https://hellonado.com/">
 <meta property="og:image" content="https://hellonado.com/img/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="나도 | 미국 대학생 1:1 영어회화">
-<meta name="twitter:description" content="나도는 미국 대학생 선생님과 직접 만나 진행하는 1:1 맞춤 영어회화 서비스입니다. 목표에 맞는 선생님을 연결해드려요.">
+<meta name="twitter:title" content="나도 | 송도 미국 대학생 1:1 영어회화">
+<meta name="twitter:description" content="나도는 인천 송도에서 미국 대학생 선생님과 직접 만나 진행하는 1:1 맞춤 영어회화 서비스입니다. 목표에 맞는 선생님을 연결해드려요.">
 <meta name="twitter:image" content="https://hellonado.com/img/og-image.png">
 <script id="seo-structured-data" type="application/ld+json">
 {
@@ -45,18 +45,13 @@
       "alternateName": "NADO",
       "url": "https://hellonado.com/",
       "logo": "https://hellonado.com/img/mlogo.png",
-      "description": "나도는 미국 대학생 선생님과 직접 만나 진행하는 1:1 맞춤 영어회화 서비스입니다. 목표에 맞는 선생님을 연결해드려요.",
-      "areaServed": [
-      {
-        "@type": "City",
-        "name": "서울"
-      },
-      {
-        "@type": "City",
-        "name": "인천"
+      "description": "나도는 인천 송도에서 미국 대학생 선생님과 직접 만나 진행하는 1:1 맞춤 영어회화 서비스입니다. 목표에 맞는 선생님을 연결해드려요.",
+      "areaServed": {
+        "@type": "Place",
+        "name": "인천 송도"
       }
-        }
-      ]
+    }
+  ]
 }
 </script>
   <link rel="icon" type="image/png" href="img/clogo.png">
@@ -121,6 +116,17 @@
       text-decoration: none; transition: border-color .2s, background .2s, transform .2s;
     }
     .btn-text:hover { background: var(--white); border-color: var(--accent); transform: translateY(-2px); }
+    .trial-cta-wrap { position: relative; display: inline-flex; }
+    .trial-event-bubble {
+      position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
+      padding: .38rem .72rem; border-radius: .75rem; background: #FF6B5F; color: #fff;
+      font-size: .76rem; font-weight: 800; line-height: 1; white-space: nowrap;
+      box-shadow: 0 5px 14px rgba(255, 107, 95, .28); pointer-events: none;
+    }
+    .trial-event-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+      border: 5px solid transparent; border-top-color: #FF6B5F;
+    }
     .hero-micro { font-size: 0.88rem; color: var(--gray); margin-top: 1rem; max-width: 460px; line-height: 1.6; }
 
     .hero-right { position: relative; display: flex; align-items: center; justify-content: center; }
@@ -146,26 +152,29 @@
     .small-card-icon { font-size: 1.5rem; margin-bottom: 0.4rem; }
     .small-card-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem; }
     .small-card-sub { font-size: 0.75rem; color: var(--gray); }
-    .hero-teacher-carousel-shell { width: min(380px, 100%); overflow: visible; }
-    .teacher-flip-deck { position: relative; width: min(350px, calc(100% - 22px)); height: 466px; margin: 0 auto; perspective: 1200px; }
+    .hero-teacher-carousel-shell { width: min(410px, 100%); overflow: visible; }
+    /* Reserve space for the two rear cards; grid sizes the deck to its longest bio. */
+    .teacher-flip-deck {
+      --stack-x: 24px; --stack-y: 18px; --stack-angle: 3deg;
+      --stack-space: 80px;
+      position: relative; display: grid; isolation: isolate; width: 100%;
+      padding-right: var(--stack-space); margin: 0 auto 64px;
+    }
     .teacher-flip-deck .flip-teacher-card {
-      position: absolute; top: 0; right: 22px; left: 0; width: auto; height: 100%; min-width: 0; min-height: 0; padding: 1.75rem;
+      position: relative; grid-area: 1 / 1; width: 100%; min-width: 0; min-height: 466px; padding: 1.75rem;
       display: flex; flex-direction: column; cursor: pointer; user-select: none;
-      transform-origin: 50% 100%; transition: transform .52s cubic-bezier(.22,.72,.2,1), opacity .36s ease, box-shadow .36s ease;
+      transform-origin: 50% 50%; transition: transform .52s cubic-bezier(.22,.72,.2,1), opacity .36s ease, box-shadow .36s ease;
     }
-    .teacher-flip-deck .flip-teacher-card[data-position="0"] { z-index: 3; transform: translate3d(0,0,0) rotate(0deg); opacity: 1; box-shadow: 0 22px 55px rgba(36,74,120,.22); }
-    .teacher-flip-deck .flip-teacher-card[data-position="1"] { 
-      z-index: 2; 
-      transform: translate3d(32px,11px,-40px) rotate(1.6deg) scale(.985); 
-      opacity: .96; 
+    .teacher-flip-deck .flip-teacher-card[data-position="0"] { z-index: 3; transform: translate(0,0) rotate(0deg); opacity: 1; box-shadow: 0 16px 36px rgba(36,74,120,.18); }
+    .teacher-flip-deck .flip-teacher-card[data-position="1"] {
+      z-index: 2; transform: translate(var(--stack-x), var(--stack-y)) rotate(var(--stack-angle)) scale(.99); opacity: 1;
+      background: #f4f9ff; border-color: #b8d4ef; box-shadow: 0 8px 20px rgba(36,74,120,.14);
     }
-    
-    .teacher-flip-deck .flip-teacher-card[data-position="2"] { 
-      z-index: 1; 
-      transform: translate3d(64px,22px,-80px) rotate(3deg) scale(.965); 
-      opacity: .88; 
+    .teacher-flip-deck .flip-teacher-card[data-position="2"] {
+      z-index: 1; transform: translate(calc(var(--stack-x) * 2), calc(var(--stack-y) * 2)) rotate(calc(var(--stack-angle) * 2)) scale(.98); opacity: 1;
+      background: #e9f3ff; border-color: #a6c8e9; box-shadow: 0 8px 20px rgba(36,74,120,.12);
     }
-    .teacher-flip-deck .flip-teacher-card[data-position]:not([data-position="0"]):not([data-position="1"]):not([data-position="2"]) { z-index: 0; transform: translate3d(22px,22px,-100px) scale(.95); opacity: 0; pointer-events: none; }
+    .teacher-flip-deck .flip-teacher-card[data-position]:not([data-position="0"]):not([data-position="1"]):not([data-position="2"]) { z-index: 0; transform: translate(calc(var(--stack-x) * 2), calc(var(--stack-y) * 2)) scale(.98); opacity: 0; pointer-events: none; }
     .teacher-flip-deck .flip-teacher-card:focus-visible { outline: 3px solid rgba(74,144,226,.45); outline-offset: 4px; }
     .teacher-flip-deck .teach-avatar { width: 138px; height: 138px; margin-top: .05rem; }
     .teacher-flip-deck .teach-name { font-size: 1.4rem; font-weight: 800; }
@@ -515,18 +524,24 @@
       .hero-buttons { width: auto; display: flex; flex-flow: row nowrap; gap: .8rem; }
       .hero-buttons .btn-primary { width: auto; min-height: auto; display: inline-block; padding: .9rem 1.65rem; text-align: center; }
       .hero-buttons .btn-text { width: auto; min-height: auto; height: 48px; display: inline-flex; align-items: center; padding: 0 1.35rem; border: 1.5px solid rgba(74, 144, 226, .28); border-radius: 3rem; background: rgba(255,255,255,.82); text-decoration: none; }
+      .hero-buttons { flex-direction: column; align-items: flex-start; }
+      .trial-cta-wrap { align-items: center; gap: .55rem; }
+      .trial-event-bubble {
+        position: relative; left: auto; bottom: auto; transform: none; order: 2;
+        padding: .42rem .62rem; font-size: .7rem;
+      }
+      .trial-event-bubble::after {
+        top: 50%; left: auto; right: 100%; transform: translateY(-50%);
+        border-top-color: transparent; border-right-color: #FF6B5F;
+      }
       .hero-micro { width: auto; margin-top: .65rem; margin-bottom: .75rem; text-align: left; font-size: .86rem; }
       .hero-right { min-height: 0; }
-      .hero-teacher-carousel-shell { width: min(326px, 100%); }
-      .teacher-flip-deck { width: min(312px, calc(100% - 16px)); height: 426px; }
-      .teacher-flip-deck .flip-teacher-card { right: 16px; min-height: 332px; padding: 1.05rem; border-radius: 1.25rem; }
-      .teacher-flip-deck .flip-teacher-card[data-position="1"] { 
-        transform: translate3d(22px,8px,-40px) rotate(1.3deg) scale(.988); 
+      .hero-teacher-carousel-shell { width: min(360px, 100%); }
+      .teacher-flip-deck {
+        --stack-x: 18px; --stack-y: 14px; --stack-angle: 2.5deg;
+        --stack-space: 60px; margin-bottom: 52px;
       }
-      
-      .teacher-flip-deck .flip-teacher-card[data-position="2"] { 
-        transform: translate3d(44px,16px,-80px) rotate(2.5deg) scale(.972); 
-      }
+      .teacher-flip-deck .flip-teacher-card { min-height: 426px; padding: 1.05rem; border-radius: 1.25rem; }
       .teacher-flip-deck .teach-avatar { width: 170px; height: 170px; margin: 0 auto .45rem; }
       .teacher-flip-deck .teach-name { font-size: 1.22rem; margin-bottom: .15rem; }
       .teacher-flip-deck .teach-school, .teacher-flip-deck .teach-major { font-size: .84rem; line-height: 1.35; }
@@ -576,10 +591,6 @@
       .section-title { font-size: 2rem; }
     }
 
-    @media (max-width: 410px) {
-      .hero-buttons { flex-direction: column; align-items: flex-start; }
-    }
-
     @media (max-width: 350px) {
       .feature-card { grid-template-columns: minmax(0, 1fr); row-gap: .35rem; }
       .feature-icon { grid-row: auto; margin-bottom: .2rem; }
@@ -606,7 +617,7 @@
     <li><a href="#why">왜 나도인가</a></li>
     <li><a href="teachers.html">선생님 소개</a></li>
     <li><a href="how.html">이용 방법</a></li>
-    <li><a class="nav-trial" href="trial.html">무료 체험</a></li>
+    <li><a class="nav-trial" href="trial.html">체험수업</a></li>
     <li><a href="apply.html" class="nav-cta">시작하기</a></li>
 </nav>
 
@@ -621,12 +632,12 @@
     </p>
     <div class="hero-buttons">
       <a class="btn-primary" href="apply.html">1분 만에 신청하기</a>
-      <a class="btn-text" href="trial.html">1회 무료 체험 신청하기</a>
+      <span class="trial-cta-wrap">
+        <span class="trial-event-bubble">9월 30일까지 무료</span>
+        <a class="btn-text" href="trial.html">1회 체험수업 신청하기</a>
+      </span>
     </div>
-    <div class="hero-micro">
-      수업 가능 지역은 서울·인천입니다.<br>
-      주 3회 이상 수업을 원하시면 별도로 문의해주세요.
-    </div>
+    <div class='hero-micro'>주 3회 이상 수업을 원하시면 별도로 문의해주세요.</div>
   </div>
   <div class="hero-right">
     <div class="hero-teacher-carousel-shell">
@@ -747,9 +758,7 @@
       <div class="tier-desc"><span class="economy-desc-line">영어 회화 실력이 검증된 선생님과</span> 부담 없이 시작하세요.</div>
       <ul class="tier-features">
         <li>학적 인증 완료 대학생 선생님</li>
-        <li>수업 가능 지역은 서울·인천</li>
-        <li>일상 영어회화 중심</li>
-        <li>송도 지정 장소 선택 시 월 2만원 할인</li>
+        <li>IGC인천글로벌캠퍼스 카페 · 송도 트리플스트리트 카페</li>
         <li>학생 추천</li>
       </ul>
       <a class="tier-cta" href="apply.html">신청하기</a>
@@ -762,8 +771,7 @@
       <div class="tier-desc">충분한 경험과 노하우가 있는 선생님과 수업합니다.</div>
       <ul class="tier-features">
         <li>원하는 시간 우선 배치</li>
-        <li>수업 가능 지역은 서울·인천</li>
-        <li>비즈니스 영어 선택 가능</li>
+        <li>송도 원하는 곳 어디서든</li>
         <li>충분한 경험과 노하우가 있는 선생님</li>
         <li>전문적인 피드백 세션 10분 진행</li>
         <li>직장인 추천</li>
@@ -777,8 +785,7 @@
       <div class="tier-desc">나도의 최우수 선생님을 만나보세요.</div>
       <ul class="tier-features">
         <li>원하는 시간 우선 배치</li>
-        <li>수업 가능 지역은 서울·인천</li>
-        <li>비즈니스 영어 선택 가능</li>
+        <li>송도 원하는 곳 어디서든</li>
         <li>나도 최우수 선생님 매칭</li>
         <li>전문적인 피드백 세션 10분 진행</li>
         <li>뚜렷한 목적이 있고 영어 회화 실력 상승이 급한 분께 추천</li>
