@@ -142,6 +142,8 @@ function buildActiveSteps(){
   return steps.filter(s => s.key !== 'tier' && s.key !== 'place' && s.key !== 'duration');
 }
 let activeSteps = buildActiveSteps();
+const ANALYTICS_FORM_ID = TRIAL_MODE ? 'nado_trial_application' : 'nado_regular_application';
+let formStartTracked = false;
 const historyEl = document.getElementById('history');
 const qcardWrap = document.getElementById('qcardWrap');
 const progressFill = document.getElementById('progressFill');
@@ -816,6 +818,10 @@ if (step.type === 'trialType'){
 nextBtn.addEventListener('click', () => {
   const step = activeSteps[current];
   if (!checkValid(step)) return;
+  if (!formStartTracked) {
+    formStartTracked = true;
+    trackFormEvent('form_start');
+  }
   if (current === activeSteps.length - 1) {
     if (nextBtn.dataset.submitted) return;
     nextBtn.dataset.submitted = '1';
@@ -864,27 +870,72 @@ async function submitToJotform(a) {
     params.append('submission[43]', TRIAL_MODE ? ((a.trialType || '체험수업') + ' 신청') : '정규 신청'); // 신청 구분
     params.append('submission[28]', a.notes || '');                      // 문의사항
     params.append('submission[44]', a.preferredPlace || a.songdoPlace || ''); // 희망/지정 장소 세부정보
- try {
-    await fetch('https://api.jotform.com/form/' + FORM_ID + '/submissions?apiKey=' + API_KEY, {
-      method: 'POST',
-      body: params
-    });
-  } catch (err) {
-    console.error('Jotform 제출 실패:', err);
+  const response = await fetch('https://api.jotform.com/form/' + FORM_ID + '/submissions?apiKey=' + API_KEY, {
+    method: 'POST',
+    body: params
+  });
+  const result = await response.json().catch(() => null);
+  const responseCode = result && Number(result.responseCode);
+  if (!response.ok || !result || responseCode !== 200) {
+    throw new Error((result && result.message) || '신청 저장에 실패했습니다.');
   }
+  return result;
 }
 
 let alreadySubmitted = false;
-function showSuccess(){
-  if (alreadySubmitted) return;
+let submissionInProgress = false;
+
+function trackFormEvent(eventName, extraParams) {
+  if (typeof window.gtag !== 'function') return;
+  window.gtag('event', eventName, Object.assign({
+    form_id: ANALYTICS_FORM_ID,
+    form_name: TRIAL_MODE ? '체험수업 신청' : '정규수업 신청',
+    form_type: TRIAL_MODE ? 'trial' : 'regular'
+  }, extraParams || {}));
+}
+
+function showSubmitError() {
+  current = Math.max(0, activeSteps.length - 1);
+  renderStep();
+  delete nextBtn.dataset.submitted;
+  nextBtn.disabled = false;
+  nextBtn.textContent = '다시 제출하기';
+  const card = qcardWrap.querySelector('.qcard');
+  if (!card || document.getElementById('submitError')) return;
+  const error = document.createElement('div');
+  error.id = 'submitError';
+  error.setAttribute('role', 'alert');
+  error.style.cssText = 'margin-top:1rem;padding:.85rem 1rem;border-radius:.75rem;background:#fff0f0;color:#b3261e;font-weight:700;line-height:1.45;';
+  error.textContent = '신청이 저장되지 않았어요. 인터넷 연결을 확인한 뒤 다시 제출해주세요.';
+  card.appendChild(error);
+}
+
+async function showSuccess(){
+  if (alreadySubmitted || submissionInProgress) return;
+  submissionInProgress = true;
+  nextBtn.disabled = true;
+  nextBtn.textContent = '제출 중…';
+
+  const a = answers;
+  try {
+    await submitToJotform(a);
+  } catch (err) {
+    submissionInProgress = false;
+    console.error('Jotform 제출 실패:', err);
+    trackFormEvent('form_submit_error');
+    showSubmitError();
+    return;
+  }
+
   alreadySubmitted = true;
+  trackFormEvent('form_submit');
+  trackFormEvent('generate_lead', { currency: 'KRW', value: 1 });
   document.getElementById('formMain').style.display = 'none';
   document.getElementById('bottombar').style.display = 'none';
   document.querySelector('.topbar').style.display = 'none';
   const wrap = document.getElementById('successWrap');
   wrap.style.display = 'block';
 
-  const a = answers;
   if (TRIAL_MODE) {
     const isFreeTrial = a.trialType === '무료 체험';
     document.querySelector('.success-title').textContent = '체험수업 신청 완료!';
@@ -903,7 +954,6 @@ document.getElementById('summaryBox').innerHTML = ''
     + '<strong>수업 장소</strong> · ' + placeLabel(a) + '<br>'
     + '<strong>유입 경로</strong> · ' + ((a.referral||[]).join(', ') || '-') + '<br>'
     + '<strong>연락처</strong> · ' + (a.contact ? a.contact.name + ' · ' + a.contact.phone : '-');
-  submitToJotform(a);
   console.log('신청 데이터:', a);
 }
 
