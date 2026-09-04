@@ -840,9 +840,6 @@ backBtn.addEventListener('click', () => {
 });
 
 async function submitToJotform(a) {
-  const FORM_ID = '262064236851052';
-  const API_KEY = '32abecc4b70bf065c8adf25c9b02b7cb';
-
   const params = new URLSearchParams();
   params.append('submission[3]', a.contact.name);                     // 이름
   params.append('submission[4][full]', a.contact.phone);              // 연락처
@@ -870,14 +867,14 @@ async function submitToJotform(a) {
     params.append('submission[43]', TRIAL_MODE ? ((a.trialType || '체험수업') + ' 신청') : '정규 신청'); // 신청 구분
     params.append('submission[28]', a.notes || '');                      // 문의사항
     params.append('submission[44]', a.preferredPlace || a.songdoPlace || ''); // 희망/지정 장소 세부정보
-  const response = await fetch('https://api.jotform.com/form/' + FORM_ID + '/submissions?apiKey=' + API_KEY, {
+  const response = await fetch('https://nado-intro-web.vercel.app/api/submit', {
     method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
     body: params
   });
   const result = await response.json().catch(() => null);
-  const responseCode = result && Number(result.responseCode);
-  if (!response.ok || !result || responseCode !== 200) {
-    throw new Error((result && result.message) || '신청 저장에 실패했습니다.');
+  if (!response.ok || !result || result.success !== true) {
+    throw new Error((result && (result.error || result.message)) || '신청 저장에 실패했습니다.');
   }
   return result;
 }
