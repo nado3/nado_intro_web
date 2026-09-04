@@ -418,7 +418,7 @@ if (step.type === 'trialType'){
       inner += '<div class="opt-list">';
 
     const selected = answers[step.key] || (step.type === 'multi' ? [] : null);
-    const visibleOptions = step.key === 'goals' && (isFreeTrial || (isPaidTrial && answers.tier === '이코노미'))
+    const visibleOptions = step.key === 'goals' && answers.tier === '이코노미'
       ? step.options.filter(opt => opt !== '비즈니스')
       : step.options;
     visibleOptions.forEach(opt => {
@@ -585,7 +585,7 @@ if (step.type === 'trialType'){
           answers.payment = false;
         }
         answers.tier = el.dataset.value;
-        if (TRIAL_MODE && answers.trialType === '플랜 선택 체험' && answers.tier === '이코노미' && Array.isArray(answers.goals)) {
+        if (answers.tier === '이코노미' && Array.isArray(answers.goals)) {
           answers.goals = answers.goals.filter(goal => goal !== '비즈니스');
         }
         qcardWrap.querySelectorAll('.tier-opt').forEach(o => {
