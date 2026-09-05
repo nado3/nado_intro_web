@@ -12,19 +12,19 @@
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>나도 | 송도 미국 대학생 1:1 영어회화</title>
-<meta name="description" content="나도는 인천 송도에서 미국 대학생 선생님과 직접 만나 진행하는 1:1 맞춤 영어회화 서비스입니다. 목표에 맞는 선생님을 연결해드려요.">
+  <title>나도 | 서울 및 인천 지역 1:1 영어회화</title>
+<meta name="description" content="서울 및 인천 지역에서 미국 대학생 선생님과 직접 만나는 1:1 맞춤 영어회화. 목표와 일정, 희망 장소에 맞는 선생님을 연결해드려요.">
 <link rel="canonical" href="https://hellonado.com/">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="나도">
-<meta property="og:title" content="나도 | 송도 미국 대학생 1:1 영어회화">
-<meta property="og:description" content="나도는 인천 송도에서 미국 대학생 선생님과 직접 만나 진행하는 1:1 맞춤 영어회화 서비스입니다. 목표에 맞는 선생님을 연결해드려요.">
+<meta property="og:title" content="나도 | 서울 및 인천 지역 1:1 영어회화">
+<meta property="og:description" content="서울 및 인천 지역에서 미국 대학생 선생님과 직접 만나는 1:1 맞춤 영어회화. 목표와 일정, 희망 장소에 맞는 선생님을 연결해드려요.">
 <meta property="og:url" content="https://hellonado.com/">
 <meta property="og:image" content="https://hellonado.com/img/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="나도 | 송도 미국 대학생 1:1 영어회화">
-<meta name="twitter:description" content="나도는 인천 송도에서 미국 대학생 선생님과 직접 만나 진행하는 1:1 맞춤 영어회화 서비스입니다. 목표에 맞는 선생님을 연결해드려요.">
+<meta name="twitter:title" content="나도 | 서울 및 인천 지역 1:1 영어회화">
+<meta name="twitter:description" content="서울 및 인천 지역에서 미국 대학생 선생님과 직접 만나는 1:1 맞춤 영어회화. 목표와 일정, 희망 장소에 맞는 선생님을 연결해드려요.">
 <meta name="twitter:image" content="https://hellonado.com/img/og-image.png">
 <script id="seo-structured-data" type="application/ld+json">
 {
@@ -45,11 +45,17 @@
       "alternateName": "NADO",
       "url": "https://hellonado.com/",
       "logo": "https://hellonado.com/img/mlogo.png",
-      "description": "나도는 인천 송도에서 미국 대학생 선생님과 직접 만나 진행하는 1:1 맞춤 영어회화 서비스입니다. 목표에 맞는 선생님을 연결해드려요.",
-      "areaServed": {
-        "@type": "Place",
-        "name": "인천 송도"
-      }
+      "description": "서울 및 인천 지역에서 미국 대학생 선생님과 직접 만나는 1:1 맞춤 영어회화 서비스입니다.",
+      "areaServed": [
+        {
+          "@type": "AdministrativeArea",
+          "name": "서울"
+        },
+        {
+          "@type": "Place",
+          "name": "인천"
+        }
+      ]
     }
   ]
 }
@@ -248,7 +254,15 @@
     .step:hover { box-shadow: 0 16px 40px rgba(74, 144, 226, 0.12); transform: translateY(-4px); }
     .step-num { font-family: 'Pretendard', sans-serif; font-size: 3.5rem; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 1.2rem; }
     .step-title { font-family: 'Pretendard', sans-serif; font-weight: 800; font-size: 1.15rem; margin-bottom: 0.6rem; }
-    .step-desc { font-size: 0.98rem; color: var(--dark-gray); line-height: 1.7; font-weight: 400; }
+    .step-desc {
+      font-size: 0.98rem;
+      color: var(--dark-gray);
+      line-height: 1.7;
+      font-weight: 400;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+      text-wrap: pretty;
+    }
 
     /* PRICE */
     .price-section { background: var(--navy); }
@@ -268,9 +282,16 @@
     .tier-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--white); color: var(--accent); font-size: 0.72rem; font-weight: 800; padding: 0.3rem 0.9rem; border-radius: 1rem; white-space: nowrap; }
     .tier-name { color: rgba(255,255,255,0.7); font-size: 0.85rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.8rem; }
     .tier-card.popular .tier-name { color: rgba(255,255,255,0.9); }
-    .tier-price { font-size: 2.2rem; font-weight: 900; color: var(--white); letter-spacing: -0.02em; }
+    .tier-price { font-size: 2.2rem; font-weight: 900; color: var(--white); letter-spacing: -0.02em; white-space: nowrap; }
     .tier-period { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-bottom: 1.2rem; }
     .tier-card.popular .tier-period { color: rgba(255,255,255,0.85); }
+    .tier-period,
+    .tier-desc,
+    .tier-features li {
+      word-break: keep-all;
+      overflow-wrap: break-word;
+      text-wrap: pretty;
+    }
     .tier-desc { font-size: 0.85rem; color: rgba(255,255,255,0.75); line-height: 1.6; margin-bottom: 1.4rem; min-height: 3.4rem; }
     .tier-card.popular .tier-desc { color: rgba(255,255,255,0.92); }
     .tier-features { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.6rem; }
@@ -567,7 +588,6 @@
       .feature-icon { grid-row: 1 / span 2; width: 40px; margin: 0; font-size: 1.85rem; line-height: 1.2; text-align: center; justify-self: center; }
       .feature-title { margin: 0 0 .35rem; min-width: 0; line-height: 1.3; }
       .feature-desc { width: 100%; max-width: none; min-width: 0; line-height: 1.58; }
-      .mobile-copy-break { display: block; }
       .economy-desc-line { display: block; }
       .step { grid-template-columns: 58px 1fr; padding: 1.35rem; }
       .step-num { font-size: 2.25rem; }
@@ -663,7 +683,7 @@
   </div>
   <div class="stat-card">
     <div class="stat-num">오프라인</div>
-    <div class="stat-label">원하는 곳 어디서나</div>
+    <div class="stat-label">서울 및 인천 지역</div>
   </div>
 </div>
 
@@ -675,12 +695,12 @@
     <div class="feature-card fade-in">
       <div class="feature-icon">💰</div>
       <div class="feature-title">합리적인 비용</div>
-      <div class="feature-desc">한 달 14만원으로 미국 대학생과 1:1 영어 회화를 경험하세요.</div>
+      <div class="feature-desc">송도 지정 장소를 선택하면 모든 요금제에서 월 1만원 할인받을 수 있어요.</div>
     </div>
     <div class="feature-card fade-in">
       <div class="feature-icon">📍</div>
       <div class="feature-title">편한 장소로 맞춤</div>
-      <div class="feature-desc">카페 등 원하는 장소에 맞춰 대학생 선생님과 만날 수 있습니다.</div>
+      <div class="feature-desc">서울 및 인천 지역의 희망 장소에 맞춰 대학생 선생님과 만날 수 있습니다.</div>
     </div>
     <div class="feature-card fade-in">
       <div class="feature-icon">😊</div>
@@ -709,7 +729,7 @@
     <div class="why-point">
       <div class="why-point-icon">📍</div>
       <div class="why-point-title">오프라인</div>
-      <div class="why-point-desc">원하는 장소에서 영어 대화를 연습하세요.</div>
+      <div class="why-point-desc">서울 및 인천 지역의 편한 장소에서 영어 대화를 연습하세요.</div>
     </div>
     <div class="why-point">
       <div class="why-point-icon">🎯</div>
@@ -727,12 +747,12 @@
     <div class="step fade-in">
       <div class="step-num">01</div>
       <div class="step-title">정보 입력</div>
-      <div class="step-desc"><span class="mobile-copy-break">간단한 정보를 입력하면 자동으로 최적의</span> 선생님을 매칭해드립니다.</div>
+      <div class="step-desc">간단한 정보를 입력하면 자동으로 최적의 선생님을 매칭해드립니다.</div>
     </div>
     <div class="step fade-in">
       <div class="step-num">02</div>
       <div class="step-title">선생님 매칭</div>
-      <div class="step-desc"><span class="mobile-copy-break">인증된 대학생 선생님과 매칭되어 일정과</span> 장소를 조율합니다.</div>
+      <div class="step-desc">인증된 대학생 선생님과 매칭되어 서울 및 인천 지역에서 일정과 장소를 조율합니다.</div>
     </div>
     <div class="step fade-in">
       <div class="step-num">03</div>
@@ -758,7 +778,9 @@
       <div class="tier-desc"><span class="economy-desc-line">영어 회화 실력이 검증된 선생님과</span> 부담 없이 시작하세요.</div>
       <ul class="tier-features">
         <li>학적 인증 완료 대학생 선생님</li>
-        <li>IGC인천글로벌캠퍼스 카페 · 송도 트리플스트리트 카페</li>
+        <li>서울 및 인천 지역에서 수업</li>
+        <li>송도 지정 장소 선택 시 월 1만원 할인</li>
+        <li>가능 영어: 일상회화 · 여행영어 · 시험/면접 · 발음교정</li>
         <li>학생 추천</li>
       </ul>
       <a class="tier-cta" href="apply.html">신청하기</a>
@@ -771,7 +793,9 @@
       <div class="tier-desc">충분한 경험과 노하우가 있는 선생님과 수업합니다.</div>
       <ul class="tier-features">
         <li>원하는 시간 우선 배치</li>
-        <li>송도 원하는 곳 어디서든</li>
+        <li>서울 및 인천 지역에서 수업</li>
+        <li>송도 지정 장소 선택 시 월 1만원 할인</li>
+        <li>가능 영어: 일상회화 · 비즈니스 · 여행영어 · 시험/면접 · 발음교정</li>
         <li>충분한 경험과 노하우가 있는 선생님</li>
         <li>전문적인 피드백 세션 10분 진행</li>
         <li>직장인 추천</li>
@@ -782,11 +806,13 @@
       <div class="tier-name">프리미엄</div>
       <div class="tier-price">₩220,000<span style="font-size:.9rem;font-weight:600;opacity:.7;">부터</span></div>
       <div class="tier-period">한 달 · 4회</div>
-      <div class="tier-desc">나도의 최우수 선생님을 만나보세요.</div>
+      <div class="tier-desc">나도 최우수 선생님을 배정해드려요.</div>
       <ul class="tier-features">
         <li>원하는 시간 우선 배치</li>
-        <li>송도 원하는 곳 어디서든</li>
-        <li>나도 최우수 선생님 매칭</li>
+        <li>서울 및 인천 지역에서 수업</li>
+        <li>송도 지정 장소 선택 시 월 1만원 할인</li>
+        <li>가능 영어: 일상회화 · 비즈니스 · 여행영어 · 시험/면접 · 발음교정</li>
+        <li>나도 최우수 선생님 배정</li>
         <li>전문적인 피드백 세션 10분 진행</li>
         <li>뚜렷한 목적이 있고 영어 회화 실력 상승이 급한 분께 추천</li>
       </ul>
@@ -806,7 +832,7 @@
 <section id="cta" class="cta-section">
   <div class="section-label">지금 시작하세요</div>
   <h2 class="cta-title"><span class="title-line">나도,</span> <em class="title-line">할 수 있다.</em></h2>
-  <p class="cta-sub">진짜 영어는 만나서 합니다. 첫 걸음을 나도와 함께.</p>
+  <p class="cta-sub">서울 및 인천 지역에서, 진짜 영어의 첫걸음을 나도와 함께하세요.</p>
   <a class="btn-primary" href="apply.html">1분 만에 신청하기</a>
 </section>
 
@@ -818,6 +844,7 @@
     </div>
   </div>
   <div class="footer-info">
+    <div class="footer-text">수업 가능 지역: 서울 및 인천 지역</div>
     <div class="footer-text">진짜 영어는 만나서 합니다. © 2026 나도</div>
     <div class="footer-text">사업자: 장준섭 · 상호: NADO</div>
     <div class="footer-text">전화번호 : 010-9050-6528</div>

@@ -7,6 +7,7 @@ const PRICE_TABLE = {
 const KID_SURCHARGE = 1500;
 const FREQ_MULTIPLIER = { '주 1회': 1, '주 2회': 2, '체험 1회': 0.25 };
 const TRIAL_DEPOSIT = 20000;
+const SONGDO_LOCATION_DISCOUNT = 10000;
 function durationLabel(idx){
   return DURATIONS[idx] || DURATIONS[0];
 }
@@ -15,7 +16,11 @@ function calcPrice(tier, idx, freq){
   if (TRIAL_MODE) {
     return answers.trialType === '플랜 선택 체험' ? PRICE_TABLE[tier][idx] / 4 : 0;
   }
-  return PRICE_TABLE[tier][idx] * FREQ_MULTIPLIER[freq];
+  const regularPrice = PRICE_TABLE[tier][idx] * FREQ_MULTIPLIER[freq];
+  const songdoDiscount = answers.placeType === '송도 할인 장소'
+    ? SONGDO_LOCATION_DISCOUNT
+    : 0;
+  return Math.max(0, regularPrice - songdoDiscount);
 }
 function freqLabel(freq){
   if (TRIAL_MODE) return answers.trialType || '체험수업';
@@ -49,17 +54,17 @@ const steps = [
       {
         name: '이코노미',
         desc: '영어 회화 실력이 검증된 선생님과 부담 없이 시작',
-        more: '<span class="reco-badge">학생/직장인 추천</span><br>· 학적 인증 완료 대학생 선생님<br>· 인천·서울 희망 장소에서 수업 가능<br>· 세부 장소는 선생님과 조율<br>'
+        more: '<span class="reco-badge">학생/직장인 추천</span><br>· 학적 인증 완료 대학생 선생님<br>· 서울 및 인천 지역에서 수업 가능<br>· 세부 장소는 선생님과 조율<br>· 송도 지정 장소 선택 시 월 1만원 할인<br>· 가능 영어: 일상회화 · 여행영어 · 시험/면접 · 발음교정'
       },
       {
         name: '스탠다드', badge: 'Most Popular',
         desc: '충분한 경험과 노하우가 있는 선생님',
-        more: '<span class="reco-badge">학생/직장인 추천</span><br>· 원하는 시간 우선 배치<br>· 인천·서울 희망 장소에서 수업 가능<br>· 세부 장소는 선생님과 조율<br>· 해외 대학 + 영어회화 교육 경험이 많은 선생님<br>· 학적 인증 완료 대학생 선생님'
+        more: '<span class="reco-badge">학생/직장인 추천</span><br>· 원하는 시간 우선 배치<br>· 서울 및 인천 지역에서 수업 가능<br>· 세부 장소는 선생님과 조율<br>· 송도 지정 장소 선택 시 월 1만원 할인<br>· 가능 영어: 일상회화 · 비즈니스 · 여행영어 · 시험/면접 · 발음교정<br>· 해외 대학 + 영어회화 교육 경험이 많은 선생님<br>· 학적 인증 완료 대학생 선생님'
       },
       {
         name: '프리미엄',
-        desc: '나도 최우수 선생님 3명 중 선택',
-        more: '<span class="reco-badge">뚜렷한 목적이 있고 영어 회화 실력 급상승이 필요한 분께 추천</span><br>· 원하는 시간 우선 배치<br>· 인천·서울 희망 장소에서 수업 가능<br>· 세부 장소는 선생님과 조율<br>· 학적 인증 완료 대학생 선생님<br>· 나도 <strong>최우수 선생님</strong><span class="tip-icon">?<span class="tip-bubble"><u>최우수 선생님</u>은 학생 만족도, 수업 지속률, 피드백 평가 등을 종합하여 선정된 상위 선생님입니다.</span></span> 3명 중 선택'
+        desc: '나도 최우수 선생님 배정',
+        more: '<span class="reco-badge">뚜렷한 목적이 있고 영어 회화 실력 급상승이 필요한 분께 추천</span><br>· 원하는 시간 우선 배치<br>· 서울 및 인천 지역에서 수업 가능<br>· 세부 장소는 선생님과 조율<br>· 송도 지정 장소 선택 시 월 1만원 할인<br>· 가능 영어: 일상회화 · 비즈니스 · 여행영어 · 시험/면접 · 발음교정<br>· 학적 인증 완료 대학생 선생님<br>· 나도 <strong>최우수 선생님 배정</strong>'
       }
     ]
   },
@@ -198,7 +203,11 @@ function checkValid(step){
     return (answers.placeType === '인천 원하는 장소' || answers.placeType === '서울 원하는 장소')
       && !!(answers.preferredPlace && answers.preferredPlace.trim());
   }
-  if (step.type === 'multi') return Array.isArray(v) && v.length > 0;
+  if (step.type === 'multi') {
+    if (!Array.isArray(v) || v.length === 0) return false;
+    if (step.key === 'goals' && answers.tier === '이코노미' && v.includes('비즈니스')) return false;
+    return true;
+  }
   if (step.type === 'rank') {
     if (!Array.isArray(v) || v.length === 0) return false;
     if (answers.placeType === '인천 원하는 장소' || answers.placeType === '서울 원하는 장소') {
@@ -237,14 +246,16 @@ function renderStep(){
   const isPaidTrial = TRIAL_MODE && answers.trialType === '플랜 선택 체험';
   const RANK_OPTIONS = isFreeTrial
     ? ['IGC 인천글로벌캠퍼스', '송도 트리플스트리트']
-    : ['인천 원하는 장소', '서울 원하는 장소'];
+    : (TRIAL_MODE
+      ? ['서울 원하는 장소', '인천 원하는 장소']
+      : ['서울 원하는 장소', '인천 원하는 장소', '송도 할인 장소']);
   if (step.type === 'rank') {
     if (isFreeTrial) {
       title = '무료 체험 장소 선택';
       sub = 'IGC 인천글로벌캠퍼스와 송도 트리플스트리트 중 한 곳을 선택해주세요.';
     } else {
       title = '수업 장소를 선택해주세요';
-      sub = '인천·서울 중 희망 지역을 선택하고 대략적인 장소를 입력해주세요.';
+      sub = '서울 및 인천 지역의 희망 장소를 입력하거나, 월 1만원 할인되는 송도 지정 장소를 선택해주세요.';
     }
   }
   if (isPaidTrial && step.type === 'tier') {
@@ -286,8 +297,8 @@ if (step.type === 'trialType'){
       }
 
       inner += '<div class="tier-opt ' + (selectedType === '플랜 선택 체험' ? 'selected' : '') + '" data-trial-type="플랜 선택 체험">'
-        + '<div class="tier-opt-top"><div class="tier-opt-name">인천/서울 희망 장소</div><div class="tier-opt-price">월 수강료 1회분</div></div>'
-        + '<div class="tier-opt-desc">인천 또는 서울</div></div>';
+        + '<div class="tier-opt-top"><div class="tier-opt-name">서울 및 인천 지역 희망 장소</div><div class="tier-opt-price">월 수강료 1회분</div></div>'
+        + '<div class="tier-opt-desc">세부 장소는 선생님과 조율</div></div>';
 
       if (selectedType === '플랜 선택 체험') {
         inner += '<div class="trial-place-group">'
@@ -381,7 +392,7 @@ if (step.type === 'trialType'){
           optionMeta = '<div class="place-option-meta">대략적인 장소 입력 · 추후 조율</div>';
         } else if (opt === '송도 할인 장소') {
           optionTitle = '송도 지정 장소';
-          optionMeta = '<div class="place-option-meta">IGC·트리플스트리트</div>';
+          optionMeta = '<div class="place-option-meta">IGC·트리플스트리트 · 모든 요금제 월 1만원 할인</div>';
         } else if (opt === '송도') {
           optionTitle = '송도에서 진행';
           optionMeta = '<div class="place-option-meta">세부 장소는 선생님과 추후 조율</div>';
@@ -408,7 +419,7 @@ if (step.type === 'trialType'){
           + '<div class="field-label">송도에서 수업할 장소를 선택해주세요</div>'
           + '<div class="qsub" style="margin-top:-.2rem;">' + (TRIAL_MODE
             ? '무료 체험은 아래 두 곳 중에서 진행됩니다.'
-            : '이코노미 송도 할인은 아래 두 지정 장소에서 진행할 때 적용됩니다.') + '</div>'
+            : '모든 정규 요금제는 아래 두 송도 지정 장소에서 진행할 때 월 1만원 할인됩니다.') + '</div>'
           + '<div class="opt-list">'
           + '<div class="opt songdo-sub-place ' + (answers.songdoPlace === 'IGC 인천글로벌캠퍼스' ? 'selected' : '') + '" data-value="IGC 인천글로벌캠퍼스"><div class="opt-dot"></div><div class="opt-label">IGC 인천글로벌캠퍼스</div></div>'
           + '<div class="opt songdo-sub-place ' + (answers.songdoPlace === '송도 트리플스트리트' ? 'selected' : '') + '" data-value="송도 트리플스트리트"><div class="opt-dot"></div><div class="opt-label">송도 트리플스트리트</div></div>'
@@ -507,11 +518,13 @@ if (step.type === 'trialType'){
       const tierName = answers.tier || '-';
       const d = answers.duration || { index: 0 };
       const price = PRICE_TABLE[answers.tier] ? calcPrice(answers.tier, d.index, answers.frequency) : 0;
+      const hasSongdoDiscount = !TRIAL_MODE && answers.placeType === '송도 할인 장소';
       inner += ''
         + '<div class="pay-box">'
         + '<div class="pay-row"><span>선택 플랜</span><strong>' + tierName + '</strong></div>'
         + '<div class="pay-row"><span>수업 횟수</span><strong>' + (isPaidTrial ? '1회' : answers.frequency) + '</strong></div>'
         + '<div class="pay-row"><span>수업 시간</span><strong>' + durationLabel(d.index, answers.tier) + '</strong></div>'
+        + (hasSongdoDiscount ? '<div class="pay-row"><span>송도 지정 장소 할인</span><strong>-₩' + SONGDO_LOCATION_DISCOUNT.toLocaleString() + '</strong></div>' : '')
         + '<div class="pay-row"><span>결제 금액</span><strong>₩' + price.toLocaleString() + '</strong></div>'
         + '</div>'
         + '<div class="consent-box">'
@@ -949,6 +962,8 @@ async function showSuccess(){
     document.querySelector('.success-text').innerHTML = isFreeTrial
       ? '매칭 준비 후 24시간 내에 카카오톡으로 보증금 입금 계좌를 안내드려요.<br>수업 참석 시 보증금은 전액 환불됩니다.'
       : '매칭 준비 후 24시간 내에 카카오톡으로 1회 수업 결제 방법을 안내드려요.';
+  } else {
+    document.querySelector('.success-text').innerHTML = '서울 및 인천 지역의 희망 장소를 확인한 뒤 24시간 내에 카카오톡으로 연락드려요.';
   }
 document.getElementById('summaryBox').innerHTML = ''
     + (TRIAL_MODE ? '<strong>체험 방식</strong> · ' + (a.trialType || '-') + '<br>' : '')
@@ -959,6 +974,7 @@ document.getElementById('summaryBox').innerHTML = ''
     + '<strong>학습 목표</strong> · ' + ((a.goals||[]).map(g => g === '기타' && a.goalsOther ? '기타(' + a.goalsOther + ')' : g).join(', ') || '-') + '<br>'
     + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).join(', ') || '-') + '<br>'
     + '<strong>수업 장소</strong> · ' + placeLabel(a) + '<br>'
+    + (!TRIAL_MODE && a.placeType === '송도 할인 장소' ? '<strong>송도 지정 장소 할인</strong> · 월 -₩' + SONGDO_LOCATION_DISCOUNT.toLocaleString() + '<br>' : '')
     + '<strong>유입 경로</strong> · ' + ((a.referral||[]).join(', ') || '-') + '<br>'
     + '<strong>연락처</strong> · ' + (a.contact ? a.contact.name + ' · ' + a.contact.phone : '-');
   console.log('신청 데이터:', a);

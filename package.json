@@ -1,0 +1,8 @@
+{
+  "name": "hellonado-site",
+  "private": true,
+  "scripts": {
+    "start": "node tools/serve.js",
+    "test": "node --check script.js && node --test tests/location-rules.test.js"
+  }
+}
