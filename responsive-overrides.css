@@ -253,10 +253,13 @@ body.legal-page table { font-size: .92rem; }
 }
 
 @media (max-width: 479px) {
+  body.form-page .success-wrap { padding-inline: 1rem; }
+  body.form-page .success-title { font-size: clamp(1.3rem, 6.3vw, 1.5rem); line-height: 1.35; }
+  body.form-page .success-text { max-width: 22rem; font-size: .92rem; line-height: 1.75; }
   body.form-page .success-actions { flex-direction:column; }
   body.form-page .success-actions .btn-home { width:100%; }
   body.form-page .teacher-detail-head { align-items:flex-start; }
-  body.form-page .teacher-match-photo:not(.compact) { width:76px;height:76px;border-radius:1rem; }
+  body.form-page .teacher-match-photo:not(.compact) { width:76px;height:76px;border-radius:50%; }
   body.how-page .page-subtitle { max-width: 19rem; }
   body.how-page .step-item { grid-template-columns: 48px minmax(0, 1fr); gap: .85rem; }
   body.how-page .step-number { width: 48px; height: 48px; font-size: 1.15rem; }
