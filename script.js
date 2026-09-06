@@ -523,12 +523,6 @@ if (step.type === 'trialType'){
     });
     inner += '</div>';
 
-    inner += '<div class="time-preset-row" aria-label="시간대 빠른 선택">'
-      + '<button type="button" class="time-preset" data-start="09:00" data-end="12:30">오전</button>'
-      + '<button type="button" class="time-preset" data-start="13:00" data-end="17:30">오후</button>'
-      + '<button type="button" class="time-preset" data-start="18:00" data-end="21:30">저녁</button>'
-      + '<button type="button" class="time-preset" data-start="22:00" data-end="24:00">늦은 밤</button>'
-      + '</div>';
     inner += '<div class="time-slot-grid" id="timeSlotGrid">';
     slots.forEach(t => {
       const key = activeDay + ' ' + t;
@@ -824,7 +818,6 @@ if (step.type === 'trialType'){
       answers[step.key] = selectedArr;
       renderTabs();
       setNextState(step);
-      syncPresetButtons();
     };
 
     const bindSlotEvents = () => {
@@ -861,35 +854,15 @@ if (step.type === 'trialType'){
       bindSlotEvents();
     };
 
-    const syncPresetButtons = () => {
-      qcardWrap.querySelectorAll('.time-preset').forEach(button => {
-        const range = buildSlots().filter(time => time >= button.dataset.start && time <= button.dataset.end);
-        const allSelected = range.every(time => selectedArr.includes(scheduleActiveDay + ' ' + time));
-        button.classList.toggle('selected', allSelected);
-      });
-    };
-
     document.querySelectorAll('.day-tab').forEach(tab => {
       tab.addEventListener('click', () => {
         scheduleActiveDay = tab.dataset.day;
         renderTabs();
         rebuildSlotGrid();
-        syncPresetButtons();
-      });
-    });
-
-    qcardWrap.querySelectorAll('.time-preset').forEach(button => {
-      button.addEventListener('click', () => {
-        const range = buildSlots().filter(time => time >= button.dataset.start && time <= button.dataset.end);
-        const shouldSelect = !range.every(time => selectedArr.includes(scheduleActiveDay + ' ' + time));
-        range.forEach(time => applySlot(scheduleActiveDay + ' ' + time, shouldSelect));
-        rebuildSlotGrid();
-        syncPresetButtons();
       });
     });
 
     bindSlotEvents();
-    syncPresetButtons();
   } else if (step.type === 'text'){
     const ta = document.getElementById('textInput');
     ta.addEventListener('input', () => { answers[step.key] = ta.value; });
