@@ -46,3 +46,92 @@
     }
   });
 })();
+
+// Keep the public matching flow aligned with the current teacher-selection experience.
+(() => {
+  const setText = (root, selector, text) => {
+    const el = root?.querySelector(selector);
+    if (el) el.textContent = text;
+  };
+
+  const matchFeature = [...document.querySelectorAll('.feature-card')]
+    .find(card => card.querySelector('.feature-title')?.textContent.trim() === '맞춤형 매칭');
+  if (matchFeature) {
+    setText(matchFeature, '.feature-title', '조건에 맞는 선생님 선택');
+    setText(matchFeature, '.feature-desc', '입력한 조건에 맞는 선생님을 직접 확인하고 선택할 수 있습니다.');
+  }
+
+  const whyTeacher = [...document.querySelectorAll('.why-point')]
+    .find(point => point.querySelector('.why-point-title')?.textContent.trim() === '나에게 맞는 선생님');
+  if (whyTeacher) {
+    setText(whyTeacher, '.why-point-desc', '수업 조건에 맞는 선생님을 직접 확인하고 선택하세요. 가능한 선생님이 없으면 나도가 맞춤 추천을 도와드립니다.');
+  }
+
+  const homeSteps = [...document.querySelectorAll('.steps-grid .step')];
+  const homeStep1 = homeSteps.find(step => step.querySelector('.step-num')?.textContent.trim() === '01');
+  const homeStep2 = homeSteps.find(step => step.querySelector('.step-num')?.textContent.trim() === '02');
+  if (homeStep1) {
+    setText(homeStep1, '.step-title', '정보 입력');
+    setText(homeStep1, '.step-desc', '원하는 플랜, 지역, 시간대와 학습 목표를 입력하면 조건에 맞는 선생님을 확인할 수 있습니다.');
+  }
+  if (homeStep2) {
+    setText(homeStep2, '.step-title', '선생님 선택');
+    setText(homeStep2, '.step-desc', '프로필과 함께 가능한 시간을 확인해 직접 선택하세요. 가능한 선생님이 없으면 신청 내용을 바탕으로 나도가 별도로 추천해드립니다.');
+  }
+
+  const howSteps = [...document.querySelectorAll('.step-item')];
+  const howStep1 = howSteps.find(step => step.querySelector('.step-number')?.textContent.trim() === '01');
+  const howStep2 = howSteps.find(step => step.querySelector('.step-number')?.textContent.trim() === '02');
+  if (howStep1) {
+    setText(howStep1, '.step-title', '정보 입력 및 신청');
+    setText(howStep1, '.step-desc', '원하는 플랜, 수업 지역과 장소, 가능한 시간대, 학습 목표 등을 입력해주세요. 입력한 조건을 기준으로 가능한 선생님을 확인합니다.');
+  }
+  if (howStep2) {
+    setText(howStep2, '.step-title', '선생님 선택 또는 맞춤 추천');
+    setText(howStep2, '.step-desc', '조건에 맞는 선생님이 있으면 프로필과 함께 가능한 시간을 확인한 뒤 직접 선택할 수 있습니다. 바로 선택 가능한 선생님이 없으면 신청은 그대로 접수되며, 나도가 내용을 확인해 잘 맞는 선생님을 별도로 추천해드립니다.');
+    setText(howStep2, '.step-details-title', '선생님 확인 기준');
+    const list = howStep2.querySelector('.step-details-list');
+    if (list) {
+      list.innerHTML = [
+        '선택한 플랜',
+        '희망 지역 및 장소',
+        '수업 가능 시간대 일치 여부',
+        '학습 목표 및 요청사항',
+        '가능한 선생님이 없으면 신청 내용 확인 후 나도가 별도 추천'
+      ].map(text => '<li>' + text + '</li>').join('');
+    }
+    const note = howStep2.querySelector('.step-details p');
+    if (note) note.textContent = '*표시되는 선생님은 선택한 플랜, 지역, 일정 등 신청 조건에 따라 달라질 수 있습니다.';
+  }
+
+  document.querySelectorAll('.info-text').forEach(el => {
+    if (el.textContent.includes('대중교통 이용이 편리한 지역 우선 매칭')) {
+      el.innerHTML = el.innerHTML
+        .replace('선생님과 협의하여 최적의 장소 선정', '선생님과 협의하여 세부 장소 확정')
+        .replace('대중교통 이용이 편리한 지역 우선 매칭', '선택한 희망 지역과 선생님 가능 범위 안에서 조율');
+    }
+  });
+
+  const faqItems = [...document.querySelectorAll('.faq-item')];
+  const teacherFaq = faqItems.find(item => item.querySelector('.faq-question')?.textContent.includes('선생님은 어떻게 매칭'));
+  if (teacherFaq) {
+    setText(teacherFaq, '.faq-question', 'Q. 선생님은 어떻게 선택하나요?');
+    setText(teacherFaq, '.faq-answer', '신청 과정에서 선택한 플랜, 희망 지역과 장소, 가능한 시간대 등을 기준으로 조건에 맞는 선생님을 확인할 수 있습니다. 가능한 선생님이 있으면 프로필과 함께 겹치는 시간을 확인한 뒤 직접 선택합니다. 바로 선택 가능한 선생님이 없으면 신청은 정상적으로 접수되며, 나도가 확인 후 맞춤 추천을 안내해드립니다.');
+  }
+
+  const scheduleFaq = faqItems.find(item => item.querySelector('.faq-question')?.textContent.includes('수업 일정은 어떻게 정하나요'));
+  if (scheduleFaq) {
+    const answer = scheduleFaq.querySelector('.faq-answer');
+    if (answer) answer.textContent = '선택한 선생님과 직접 소통하여 서로 편한 시간에 수업 일정을 조율합니다. 평일 저녁이나 주말 등 서로 가능한 범위에서 유연하게 정할 수 있습니다.';
+  }
+
+  if (document.querySelector('link[rel="canonical"]')?.href.endsWith('/how.html')) {
+    const description = '서울 및 인천 지역에서 진행하는 나도 영어회화의 신청, 선생님 선택 또는 맞춤 추천, 첫 수업 과정을 확인하세요.';
+    const metaDescription = document.querySelector('meta[name="description"]');
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
+    if (metaDescription) metaDescription.content = description;
+    if (ogDescription) ogDescription.content = description;
+    if (twitterDescription) twitterDescription.content = description;
+  }
+})();
