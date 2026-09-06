@@ -1248,6 +1248,9 @@ async function submitToJotform(a) {
       'teacher_name=' + (a.teacher_name || '')
     ].join('\n');
     params.append('submission[28]', [a.notes || '', matchingMeta].filter(Boolean).join('\n\n')); // 문의사항 + 안전한 내부 매칭 정보
+    params.append('submission[62]', a.matching_type || 'manual');     // 매칭 방식
+    params.append('submission[63]', a.teacher_name || '');           // 선택 선생님 이름
+    params.append('submission[64]', a.teacher_id || '');             // 선택 선생님 UUID
     const placeDetail = a.placeType === '서울 원하는 장소'
       ? [serviceAreaLabel(a.areaCode), a.preferredPlace || ''].filter(Boolean).join(' / ')
       : (a.preferredPlace || a.songdoPlace || '');
