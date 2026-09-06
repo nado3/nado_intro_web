@@ -1386,8 +1386,8 @@ async function showSuccess(){
       ? '체험수업 신청이 완료되었습니다 🎉'
       : '신청이 완료되었습니다 🎉';
     document.querySelector('.success-text').innerHTML = TRIAL_MODE
-      ? '결제 안내와 선생님 연락 연결은 신청하신 연락처로 안내드려요.<br>문의사항이 있다면 카카오톡으로 편하게 문의해주세요.'
-      : '수업료 안내와 선생님 연락 연결은 신청하신 연락처로 안내드려요.<br>문의사항이 있다면 카카오톡으로 편하게 문의해주세요.';
+      ? '<span>결제 안내와 선생님 연락 연결은<br class="success-mobile-break">신청하신 연락처로 안내드려요.</span><span>문의사항이 있다면 카카오톡으로 편하게 문의해주세요.</span>'
+      : '<span>수업료 안내와 선생님 연락 연결은<br class="success-mobile-break">신청하신 연락처로 안내드려요.</span><span>문의사항이 있다면 카카오톡으로 편하게 문의해주세요.</span>';
   }
 
   if (a.matching_type !== 'student_selected' && TRIAL_MODE) {
