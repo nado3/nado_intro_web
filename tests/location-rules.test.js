@@ -88,3 +88,9 @@ test('legacy broad location claims are absent from served content', () => {
     assert.doesNotMatch(content, new RegExp(legacy), `legacy copy remains: ${legacy}`);
   }
 });
+
+test('each teacher detail binds its own select button', () => {
+  const script = read('script.js');
+  assert.match(script, /detail\.querySelector\('\.teacher-select-btn'\)/);
+  assert.doesNotMatch(script, /id="teacherSelectBtn"/);
+});

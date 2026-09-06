@@ -1099,10 +1099,11 @@ function openTeacherDetail(teacher, cardElements) {
     + '<div class="teacher-overlap-box"><strong>함께 가능한 시간</strong><div>'
     + teacher.overlaps.map(slot => '<span>' + escapeHtml(slot) + '</span>').join('')
     + '</div></div>'
-    + '<button type="button" class="teacher-select-btn" id="teacherSelectBtn">' + escapeHtml(teacher.name) + ' 선생님 선택하기</button>';
+    + '<button type="button" class="teacher-select-btn">' + escapeHtml(teacher.name) + ' 선생님 선택하기</button>';
   detail.hidden = false;
   bindTeacherPhotoFallbacks(detail);
-  document.getElementById('teacherSelectBtn').addEventListener('click', () => selectTeacher(teacher));
+  const selectButton = detail.querySelector('.teacher-select-btn');
+  if (selectButton) selectButton.addEventListener('click', () => selectTeacher(teacher));
   detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
