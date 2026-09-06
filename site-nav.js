@@ -28,32 +28,31 @@
   navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
 })();
 
-// Keep public plan copy aligned with the current Business English policy.
-(() => {
-  const standardCard = [...document.querySelectorAll('.tier-card')]
-    .find(card => card.querySelector('.tier-name')?.textContent.trim() === '스탠다드');
-  if (standardCard) {
-    const englishLine = [...standardCard.querySelectorAll('.tier-features li')]
-      .find(item => item.textContent.includes('가능 영어:'));
-    if (englishLine) {
-      englishLine.textContent = '가능 영어: 일상회화 · 여행영어 · 시험/면접 · 발음교정';
-    }
-  }
-
-  document.querySelectorAll('.step-details-list li').forEach(item => {
-    if (item.textContent.includes('학습 목표 (') && item.textContent.includes('비즈니스')) {
-      item.textContent = '학습 목표 (일상회화 / 여행 / 시험 등 · 비즈니스 영어는 프리미엄만 가능)';
-    }
-  });
-})();
-
-// Keep the public matching flow aligned with the current teacher-selection experience.
 (() => {
   const setText = (root, selector, text) => {
     const el = root?.querySelector(selector);
     if (el) el.textContent = text;
   };
 
+  // Business English: Premium only.
+  const standardCard = [...document.querySelectorAll('.tier-card')]
+    .find(card => card.querySelector('.tier-name')?.textContent.trim() === '스탠다드');
+  if (standardCard) {
+    const englishLine = [...standardCard.querySelectorAll('.tier-features li')]
+      .find(item => item.textContent.includes('가능 영어:'));
+    if (englishLine) englishLine.textContent = '가능 영어: 일상회화 · 여행영어 · 시험/면접 · 발음교정';
+  }
+
+  document.querySelectorAll('.step-details-list li').forEach(item => {
+    if (item.textContent.includes('학습 목표 (') && item.textContent.includes('비즈니스')) {
+      item.textContent = '학습 목표 (일상회화 / 여행 / 시험 등 · 비즈니스 영어는 프리미엄만 가능)';
+    }
+    if (item.textContent.includes('수업 만족도에 따라 선생님 유지/변경 가능')) {
+      item.textContent = '선생님 변경이 필요하면 나도에 문의 가능';
+    }
+  });
+
+  // Current teacher-selection flow.
   const matchFeature = [...document.querySelectorAll('.feature-card')]
     .find(card => card.querySelector('.feature-title')?.textContent.trim() === '맞춤형 매칭');
   if (matchFeature) {
@@ -113,6 +112,7 @@
   });
 
   const faqItems = [...document.querySelectorAll('.faq-item')];
+
   const teacherFaq = faqItems.find(item => item.querySelector('.faq-question')?.textContent.includes('선생님은 어떻게 매칭'));
   if (teacherFaq) {
     setText(teacherFaq, '.faq-question', 'Q. 선생님은 어떻게 선택하나요?');
@@ -121,8 +121,17 @@
 
   const scheduleFaq = faqItems.find(item => item.querySelector('.faq-question')?.textContent.includes('수업 일정은 어떻게 정하나요'));
   if (scheduleFaq) {
-    const answer = scheduleFaq.querySelector('.faq-answer');
-    if (answer) answer.textContent = '선택한 선생님과 직접 소통하여 서로 편한 시간에 수업 일정을 조율합니다. 평일 저녁이나 주말 등 서로 가능한 범위에서 유연하게 정할 수 있습니다.';
+    setText(scheduleFaq, '.faq-answer', '선택한 선생님과 직접 소통하여 서로 편한 시간에 수업 일정을 조율합니다. 평일 저녁이나 주말 등 서로 가능한 범위에서 유연하게 정할 수 있습니다.');
+  }
+
+  const changeFaq = faqItems.find(item => item.querySelector('.faq-question')?.textContent.includes('선생님을 바꿀 수 있나요'));
+  if (changeFaq) {
+    setText(changeFaq, '.faq-answer', '네, 가능합니다. 수업 진행 중 선생님 변경이 필요하면 나도에 문의해주세요. 현재 수업 진행 상황과 가능한 선생님 일정을 확인한 뒤 안내드립니다.');
+  }
+
+  const paymentFaq = faqItems.find(item => item.querySelector('.faq-question')?.textContent.includes('결제 방법'));
+  if (paymentFaq) {
+    setText(paymentFaq, '.faq-answer', '현재는 계좌이체로 진행합니다. 첫 달 수업료는 나도를 통해 결제하며, 선생님 연결 후 첫 수업 일정이 확정되면 카카오톡으로 입금 방법을 안내드립니다. 첫 달 이후부터 같은 선생님과 계속 수업하는 경우에는 수업료를 선생님에게 직접 지급합니다.');
   }
 
   if (document.querySelector('link[rel="canonical"]')?.href.endsWith('/how.html')) {
@@ -134,19 +143,8 @@
     if (ogDescription) ogDescription.content = description;
     if (twitterDescription) twitterDescription.content = description;
   }
-})();
 
-// Keep first-month payment wording consistent across public pages and terms.
-(() => {
-  const faqItems = [...document.querySelectorAll('.faq-item')];
-  const paymentFaq = faqItems.find(item => item.querySelector('.faq-question')?.textContent.includes('결제 방법'));
-  if (paymentFaq) {
-    const answer = paymentFaq.querySelector('.faq-answer');
-    if (answer) {
-      answer.textContent = '현재는 계좌이체로 진행합니다. 첫 달 수업료는 나도를 통해 결제하며, 선생님 연결 후 첫 수업 일정이 확정되면 카카오톡으로 입금 방법을 안내드립니다. 첫 달 이후부터 같은 선생님과 계속 수업하는 경우에는 수업료를 선생님에게 직접 지급합니다.';
-    }
-  }
-
+  // Terms cleanup.
   if (document.body.classList.contains('legal-page')) {
     document.querySelectorAll('.doc-card').forEach(card => {
       const heading = card.querySelector('h2')?.textContent.trim() || '';
@@ -162,35 +160,43 @@
       if (heading.startsWith('제3조')) {
         const items = card.querySelectorAll('li');
         if (items[1]) {
-          items[1].innerHTML = '회사는 첫 달 수업료에 한하여 학생으로부터 수업료 전액을 수령한 후, 정해진 기준에 따라 선생님 회원에게 정산하는 방식으로 결제 절차에 관여합니다. 첫 달 이후 같은 선생님과 수업을 계속하는 경우 수업료는 학생이 선생님 회원에게 직접 지급합니다.';
+          items[1].textContent = '회사는 첫 달 수업료에 한하여 학생으로부터 수업료 전액을 수령한 후, 정해진 기준에 따라 선생님 회원에게 정산하는 방식으로 결제 절차에 관여합니다. 첫 달 이후 같은 선생님과 수업을 계속하는 경우 수업료는 학생이 선생님 회원에게 직접 지급합니다.';
         }
       }
 
       if (heading.startsWith('제6조')) {
         const items = card.querySelectorAll('li');
-        if (items[0]) items[0].textContent = '학생이 신청 폼에 플랜, 영어 수준, 학습 목표, 희망 시간대와 장소 등을 제출하면 조건에 맞는 선생님을 확인하고 직접 선택할 수 있습니다. 바로 선택 가능한 선생님이 없는 경우 회사가 신청 내용을 확인하여 적합한 선생님을 별도로 추천할 수 있습니다.';
+        if (items[0]) {
+          items[0].textContent = '학생이 신청 폼에 플랜, 영어 수준, 학습 목표, 희망 시간대와 장소 등을 제출하면 조건에 맞는 선생님을 확인하고 직접 선택할 수 있습니다. 바로 선택 가능한 선생님이 없는 경우 회사가 신청 내용을 확인하여 적합한 선생님을 별도로 추천할 수 있습니다.';
+        }
       }
 
       if (heading.startsWith('제7조')) {
         const items = card.querySelectorAll(':scope > ol > li');
-        if (items[1]) items[1].textContent = '첫 달 수업료는 회사가 지정한 계좌로 이체합니다. 선생님 연결 후 첫 수업 일정이 확정되면 회사가 카카오톡 등으로 입금 방법을 안내합니다.';
-        if (items[3]) items[3].textContent = '동일한 선생님 회원과 수업을 계속하는 경우, 첫 달 이후부터는 회사의 추가 매칭 수수료가 발생하지 않으며 학생이 해당 선생님 회원에게 수업료를 직접 지급합니다. 선생님 변경 등으로 새로운 매칭이 필요한 경우에는 별도 조건이 적용될 수 있습니다.';
+        if (items[1]) {
+          items[1].textContent = '첫 달 수업료는 회사가 지정한 계좌로 이체합니다. 선생님 연결 후 첫 수업 일정이 확정되면 회사가 카카오톡 등으로 입금 방법을 안내합니다.';
+        }
+        if (items[3]) {
+          items[3].textContent = '동일한 선생님 회원과 수업을 계속하는 경우 첫 달 이후부터 학생이 해당 선생님 회원에게 수업료를 직접 지급합니다. 선생님 변경이 필요한 경우 나도를 통해 요청할 수 있으며, 가능한 선생님과 진행 방법은 개별 안내합니다.';
+        }
+      }
+
+      if (heading.startsWith('제9조')) {
+        card.querySelectorAll('li').forEach(li => {
+          if (li.textContent.includes('재매칭을 반복적으로 요청하며 매칭비 지급을 회피')) li.remove();
+        });
       }
     });
   }
-})();
 
-// The child surcharge has been retired; remove any legacy public copy.
-(() => {
+  // Child surcharge retired.
   const retiredCopy = '초등학생 이하 수업은 월 2만원 추가';
   document.querySelectorAll('.info-text, .faq-answer, .step-details-list li, .tier-features li').forEach(el => {
     if (!el.textContent.includes(retiredCopy)) return;
-
     if (el.tagName === 'LI' && el.textContent.trim() === retiredCopy) {
       el.remove();
       return;
     }
-
     el.innerHTML = el.innerHTML
       .replace(new RegExp('<br>\\s*' + retiredCopy, 'g'), '')
       .replace(new RegExp(retiredCopy + '\\s*<br>', 'g'), '')
