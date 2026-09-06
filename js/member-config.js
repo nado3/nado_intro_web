@@ -79,6 +79,9 @@ window.NADO_MEMBER_CONFIG = {
     const successText = document.querySelector('.success-text');
     if (!summary || !successText) return;
 
+    // Manual matching promises a match within 24 hours. Preserve that fallback copy.
+    if (successText.textContent.includes('24시간')) return;
+
     if (summary.textContent.includes('무료 체험')) {
       successText.innerHTML = '<span>보증금 입금 안내와 선생님 연락 연결은<br class="success-mobile-break">신청하신 연락처로 안내드려요.</span><span>수업에 참석하시면 보증금은 전액 환불됩니다.</span>';
     } else if (summary.textContent.includes('플랜 선택 체험')) {
