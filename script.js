@@ -179,7 +179,7 @@ function buildActiveSteps(){
   if (!TRIAL_MODE) return steps.filter(s => s.key !== 'trialType');
   if (!answers.trialType) return steps.filter(s => s.key === 'trialType');
   if (answers.trialType === '플랜 선택 체험') {
-    return steps.filter(s => s.key !== 'place' && s.key !== 'duration');
+    return steps.filter(s => s.key !== 'duration');
   }
   return steps.filter(s => s.key !== 'tier' && s.key !== 'place' && s.key !== 'duration');
 }
@@ -255,12 +255,12 @@ function checkValid(step){
   if (step.type === 'single') return !!v;
   if (step.type === 'tier') return !!v;
   if (step.type === 'trialType') {
-    if (!v || !Array.isArray(answers.place) || answers.place.length === 0) return false;
+    if (!v) return false;
     if (v === '무료 체험') {
+      if (!Array.isArray(answers.place) || answers.place.length === 0) return false;
       return answers.placeType === 'IGC 인천글로벌캠퍼스' || answers.placeType === '송도 트리플스트리트';
     }
-    return (answers.placeType === '인천 원하는 장소' || answers.placeType === '서울 원하는 장소')
-      && !!(answers.preferredPlace && answers.preferredPlace.trim());
+    return true;
   }
   if (step.type === 'multi') {
     if (!Array.isArray(v) || v.length === 0) return false;
@@ -306,7 +306,7 @@ function renderStep(){
   let sub = step.sub;
   const isFreeTrial = TRIAL_MODE && answers.trialType === '무료 체험';
   const isPaidTrial = TRIAL_MODE && answers.trialType === '플랜 선택 체험';
-  const RANK_OPTIONS = isFreeTrial
+    const RANK_OPTIONS = isFreeTrial
     ? ['IGC 인천글로벌캠퍼스', '송도 트리플스트리트']
     : (TRIAL_MODE
       ? ['서울 원하는 장소', '인천 원하는 장소']
@@ -315,6 +315,9 @@ function renderStep(){
     if (isFreeTrial) {
       title = '무료 체험 장소 선택';
       sub = 'IGC 인천글로벌캠퍼스와 송도 트리플스트리트 중 한 곳을 선택해주세요.';
+    } else if (isPaidTrial) {
+      title = '수업 장소를 선택해주세요';
+      sub = '서울 또는 인천에서 희망하는 장소를 선택해주세요.';
     } else {
       title = '수업 장소를 선택해주세요';
       sub = '서울 및 인천 지역의 희망 장소를 입력하거나, 월 1만원 할인되는 송도 지정 장소를 선택해주세요.';
@@ -361,21 +364,6 @@ if (step.type === 'trialType'){
       inner += '<div class="tier-opt ' + (selectedType === '플랜 선택 체험' ? 'selected' : '') + '" data-trial-type="플랜 선택 체험">'
         + '<div class="tier-opt-top"><div class="tier-opt-name">서울 및 인천 지역 희망 장소</div><div class="tier-opt-price">월 수강료 1회분</div></div>'
         + '<div class="tier-opt-desc">세부 장소는 선생님과 조율</div></div>';
-
-      if (selectedType === '플랜 선택 체험') {
-        inner += '<div class="trial-place-group">'
-          + '<div class="field-label">장소 선택</div>'
-          + '<div class="opt-list">'
-          + '<div class="opt trial-place-opt ' + (answers.placeType === '인천 원하는 장소' ? 'selected' : '') + '" data-value="인천 원하는 장소"><div class="opt-dot"></div><div class="opt-label">인천에서 희망하는 장소</div></div>';
-        if (answers.placeType === '인천 원하는 장소') {
-          inner += '<div class="preferred-place-wrap"><label class="sr-only" for="preferredPlaceInput">인천 희망 장소</label><input type="text" id="preferredPlaceInput" placeholder="예: 부평역 근처 카페" value="' + (answers.preferredPlace || '') + '"></div>';
-        }
-        inner += '<div class="opt trial-place-opt ' + (answers.placeType === '서울 원하는 장소' ? 'selected' : '') + '" data-value="서울 원하는 장소"><div class="opt-dot"></div><div class="opt-label">서울에서 희망하는 장소</div></div>';
-        if (answers.placeType === '서울 원하는 장소') {
-          inner += '<div class="preferred-place-wrap"><label class="sr-only" for="preferredPlaceInput">서울 희망 장소</label><input type="text" id="preferredPlaceInput" placeholder="예: 홍대입구역 근처 카페" value="' + (answers.preferredPlace || '') + '"></div>';
-        }
-        inner += '</div></div>';
-      }
 
       inner += '</div>';
     } else if (step.type === 'tier'){
