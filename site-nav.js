@@ -179,3 +179,21 @@
     });
   }
 })();
+
+// The child surcharge has been retired; remove any legacy public copy.
+(() => {
+  const retiredCopy = '초등학생 이하 수업은 월 2만원 추가';
+  document.querySelectorAll('.info-text, .faq-answer, .step-details-list li, .tier-features li').forEach(el => {
+    if (!el.textContent.includes(retiredCopy)) return;
+
+    if (el.tagName === 'LI' && el.textContent.trim() === retiredCopy) {
+      el.remove();
+      return;
+    }
+
+    el.innerHTML = el.innerHTML
+      .replace(new RegExp('<br>\\s*' + retiredCopy, 'g'), '')
+      .replace(new RegExp(retiredCopy + '\\s*<br>', 'g'), '')
+      .replace(retiredCopy, '');
+  });
+})();
