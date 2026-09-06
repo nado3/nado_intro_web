@@ -40,12 +40,61 @@ window.NADO_MEMBER_CONFIG = {
       const oldNote = qcard.querySelector('#firstMonthPaymentNote');
       if (oldNote) oldNote.remove();
     }
+
+    if (document.body?.dataset.mode === 'trial' && qcard) {
+      const freeTrial = qcard.querySelector('[data-trial-type="무료 체험"]');
+      const paidTrial = qcard.querySelector('[data-trial-type="플랜 선택 체험"]');
+
+      if (freeTrial && paidTrial) {
+        const title = qcard.querySelector('.qtitle');
+        const sub = qcard.querySelector('.qsub');
+        if (title) title.textContent = '어떤 체험수업을 원하시나요?';
+        if (sub) sub.textContent = '무료 체험 또는 원하는 장소에서 진행하는 1회 체험 중 선택해주세요.';
+
+        const freeName = freeTrial.querySelector('.tier-opt-name');
+        const freePrice = freeTrial.querySelector('.tier-opt-price');
+        const freeDesc = freeTrial.querySelector('.tier-opt-desc');
+        if (freeName) freeName.textContent = '무료 체험';
+        if (freePrice) freePrice.textContent = '무료';
+        if (freeDesc) freeDesc.textContent = '이코노미 · 1시간 · IGC 또는 트리플스트리트 · 보증금 2만원(참석 시 전액 환불)';
+
+        const paidName = paidTrial.querySelector('.tier-opt-name');
+        const paidPrice = paidTrial.querySelector('.tier-opt-price');
+        const paidDesc = paidTrial.querySelector('.tier-opt-desc');
+        if (paidName) paidName.textContent = '원하는 장소에서 1회 체험';
+        if (paidPrice) paidPrice.textContent = '1회 수업료';
+        if (paidDesc) paidDesc.textContent = '원하는 플랜 · 1시간 · 서울 또는 인천 · 세부 장소는 선생님과 조율';
+      }
+
+      if (qtitle === '1회 수업 결제 안내') {
+        const title = qcard.querySelector('.qtitle');
+        if (title) title.textContent = '1회 체험 결제 안내';
+      }
+    }
+  };
+
+  const syncTrialSuccessCopy = () => {
+    if (document.body?.dataset.mode !== 'trial') return;
+    const summary = document.getElementById('summaryBox');
+    const successText = document.querySelector('.success-text');
+    if (!summary || !successText) return;
+
+    if (summary.textContent.includes('무료 체험')) {
+      successText.innerHTML = '<span>보증금 입금 안내와 선생님 연락 연결은<br class="success-mobile-break">신청하신 연락처로 안내드려요.</span><span>수업에 참석하시면 보증금은 전액 환불됩니다.</span>';
+    } else if (summary.textContent.includes('플랜 선택 체험')) {
+      successText.innerHTML = '<span>1회 체험 결제 안내와 선생님 연락 연결은<br class="success-mobile-break">신청하신 연락처로 안내드려요.</span><span>문의사항이 있다면 카카오톡으로 편하게 문의해주세요.</span>';
+    }
   };
 
   const start = () => {
     syncCurrentPolicyCopy();
+    syncTrialSuccessCopy();
+
     const root = document.getElementById('qcardWrap');
     if (root) new MutationObserver(syncCurrentPolicyCopy).observe(root, { childList: true, subtree: true });
+
+    const successWrap = document.getElementById('successWrap');
+    if (successWrap) new MutationObserver(syncTrialSuccessCopy).observe(successWrap, { childList: true, subtree: true, attributes: true });
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
