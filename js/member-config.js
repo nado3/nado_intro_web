@@ -34,23 +34,11 @@ window.NADO_MEMBER_CONFIG = {
     if (document.body?.dataset.mode !== 'trial' && qtitle === '결제 안내') {
       const qsub = qcard.querySelector('.qsub');
       if (qsub) {
-        qsub.textContent = '표시된 금액은 첫 달 수업료입니다. 선생님 연결 후 첫 수업 일정이 확정되면 카카오톡으로 입금 방법을 안내드립니다.';
+        qsub.textContent = '결제 금액을 확인해주세요. 선생님 연결 후 첫 수업 일정이 확정되면 카카오톡으로 입금 방법을 안내드립니다.';
       }
 
-      const payBox = qcard.querySelector('.pay-box');
-      if (payBox && !qcard.querySelector('#firstMonthPaymentNote')) {
-        const note = document.createElement('div');
-        note.id = 'firstMonthPaymentNote';
-        note.style.marginTop = '12px';
-        note.style.padding = '12px 14px';
-        note.style.borderRadius = '12px';
-        note.style.background = '#F4F8FD';
-        note.style.color = '#44546A';
-        note.style.fontSize = '0.9rem';
-        note.style.lineHeight = '1.55';
-        note.textContent = '첫 달 이후부터 같은 선생님과 계속 수업하는 경우, 수업료는 선생님에게 직접 지급합니다.';
-        payBox.insertAdjacentElement('afterend', note);
-      }
+      const oldNote = qcard.querySelector('#firstMonthPaymentNote');
+      if (oldNote) oldNote.remove();
     }
   };
 
