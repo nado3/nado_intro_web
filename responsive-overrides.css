@@ -253,6 +253,8 @@ body.legal-page table { font-size: .92rem; }
 }
 
 @media (max-width: 479px) {
+  body.form-page .success-actions { flex-direction:column; }
+  body.form-page .success-actions .btn-home { width:100%; }
   body.form-page .teacher-detail-head { align-items:flex-start; }
   body.form-page .teacher-match-photo:not(.compact) { width:76px;height:76px;border-radius:1rem; }
   body.how-page .page-subtitle { max-width: 19rem; }

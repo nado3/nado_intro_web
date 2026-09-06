@@ -19,7 +19,6 @@ const SEOUL_SERVICE_AREAS = [
   { code: 'Yongsan', label: '용산' },
   { code: 'Line 3 vicinity', label: '3호선 인근' }
 ];
-const KAKAO_CHAT_URL = 'http://pf.kakao.com/_pbPJX/chat';
 const LOCAL_TEACHER_PHOTOS = {
   abhinay: 'img/abhinay.jpg',
   amelia: 'img/amelia.jpg',
@@ -1347,16 +1346,13 @@ async function showSuccess(){
     wrap.insertBefore(notice, document.getElementById('summaryBox'));
   }
 
-  const successButton = wrap.querySelector('.btn-home');
   if (a.matching_type === 'student_selected') {
     document.querySelector('.success-title').textContent = TRIAL_MODE
       ? '체험수업 신청이 완료되었습니다 🎉'
       : '신청이 완료되었습니다 🎉';
     document.querySelector('.success-text').innerHTML = TRIAL_MODE
-      ? '선택하신 선생님과의 체험수업 진행을 위해<br>결제 안내 및 선생님 연락 연결을 카카오톡에서 도와드립니다.'
-      : '선택하신 선생님과의 수업 진행을 위해<br>수업료 안내 및 선생님 연락 연결을 카카오톡에서 도와드립니다.';
-    successButton.textContent = '카카오톡으로 안내받기';
-    successButton.href = KAKAO_CHAT_URL;
+      ? '결제 안내와 선생님 연락 연결은 신청하신 연락처로 안내드려요.<br>문의사항이 있다면 카카오톡으로 편하게 문의해주세요.'
+      : '수업료 안내와 선생님 연락 연결은 신청하신 연락처로 안내드려요.<br>문의사항이 있다면 카카오톡으로 편하게 문의해주세요.';
   }
 
   if (a.matching_type !== 'student_selected' && TRIAL_MODE) {

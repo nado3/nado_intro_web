@@ -194,6 +194,10 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
 .local-test-notice{margin:0 0 1rem;padding:.85rem 1rem;border:1px solid #f2d787;border-radius:1rem;background:#fff8dd;color:#765400;font-size:.86rem;font-weight:800;line-height:1.5;text-align:center;}
 .summary-box strong{color:var(--accent-deep);}
 .btn-home{display:inline-block;background:var(--accent);color:#fff;padding:1rem 2.2rem;border-radius:3rem;font-weight:800;text-decoration:none;font-size:.98rem;}
+.success-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:.75rem;}
+.success-actions .btn-home{min-width:210px;text-align:center;}
+.btn-home-secondary{border:1.5px solid var(--line);background:var(--white);color:var(--navy);}
+.btn-home-secondary:hover{border-color:#b8d3f2;background:var(--accent-light);}
 
 /* REGULAR APPLICATION — TEACHER MATCHING */
 .matching-loading-card{text-align:center;padding-block:3.5rem;}
