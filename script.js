@@ -535,6 +535,12 @@ if (step.type === 'trialType'){
     });
     inner += '</div>';
 
+    inner += '<div class="time-preset-row" aria-label="시간대 빠른 선택">'
+      + '<button type="button" class="time-preset" data-start="09:00" data-end="12:30">오전</button>'
+      + '<button type="button" class="time-preset" data-start="13:00" data-end="17:30">오후</button>'
+      + '<button type="button" class="time-preset" data-start="18:00" data-end="21:30">저녁</button>'
+      + '<button type="button" class="time-preset" data-start="22:00" data-end="24:00">늦은 밤</button>'
+      + '</div>';
     inner += '<div class="time-slot-grid" id="timeSlotGrid">';
     slots.forEach(t => {
       const key = activeDay + ' ' + t;
@@ -830,6 +836,7 @@ if (step.type === 'trialType'){
       answers[step.key] = selectedArr;
       renderTabs();
       setNextState(step);
+      syncPresetButtons();
     };
 
     const bindSlotEvents = () => {
@@ -866,15 +873,35 @@ if (step.type === 'trialType'){
       bindSlotEvents();
     };
 
+    const syncPresetButtons = () => {
+      qcardWrap.querySelectorAll('.time-preset').forEach(button => {
+        const range = buildSlots().filter(time => time >= button.dataset.start && time <= button.dataset.end);
+        const allSelected = range.every(time => selectedArr.includes(scheduleActiveDay + ' ' + time));
+        button.classList.toggle('selected', allSelected);
+      });
+    };
+
     document.querySelectorAll('.day-tab').forEach(tab => {
       tab.addEventListener('click', () => {
         scheduleActiveDay = tab.dataset.day;
         renderTabs();
         rebuildSlotGrid();
+        syncPresetButtons();
+      });
+    });
+
+    qcardWrap.querySelectorAll('.time-preset').forEach(button => {
+      button.addEventListener('click', () => {
+        const range = buildSlots().filter(time => time >= button.dataset.start && time <= button.dataset.end);
+        const shouldSelect = !range.every(time => selectedArr.includes(scheduleActiveDay + ' ' + time));
+        range.forEach(time => applySlot(scheduleActiveDay + ' ' + time, shouldSelect));
+        rebuildSlotGrid();
+        syncPresetButtons();
       });
     });
 
     bindSlotEvents();
+    syncPresetButtons();
   } else if (step.type === 'text'){
     const ta = document.getElementById('textInput');
     ta.addEventListener('input', () => { answers[step.key] = ta.value; });
@@ -1096,7 +1123,8 @@ function teacherSchoolClass(school) {
 
 function openTeacherDetail(teacher, cardElements) {
   cardElements.forEach(card => card.classList.toggle('selected', Number(card.dataset.index) === teacher._index));
-  const detail = document.getElementById('teacherMatchDetail');
+  document.querySelectorAll('.teacher-match-detail').forEach(panel => { panel.hidden = true; });
+  const detail = document.getElementById('teacherMatchDetail-' + teacher._index);
   const extra = [teacher.languages, teacher.experience].filter(Boolean).join(' · ');
   detail.innerHTML = '<div class="teacher-detail-head">'
     + teacherPhotoMarkup(teacher, false)
@@ -1129,13 +1157,13 @@ function renderTeacherMatches(teachers) {
       + (teacher.university ? '<small class="teacher-profile-school' + teacherSchoolClass(teacher.university) + '">' + escapeHtml(teacher.university) + '</small>' : '')
       + (teacher.major ? '<small class="teacher-profile-major">' + escapeHtml(teacher.major) + '</small>' : '')
       + '<small class="teacher-overlap-summary">선택 시간과 ' + teacher.overlaps.length + '개 일치</small></span>'
-      + '<span class="teacher-card-arrow" aria-hidden="true">›</span></button>';
+      + '<span class="teacher-card-arrow" aria-hidden="true">›</span></button>'
+      + '<div class="teacher-match-detail" id="teacherMatchDetail-' + index + '" hidden></div>';
   }).join('');
   qcardWrap.innerHTML = '<div class="qcard teacher-matches-card">'
     + '<div class="qtitle">가능한 선생님을 확인해보세요</div>'
     + '<div class="qsub">카드를 누르면 프로필과 함께 가능한 시간을 볼 수 있어요.</div>'
     + '<div class="teacher-match-list">' + cards + '</div>'
-    + '<div class="teacher-match-detail" id="teacherMatchDetail" hidden></div>'
     + '</div>';
   const cardElements = Array.from(qcardWrap.querySelectorAll('.teacher-match-card'));
   cardElements.forEach(card => card.addEventListener('click', () => openTeacherDetail(teachers[Number(card.dataset.index)], cardElements)));
