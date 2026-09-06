@@ -154,14 +154,23 @@
           if (li.textContent.includes('"요금제"')) {
             li.innerHTML = '<strong>"요금제"</strong>란 회사가 제공하는 이코노미, 스탠다드, 프리미엄 수업료 등급을 의미합니다. (제7조 참조)';
           }
+          if (li.textContent.includes('"매칭비"')) li.remove();
+          if (li.textContent.includes('"매칭"')) {
+            li.innerHTML = '<strong>"선생님 선택 및 연결"</strong>이란 학생이 신청 조건에 맞는 선생님을 직접 선택하거나, 바로 선택 가능한 선생님이 없는 경우 회사가 적합한 선생님을 추천하여 연결하는 절차를 의미합니다.';
+          }
         });
       }
 
       if (heading.startsWith('제3조')) {
         const items = card.querySelectorAll('li');
         if (items[1]) {
-          items[1].textContent = '회사는 첫 달 수업료에 한하여 학생으로부터 수업료 전액을 수령한 후, 정해진 기준에 따라 선생님 회원에게 정산하는 방식으로 결제 절차에 관여합니다. 첫 달 이후 같은 선생님과 수업을 계속하는 경우 수업료는 학생이 선생님 회원에게 직접 지급합니다.';
+          items[1].textContent = '회사는 첫 달 수업료에 한하여 학생으로부터 수업료 전액을 수령한 후, 회사와 선생님 회원 간 정해진 기준에 따라 정산하는 방식으로 결제 절차에 관여합니다. 첫 달 이후 같은 선생님과 수업을 계속하는 경우 수업료는 학생이 선생님 회원에게 직접 지급합니다.';
         }
+      }
+
+      if (heading.startsWith('제5조')) {
+        const items = card.querySelectorAll('li');
+        if (items[1]) items[1].textContent = '회사는 인증된 선생님 회원만 학생의 선택 또는 추천 대상으로 제공합니다.';
       }
 
       if (heading.startsWith('제6조')) {
@@ -169,22 +178,46 @@
         if (items[0]) {
           items[0].textContent = '학생이 신청 폼에 플랜, 영어 수준, 학습 목표, 희망 시간대와 장소 등을 제출하면 조건에 맞는 선생님을 확인하고 직접 선택할 수 있습니다. 바로 선택 가능한 선생님이 없는 경우 회사가 신청 내용을 확인하여 적합한 선생님을 별도로 추천할 수 있습니다.';
         }
+        if (items[1]) {
+          items[1].textContent = '선생님 선택 또는 추천 후 구체적인 수업 일정과 세부 장소는 학생과 선생님 회원이 직접 협의하여 정합니다.';
+        }
+        if (items[2]) {
+          items[2].textContent = '바로 선택 가능한 선생님이 없더라도 신청은 정상적으로 접수되며, 회사는 신청 내용을 확인한 뒤 가능한 선생님 또는 진행 방법을 별도로 안내할 수 있습니다.';
+        }
       }
 
       if (heading.startsWith('제7조')) {
+        const title = card.querySelector('h2');
+        if (title) title.textContent = '제7조 (요금제 및 결제)';
         const items = card.querySelectorAll(':scope > ol > li');
         if (items[1]) {
           items[1].textContent = '첫 달 수업료는 회사가 지정한 계좌로 이체합니다. 선생님 연결 후 첫 수업 일정이 확정되면 회사가 카카오톡 등으로 입금 방법을 안내합니다.';
+        }
+        if (items[2]) {
+          items[2].textContent = '회사는 첫 달 결제 및 선생님 정산 절차를 운영하며, 선생님 회원에 대한 정산은 회사와 선생님 회원 간 별도 기준에 따라 이루어집니다.';
         }
         if (items[3]) {
           items[3].textContent = '동일한 선생님 회원과 수업을 계속하는 경우 첫 달 이후부터 학생이 해당 선생님 회원에게 수업료를 직접 지급합니다. 선생님 변경이 필요한 경우 나도를 통해 요청할 수 있으며, 가능한 선생님과 진행 방법은 개별 안내합니다.';
         }
       }
 
+      if (heading.startsWith('제8조')) {
+        const title = card.querySelector('h2');
+        if (title) title.textContent = '제8조 (환불)';
+        const items = card.querySelectorAll(':scope > ol > li');
+        if (items[0]) items[0].textContent = '결제 취소 또는 환불이 필요한 경우 학생은 나도에 문의하여 처리 절차를 안내받을 수 있습니다.';
+        if (items[1]) items[1].textContent = '회사의 귀책사유 또는 선생님 회원의 사정으로 수업 시작이 불가능해진 경우, 회사는 환불 또는 대체 선생님 연결 등 필요한 조치를 안내합니다.';
+      }
+
       if (heading.startsWith('제9조')) {
         card.querySelectorAll('li').forEach(li => {
           if (li.textContent.includes('재매칭을 반복적으로 요청하며 매칭비 지급을 회피')) li.remove();
         });
+      }
+
+      if (heading.startsWith('제12조')) {
+        const items = card.querySelectorAll('li');
+        if (items[1]) items[1].textContent = '결제 및 서비스 이용과 관련하여 발생한 분쟁은 회원과 회사 간 협의를 통해 해결함을 원칙으로 합니다.';
       }
     });
   }
