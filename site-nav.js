@@ -135,3 +135,47 @@
     if (twitterDescription) twitterDescription.content = description;
   }
 })();
+
+// Keep first-month payment wording consistent across public pages and terms.
+(() => {
+  const faqItems = [...document.querySelectorAll('.faq-item')];
+  const paymentFaq = faqItems.find(item => item.querySelector('.faq-question')?.textContent.includes('결제 방법'));
+  if (paymentFaq) {
+    const answer = paymentFaq.querySelector('.faq-answer');
+    if (answer) {
+      answer.textContent = '현재는 계좌이체로 진행합니다. 첫 달 수업료는 나도를 통해 결제하며, 선생님 연결 후 첫 수업 일정이 확정되면 카카오톡으로 입금 방법을 안내드립니다. 첫 달 이후부터 같은 선생님과 계속 수업하는 경우에는 수업료를 선생님에게 직접 지급합니다.';
+    }
+  }
+
+  if (document.body.classList.contains('legal-page')) {
+    document.querySelectorAll('.doc-card').forEach(card => {
+      const heading = card.querySelector('h2')?.textContent.trim() || '';
+
+      if (heading.startsWith('제2조')) {
+        card.querySelectorAll('li').forEach(li => {
+          if (li.textContent.includes('"요금제"')) {
+            li.innerHTML = '<strong>"요금제"</strong>란 회사가 제공하는 이코노미, 스탠다드, 프리미엄 수업료 등급을 의미합니다. (제7조 참조)';
+          }
+        });
+      }
+
+      if (heading.startsWith('제3조')) {
+        const items = card.querySelectorAll('li');
+        if (items[1]) {
+          items[1].innerHTML = '회사는 첫 달 수업료에 한하여 학생으로부터 수업료 전액을 수령한 후, 정해진 기준에 따라 선생님 회원에게 정산하는 방식으로 결제 절차에 관여합니다. 첫 달 이후 같은 선생님과 수업을 계속하는 경우 수업료는 학생이 선생님 회원에게 직접 지급합니다.';
+        }
+      }
+
+      if (heading.startsWith('제6조')) {
+        const items = card.querySelectorAll('li');
+        if (items[0]) items[0].textContent = '학생이 신청 폼에 플랜, 영어 수준, 학습 목표, 희망 시간대와 장소 등을 제출하면 조건에 맞는 선생님을 확인하고 직접 선택할 수 있습니다. 바로 선택 가능한 선생님이 없는 경우 회사가 신청 내용을 확인하여 적합한 선생님을 별도로 추천할 수 있습니다.';
+      }
+
+      if (heading.startsWith('제7조')) {
+        const items = card.querySelectorAll(':scope > ol > li');
+        if (items[1]) items[1].textContent = '첫 달 수업료는 회사가 지정한 계좌로 이체합니다. 선생님 연결 후 첫 수업 일정이 확정되면 회사가 카카오톡 등으로 입금 방법을 안내합니다.';
+        if (items[3]) items[3].textContent = '동일한 선생님 회원과 수업을 계속하는 경우, 첫 달 이후부터는 회사의 추가 매칭 수수료가 발생하지 않으며 학생이 해당 선생님 회원에게 수업료를 직접 지급합니다. 선생님 변경 등으로 새로운 매칭이 필요한 경우에는 별도 조건이 적용될 수 있습니다.';
+      }
+    });
+  }
+})();
