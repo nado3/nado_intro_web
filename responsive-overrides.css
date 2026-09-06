@@ -165,6 +165,8 @@ body.form-page .history-edit,
 body.form-page .trust-label { font-size: max(.8rem, 13px); }
 body.form-page .tier-opt-badge { font-size: .875rem; }
 body.form-page #freqToggle span { font-size: .8rem !important; }
+body.form-page .teacher-match-copy small,
+body.form-page .teacher-detail-meta { font-size: max(.78rem, 13px); }
 
 /* Legal documents */
 body.legal-page .wrap { max-width: 880px; padding: clamp(2.5rem, 6vw, 4.5rem) var(--responsive-gutter) 6rem; }
@@ -236,6 +238,10 @@ body.legal-page table { font-size: .92rem; }
   }
   body.form-page .topbar-inner,
   body.form-page .bottombar { padding-inline: 1rem; }
+  body.form-page .teacher-match-list { grid-template-columns: 1fr; }
+  body.form-page .teacher-match-card { padding: .9rem; }
+  body.form-page .teacher-match-photo.compact { width: 58px; height: 58px; }
+  body.form-page .teacher-match-detail { padding: 1rem; }
   body.legal-page .doc-card { border-radius: 1rem; }
   body.legal-page table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   body.how-page .step-item { align-items: start; margin-bottom: 3rem; }
@@ -247,6 +253,8 @@ body.legal-page table { font-size: .92rem; }
 }
 
 @media (max-width: 479px) {
+  body.form-page .teacher-detail-head { align-items:flex-start; }
+  body.form-page .teacher-match-photo:not(.compact) { width:76px;height:76px;border-radius:1rem; }
   body.how-page .page-subtitle { max-width: 19rem; }
   body.how-page .step-item { grid-template-columns: 48px minmax(0, 1fr); gap: .85rem; }
   body.how-page .step-number { width: 48px; height: 48px; font-size: 1.15rem; }

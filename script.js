@@ -5,9 +5,40 @@ const PRICE_TABLE = {
   '프리미엄': [220000,440000]
 };
 const KID_SURCHARGE = 1500;
+const SONGDO_LOCATION_DISCOUNT = 10000;
 const FREQ_MULTIPLIER = { '주 1회': 1, '주 2회': 2, '체험 1회': 0.25 };
 const TRIAL_DEPOSIT = 20000;
-const SONGDO_LOCATION_DISCOUNT = 10000;
+const PLAN_GROUP = { '이코노미': 'economy', '스탠다드': 'standard', '프리미엄': 'premium' };
+const DAY_OF_WEEK = { '일': 0, '월': 1, '화': 2, '수': 3, '목': 4, '금': 5, '토': 6 };
+const SEOUL_SERVICE_AREAS = [
+  { code: 'Gangnam', label: '강남' },
+  { code: 'Daechi', label: '대치' },
+  { code: 'Jamsil', label: '잠실' },
+  { code: 'Hanti', label: '한티' },
+  { code: 'Hongdae', label: '홍대' },
+  { code: 'Yongsan', label: '용산' },
+  { code: 'Line 3 vicinity', label: '3호선 인근' }
+];
+const KAKAO_CHAT_URL = 'http://pf.kakao.com/_pbPJX/chat';
+const LOCAL_TEACHER_PHOTOS = {
+  abhinay: 'img/abhinay.jpg',
+  amelia: 'img/amelia.jpg',
+  amy: 'img/amy.jpg',
+  anniah: 'img/anniah.jpg',
+  ej: 'img/ej.jpg',
+  hara: 'img/hara.jpg',
+  justina: 'img/justina.jpg',
+  oscar: 'img/oscar.jpg',
+  sophie: 'img/sophie.jpg',
+  tae: 'img/tae.jpg',
+  victoria: 'img/victoria.jpg',
+  vita: 'img/vitalina.jpg',
+  vitalina: 'img/vitalina.jpg'
+};
+function serviceAreaLabel(code){
+  const area = SEOUL_SERVICE_AREAS.find(item => item.code === code);
+  return area ? area.label : (code || '');
+}
 function durationLabel(idx){
   return DURATIONS[idx] || DURATIONS[0];
 }
@@ -34,7 +65,11 @@ function placeLabel(a){
   if (a.placeType === '인천 원하는 장소' || a.placeType === '서울 원하는 장소') {
     const city = a.placeType === '인천 원하는 장소' ? '인천' : '서울';
     const preferredPlace = (a.preferredPlace || '').trim();
-    return city + ' 희망 장소' + (preferredPlace ? ' · ' + preferredPlace : '') + ' (최종 장소 추후 조율)';
+    const serviceArea = a.placeType === '서울 원하는 장소' ? serviceAreaLabel(a.areaCode) : '';
+    return city + ' 희망 장소'
+      + (serviceArea ? ' · ' + serviceArea : '')
+      + (preferredPlace ? ' · ' + preferredPlace : '')
+      + ' (최종 장소 추후 조율)';
   }
   if (a.placeType === '송도') return '송도 · 세부 장소는 추후 조율';
   return (a.place || []).join(', ') || '-';
@@ -133,10 +168,13 @@ const steps = [
   }
 ];
 const TRIAL_MODE = document.body.dataset.mode === 'trial';
+const LOCAL_TEST_MODE = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
+  && new URLSearchParams(window.location.search).get('test') === '1';
 let current = 0;
 const answers = {
   frequency: TRIAL_MODE ? '체험 1회' : '주 1회',
-  preferredPlace: ''
+  preferredPlace: '',
+  areaCode: ''
 };
 function buildActiveSteps(){
   if (!TRIAL_MODE) return steps.filter(s => s.key !== 'trialType');
@@ -149,6 +187,10 @@ function buildActiveSteps(){
 let activeSteps = buildActiveSteps();
 const ANALYTICS_FORM_ID = TRIAL_MODE ? 'nado_trial_application' : 'nado_regular_application';
 let formStartTracked = false;
+let matchingViewActive = false;
+let matchingInProgress = false;
+let matchingClient = null;
+let matchingRequestId = 0;
 const historyEl = document.getElementById('history');
 const qcardWrap = document.getElementById('qcardWrap');
 const progressFill = document.getElementById('progressFill');
@@ -156,6 +198,11 @@ const nextBtn = document.getElementById('nextBtn');
 const skipBtn = document.getElementById('skipBtn');
 const backBtn = document.getElementById('backBtn');
 const dragState = { isDragging: false, mode: true };
+if (LOCAL_TEST_MODE) {
+  document.body.classList.add('local-test-mode');
+  const topbarTitle = document.querySelector('.topbar-title');
+  if (topbarTitle) topbarTitle.insertAdjacentHTML('beforeend', '<span class="local-test-badge">로컬 테스트</span>');
+}
 document.addEventListener('mouseup', () => { dragState.isDragging = false; });
 let scheduleActiveDay = '월';
 
@@ -186,7 +233,20 @@ function renderHistory(){
     historyEl.appendChild(item);
   }
   historyEl.querySelectorAll('.history-edit').forEach(btn => {
-    btn.addEventListener('click', () => { current = parseInt(btn.dataset.idx); renderStep(); });
+    btn.addEventListener('click', () => {
+      if (matchingViewActive) {
+        matchingRequestId++;
+        matchingViewActive = false;
+        matchingInProgress = false;
+        answers.teacher_id = null;
+        answers.teacher_name = '';
+        answers.matching_type = 'manual';
+        delete nextBtn.dataset.submitted;
+        document.getElementById('bottombar').style.display = 'block';
+      }
+      current = parseInt(btn.dataset.idx);
+      renderStep();
+    });
   });
 }
 
@@ -210,7 +270,8 @@ function checkValid(step){
   }
   if (step.type === 'rank') {
     if (!Array.isArray(v) || v.length === 0) return false;
-    if (answers.placeType === '인천 원하는 장소' || answers.placeType === '서울 원하는 장소') {
+    if (answers.placeType === '서울 원하는 장소') return !!answers.areaCode;
+    if (answers.placeType === '인천 원하는 장소') {
       return !!(answers.preferredPlace && answers.preferredPlace.trim());
     }
     if (answers.placeType === '송도 할인 장소') return !!answers.songdoPlace;
@@ -229,7 +290,9 @@ function setNextState(step){
   const valid = checkValid(step);
   nextBtn.classList.toggle('active', valid);
   nextBtn.disabled = !valid;
-  nextBtn.textContent = current === activeSteps.length - 1 ? '제출하기' : '다음';
+  nextBtn.textContent = current === activeSteps.length - 1
+    ? (LOCAL_TEST_MODE ? '테스트 제출하기' : '제출하기')
+    : '다음';
   skipBtn.style.display = step.required ? 'none' : 'block';
 }
 
@@ -389,7 +452,7 @@ if (step.type === 'trialType'){
           optionMeta = '<div class="place-option-meta">대략적인 장소 입력 · 추후 조율</div>';
         } else if (opt === '서울 원하는 장소') {
           optionTitle = '서울에서 희망하는 장소';
-          optionMeta = '<div class="place-option-meta">대략적인 장소 입력 · 추후 조율</div>';
+          optionMeta = '<div class="place-option-meta">가능 지역 선택 · 세부 장소는 추후 조율</div>';
         } else if (opt === '송도 할인 장소') {
           optionTitle = '송도 지정 장소';
           optionMeta = '<div class="place-option-meta">IGC·트리플스트리트 · 모든 요금제 월 1만원 할인</div>';
@@ -402,13 +465,23 @@ if (step.type === 'trialType'){
           + '<div class="opt-rank-badge">' + (isSel ? '✓' : '') + '</div>'
           + '<div class="opt-label">' + optionTitle + optionMeta + '</div></div>';
 
-        if (isSel && (opt === '인천 원하는 장소' || opt === '서울 원하는 장소')) {
+        if (isSel && opt === '인천 원하는 장소') {
           const isIncheon = opt === '인천 원하는 장소';
-          const placeholder = isIncheon ? '예: 부평역 근처 카페' : '예: 홍대입구역 근처 카페';
+          const placeholder = '예: 부평역 근처 카페';
           inner += '<div class="preferred-place-wrap">'
             + '<label class="sr-only" for="preferredPlaceInput">' + (isIncheon ? '인천' : '서울') + ' 희망 장소</label>'
             + '<input type="text" id="preferredPlaceInput" placeholder="' + placeholder + '" value="' + (answers.preferredPlace || '') + '">'
             + '<div class="preferred-place-help">최종 장소는 선생님과 조율해요.</div>'
+            + '</div>';
+        } else if (isSel && opt === '서울 원하는 장소') {
+          inner += '<div class="service-area-wrap">'
+            + '<div class="field-label">수업 가능한 지역을 선택해주세요</div>'
+            + '<div class="service-area-options">'
+            + SEOUL_SERVICE_AREAS.map(area => '<button type="button" class="service-area-opt ' + (answers.areaCode === area.code ? 'selected' : '') + '" data-area-code="' + area.code + '">' + area.label + '</button>').join('')
+            + '</div>'
+            + '<label class="field-label" for="preferredPlaceInput">구체적인 희망 장소 <span class="optional-label">선택</span></label>'
+            + '<input type="text" id="preferredPlaceInput" placeholder="예: 강남역 3번 출구 근처 카페" value="' + (answers.preferredPlace || '') + '">'
+            + '<div class="preferred-place-help">매칭에는 위 지역을 사용하고, 정확한 장소는 선생님과 조율해요.</div>'
             + '</div>';
         }
       });
@@ -429,7 +502,7 @@ if (step.type === 'trialType'){
       inner += '<div class="opt-list">';
 
     const selected = answers[step.key] || (step.type === 'multi' ? [] : null);
-    const visibleOptions = step.key === 'goals' && answers.tier === '이코노미'
+    const visibleOptions = step.key === 'goals' && answers.tier !== '프리미엄'
       ? step.options.filter(opt => opt !== '비즈니스')
       : step.options;
     visibleOptions.forEach(opt => {
@@ -518,13 +591,12 @@ if (step.type === 'trialType'){
       const tierName = answers.tier || '-';
       const d = answers.duration || { index: 0 };
       const price = PRICE_TABLE[answers.tier] ? calcPrice(answers.tier, d.index, answers.frequency) : 0;
-      const hasSongdoDiscount = !TRIAL_MODE && answers.placeType === '송도 할인 장소';
       inner += ''
         + '<div class="pay-box">'
         + '<div class="pay-row"><span>선택 플랜</span><strong>' + tierName + '</strong></div>'
         + '<div class="pay-row"><span>수업 횟수</span><strong>' + (isPaidTrial ? '1회' : answers.frequency) + '</strong></div>'
         + '<div class="pay-row"><span>수업 시간</span><strong>' + durationLabel(d.index, answers.tier) + '</strong></div>'
-        + (hasSongdoDiscount ? '<div class="pay-row"><span>송도 지정 장소 할인</span><strong>-₩' + SONGDO_LOCATION_DISCOUNT.toLocaleString() + '</strong></div>' : '')
+        + (!TRIAL_MODE && answers.placeType === '송도 할인 장소' ? '<div class="pay-row pay-discount"><span>송도 지정 장소 할인</span><strong>−₩' + SONGDO_LOCATION_DISCOUNT.toLocaleString() + '</strong></div>' : '')
         + '<div class="pay-row"><span>결제 금액</span><strong>₩' + price.toLocaleString() + '</strong></div>'
         + '</div>'
         + '<div class="consent-box">'
@@ -550,6 +622,7 @@ if (step.type === 'trialType'){
           answers.place = [];
           answers.placeType = '';
           answers.preferredPlace = '';
+          answers.areaCode = '';
           answers.songdoPlace = '';
           answers.payment = false;
           if (nextType === '무료 체험' && Array.isArray(answers.goals)) {
@@ -594,11 +667,12 @@ if (step.type === 'trialType'){
           answers.place = [];   // 요금제가 바뀌면 장소 선택 초기화
           answers.placeType = '';
           answers.preferredPlace = '';
+          answers.areaCode = '';
           answers.songdoPlace = '';
           answers.payment = false;
         }
         answers.tier = el.dataset.value;
-        if (answers.tier === '이코노미' && Array.isArray(answers.goals)) {
+        if (answers.tier !== '프리미엄' && Array.isArray(answers.goals)) {
           answers.goals = answers.goals.filter(goal => goal !== '비즈니스');
         }
         qcardWrap.querySelectorAll('.tier-opt').forEach(o => {
@@ -643,7 +717,10 @@ if (step.type === 'trialType'){
   qcardWrap.querySelectorAll('.opt.rank').forEach(el => {
     el.addEventListener('click', () => {
       const val = el.dataset.value;
-      if (answers.placeType !== val) answers.preferredPlace = '';
+      if (answers.placeType !== val) {
+        answers.preferredPlace = '';
+        answers.areaCode = '';
+      }
       answers.place = [val];
       answers.placeType = val;
       if (val !== '송도 할인 장소') answers.songdoPlace = '';
@@ -657,6 +734,16 @@ if (step.type === 'trialType'){
       answers.songdoPlace = el.dataset.value;
       answers.payment = false;
       qcardWrap.querySelectorAll('.songdo-sub-place').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      setNextState(step);
+    });
+  });
+
+  qcardWrap.querySelectorAll('.service-area-opt').forEach(el => {
+    el.addEventListener('click', () => {
+      answers.areaCode = el.dataset.areaCode;
+      answers.payment = false;
+      qcardWrap.querySelectorAll('.service-area-opt').forEach(option => option.classList.remove('selected'));
       el.classList.add('selected');
       setNextState(step);
     });
@@ -828,6 +915,264 @@ if (step.type === 'trialType'){
   setNextState(step);
 }
 
+function escapeHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function matchingLocation() {
+  const placeType = answers.placeType || '';
+  const isSeoul = placeType.indexOf('서울') > -1;
+  const region = isSeoul ? 'Seoul' : 'Incheon';
+  const area = isSeoul ? (answers.areaCode || null) : null;
+  return { region, area };
+}
+
+function normalizeTeacher(row, overlapSlots) {
+  const source = Object.assign({}, row && row.teacher ? row.teacher : {}, row || {});
+  const teacherId = source.teacher_id || source.id || source.teacher_uuid || source.teacher_user_id || source.profile_id || '';
+  const teacherName = source.teacher_name || source.display_name || source.full_name || source.name || source.english_name || '선생님';
+  const tags = source.tags || source.specialties || source.strengths || source.keywords || [];
+  return {
+    id: String(teacherId),
+    name: String(teacherName),
+    photoPath: source.profile_photo_path || source.profile_photo_url || source.photo_url || source.avatar_url || '',
+    videoUrl: source.introduction_video_url || source.intro_video_url || source.self_intro_video_url || source.video_url || source.profile_video_url || '',
+    bio: source.bio || source.short_bio || source.introduction || source.self_introduction || source.profile_intro || source.description || '',
+    university: source.university || source.school || source.university_name || '',
+    major: source.major || source.major_name || '',
+    experience: source.experience || source.teaching_experience || source.career || '',
+    languages: source.languages || source.language || '',
+    tags: Array.isArray(tags) ? tags : String(tags || '').split(',').map(v => v.trim()).filter(Boolean),
+    overlaps: Array.from(new Set(overlapSlots || [])),
+    raw: source
+  };
+}
+
+function publicStorageUrl(path) {
+  if (!path) return '';
+  if (/^https?:\/\//i.test(path)) return path;
+  const config = window.NADO_MEMBER_CONFIG || {};
+  const base = String(config.SUPABASE_URL || '').replace(/\/$/, '');
+  if (!base) return '';
+  const cleanPath = String(path).replace(/^\/+/, '');
+  if (cleanPath.indexOf('storage/v1/object/public/') === 0) return base + '/' + cleanPath;
+  const bucket = config.PROFILE_PHOTO_BUCKET || 'teacher-profile-photos';
+  const objectPath = cleanPath.indexOf(bucket + '/') === 0 ? cleanPath : bucket + '/' + cleanPath;
+  return base + '/storage/v1/object/public/' + objectPath.split('/').map(encodeURIComponent).join('/');
+}
+
+function localTeacherPhoto(name) {
+  const key = String(name || '').trim().split(/\s+/)[0].toLowerCase();
+  return LOCAL_TEACHER_PHOTOS[key] || '';
+}
+
+function teacherPhotoMarkup(teacher, compact) {
+  const photoUrl = publicStorageUrl(teacher.photoPath);
+  const fallbackUrl = localTeacherPhoto(teacher.name);
+  const initialUrl = photoUrl || fallbackUrl;
+  const initial = escapeHtml((teacher.name || 'T').trim().charAt(0).toUpperCase());
+  return '<div class="teacher-match-photo ' + (compact ? 'compact' : '') + '">'
+    + (initialUrl ? '<img src="' + escapeHtml(initialUrl) + '" data-fallback-src="' + escapeHtml(photoUrl ? fallbackUrl : '') + '" alt="' + escapeHtml(teacher.name) + ' 선생님 프로필 사진">' : '')
+    + '<span class="teacher-photo-fallback"' + (initialUrl ? ' hidden' : '') + '>' + initial + '</span>'
+    + '</div>';
+}
+
+function bindTeacherPhotoFallbacks(scope) {
+  scope.querySelectorAll('.teacher-match-photo img').forEach(img => {
+    img.addEventListener('error', () => {
+      const fallbackUrl = img.dataset.fallbackSrc;
+      if (fallbackUrl && img.src.indexOf(fallbackUrl) === -1) {
+        img.dataset.fallbackSrc = '';
+        img.src = fallbackUrl;
+        return;
+      }
+      img.hidden = true;
+      const fallback = img.parentElement.querySelector('.teacher-photo-fallback');
+      if (fallback) fallback.hidden = false;
+    });
+  });
+}
+
+async function runWithConcurrency(items, limit, worker) {
+  const output = new Array(items.length);
+  let cursor = 0;
+  async function runner() {
+    while (cursor < items.length) {
+      const index = cursor++;
+      output[index] = await worker(items[index], index);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, runner));
+  return output;
+}
+
+async function fetchAvailableTeachers() {
+  const config = window.NADO_MEMBER_CONFIG || {};
+  if (!window.supabase || !config.SUPABASE_URL || !config.SUPABASE_ANON_KEY) return [];
+  if (!matchingClient) matchingClient = window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
+
+  const plan = PLAN_GROUP[answers.tier];
+  const location = matchingLocation();
+  const selectedSlots = Array.from(new Set(answers.schedule || []));
+  if (!plan || selectedSlots.length === 0) return [];
+
+  const batches = await runWithConcurrency(selectedSlots, 6, async slot => {
+    const separator = slot.indexOf(' ');
+    const day = separator > -1 ? slot.slice(0, separator) : '';
+    const time = separator > -1 ? slot.slice(separator + 1) : '';
+    try {
+      const response = await matchingClient.rpc('get_available_teachers', {
+        p_plan: plan,
+        p_region: location.region,
+        p_day: DAY_OF_WEEK[day],
+        p_time: time,
+        p_area: location.area
+      });
+      if (response.error) throw response.error;
+      let rows = Array.isArray(response.data)
+        ? response.data
+        : (response.data && Array.isArray(response.data.teachers) ? response.data.teachers : []);
+      const chosenSongdoPlace = answers.songdoPlace || answers.placeType || '';
+      const isFixedSongdoPlace = answers.placeType === '송도 할인 장소'
+        || answers.placeType === 'IGC 인천글로벌캠퍼스'
+        || answers.placeType === '송도 트리플스트리트';
+      if (isFixedSongdoPlace) {
+        const requiredLocation = chosenSongdoPlace.indexOf('IGC') > -1 ? 'IGC' : '트리플스트리트';
+        rows = rows.filter(row => String(row.location || row.available_location || '').indexOf(requiredLocation) > -1);
+      }
+      return rows.map(row => ({ row, slot }));
+    } catch (error) {
+      console.warn('선생님 매칭 조회를 건너뜁니다:', error && error.message ? error.message : error);
+      return [];
+    }
+  });
+
+  const merged = new Map();
+  batches.flat().forEach(item => {
+    const provisional = normalizeTeacher(item.row, [item.slot]);
+    const key = provisional.id || provisional.name.toLowerCase();
+    if (!key) return;
+    if (!merged.has(key)) {
+      merged.set(key, provisional);
+      return;
+    }
+    const previous = merged.get(key);
+    previous.overlaps = Array.from(new Set(previous.overlaps.concat(item.slot)));
+    previous.raw = Object.assign({}, previous.raw, provisional.raw);
+  });
+
+  let teachers = Array.from(merged.values());
+  if (plan === 'premium') {
+    teachers = teachers.filter(teacher => {
+      const identity = [teacher.name, teacher.raw.slug, teacher.raw.nickname].filter(Boolean).join(' ').toLowerCase();
+      return identity.indexOf('oscar') > -1 || identity.indexOf('오스카') > -1;
+    });
+  }
+  return teachers;
+}
+
+function renderMatchingLoading() {
+  matchingViewActive = true;
+  progressFill.style.width = '100%';
+  backBtn.style.visibility = 'visible';
+  document.getElementById('bottombar').style.display = 'none';
+  qcardWrap.innerHTML = '<div class="qcard matching-loading-card" role="status" aria-live="polite">'
+    + '<div class="matching-spinner" aria-hidden="true"></div>'
+    + '<div class="qtitle">매칭 중입니다...</div>'
+    + '<div class="qsub">선택하신 장소와 희망 시간을 확인하고 있어요.</div>'
+    + '</div>';
+}
+
+function openTeacherDetail(teacher, cardElements) {
+  cardElements.forEach(card => card.classList.toggle('selected', Number(card.dataset.index) === teacher._index));
+  const detail = document.getElementById('teacherMatchDetail');
+  const meta = [teacher.university, teacher.major].filter(Boolean).join(' · ');
+  const extra = [teacher.languages, teacher.experience].filter(Boolean).join(' · ');
+  detail.innerHTML = '<div class="teacher-detail-head">'
+    + teacherPhotoMarkup(teacher, false)
+    + '<div><div class="teacher-detail-name">' + escapeHtml(teacher.name) + ' 선생님</div>'
+    + (meta ? '<div class="teacher-detail-meta">' + escapeHtml(meta) + '</div>' : '')
+    + (extra ? '<div class="teacher-detail-meta">' + escapeHtml(extra) + '</div>' : '')
+    + '</div></div>'
+    + (teacher.bio ? '<p class="teacher-detail-bio">' + escapeHtml(teacher.bio) + '</p>' : '')
+    + (teacher.tags.length ? '<div class="teacher-match-tags">' + teacher.tags.map(tag => '<span>' + escapeHtml(tag) + '</span>').join('') + '</div>' : '')
+    + '<div class="teacher-overlap-box"><strong>함께 가능한 시간</strong><div>'
+    + teacher.overlaps.map(slot => '<span>' + escapeHtml(slot) + '</span>').join('')
+    + '</div></div>'
+    + '<button type="button" class="teacher-select-btn" id="teacherSelectBtn">' + escapeHtml(teacher.name) + ' 선생님 선택하기</button>';
+  detail.hidden = false;
+  bindTeacherPhotoFallbacks(detail);
+  document.getElementById('teacherSelectBtn').addEventListener('click', () => selectTeacher(teacher));
+  detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function renderTeacherMatches(teachers) {
+  matchingInProgress = false;
+  matchingViewActive = true;
+  delete nextBtn.dataset.submitted;
+  const cards = teachers.map((teacher, index) => {
+    teacher._index = index;
+    const meta = [teacher.university, teacher.major].filter(Boolean).join(' · ');
+    return '<button type="button" class="teacher-match-card" data-index="' + index + '">'
+      + teacherPhotoMarkup(teacher, true)
+      + '<span class="teacher-match-copy"><strong>' + escapeHtml(teacher.name) + ' 선생님</strong>'
+      + (meta ? '<small>' + escapeHtml(meta) + '</small>' : '')
+      + '<small class="teacher-overlap-summary">선택 시간과 ' + teacher.overlaps.length + '개 일치</small></span>'
+      + '<span class="teacher-card-arrow" aria-hidden="true">›</span></button>';
+  }).join('');
+  qcardWrap.innerHTML = '<div class="qcard teacher-matches-card">'
+    + '<div class="qtitle">가능한 선생님을 확인해보세요</div>'
+    + '<div class="qsub">카드를 누르면 프로필과 함께 가능한 시간을 볼 수 있어요.</div>'
+    + '<div class="teacher-match-list">' + cards + '</div>'
+    + '<div class="teacher-match-detail" id="teacherMatchDetail" hidden></div>'
+    + '</div>';
+  const cardElements = Array.from(qcardWrap.querySelectorAll('.teacher-match-card'));
+  cardElements.forEach(card => card.addEventListener('click', () => openTeacherDetail(teachers[Number(card.dataset.index)], cardElements)));
+  bindTeacherPhotoFallbacks(qcardWrap);
+}
+
+async function selectTeacher(teacher) {
+  if (submissionInProgress) return;
+  answers.teacher_id = teacher.id || null;
+  answers.teacher_name = teacher.name;
+  answers.matching_type = 'student_selected';
+  qcardWrap.innerHTML = '<div class="qcard matching-loading-card" role="status" aria-live="polite">'
+    + '<div class="matching-spinner" aria-hidden="true"></div>'
+    + '<div class="qtitle">신청 내용을 저장하고 있어요...</div></div>';
+  await showSuccess();
+}
+
+async function startTeacherMatching() {
+  if (matchingInProgress || alreadySubmitted) return;
+  const requestId = ++matchingRequestId;
+  matchingInProgress = true;
+  answers.teacher_id = null;
+  answers.teacher_name = '';
+  answers.matching_type = 'manual';
+  renderMatchingLoading();
+  const minimumDelay = new Promise(resolve => setTimeout(resolve, 900));
+  let teachers = [];
+  try {
+    teachers = await fetchAvailableTeachers();
+  } catch (error) {
+    console.warn('선생님 매칭을 수동 배정으로 전환합니다:', error);
+  }
+  await minimumDelay;
+  if (requestId !== matchingRequestId || !matchingViewActive) return;
+  if (!teachers.length) {
+    matchingInProgress = false;
+    matchingViewActive = false;
+    await showSuccess();
+    return;
+  }
+  renderTeacherMatches(teachers);
+}
+
 nextBtn.addEventListener('click', () => {
   const step = activeSteps[current];
   if (!checkValid(step)) return;
@@ -838,6 +1183,8 @@ nextBtn.addEventListener('click', () => {
   if (current === activeSteps.length - 1) {
     if (nextBtn.dataset.submitted) return;
     nextBtn.dataset.submitted = '1';
+    startTeacherMatching();
+    return;
   }
   current++;
   renderStep();
@@ -849,10 +1196,26 @@ skipBtn.addEventListener('click', () => {
 });
 
 backBtn.addEventListener('click', () => {
+  if (matchingViewActive) {
+    matchingRequestId++;
+    matchingViewActive = false;
+    matchingInProgress = false;
+    answers.teacher_id = null;
+    answers.teacher_name = '';
+    answers.matching_type = 'manual';
+    delete nextBtn.dataset.submitted;
+    document.getElementById('bottombar').style.display = 'block';
+    renderStep();
+    return;
+  }
   if (current > 0){ current--; renderStep(); }
 });
 
 async function submitToJotform(a) {
+  if (LOCAL_TEST_MODE) {
+    await new Promise(resolve => setTimeout(resolve, 350));
+    return { success: true, test: true };
+  }
   const params = new URLSearchParams();
   params.append('submission[3]', a.contact.name);                     // 이름
   params.append('submission[4][full]', a.contact.phone);              // 연락처
@@ -878,8 +1241,17 @@ async function submitToJotform(a) {
     params.append('submission[40]', a.frequency || '');                 // 수업 빈도
     params.append('submission[41]', a.duration ? durationLabel(a.duration.index, a.tier) : ''); // 수업 시간
     params.append('submission[43]', TRIAL_MODE ? ((a.trialType || '체험수업') + ' 신청') : '정규 신청'); // 신청 구분
-    params.append('submission[28]', a.notes || '');                      // 문의사항
-    params.append('submission[44]', a.preferredPlace || a.songdoPlace || ''); // 희망/지정 장소 세부정보
+    const matchingMeta = [
+      '[매칭 정보]',
+      'matching_type=' + (a.matching_type || 'manual'),
+      'teacher_id=' + (a.teacher_id || ''),
+      'teacher_name=' + (a.teacher_name || '')
+    ].join('\n');
+    params.append('submission[28]', [a.notes || '', matchingMeta].filter(Boolean).join('\n\n')); // 문의사항 + 안전한 내부 매칭 정보
+    const placeDetail = a.placeType === '서울 원하는 장소'
+      ? [serviceAreaLabel(a.areaCode), a.preferredPlace || ''].filter(Boolean).join(' / ')
+      : (a.preferredPlace || a.songdoPlace || '');
+    params.append('submission[44]', placeDetail); // 매칭 지역 + 희망/지정 장소 세부정보
   const response = await fetch('https://nado-intro-web.vercel.app/api/submit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
@@ -896,6 +1268,7 @@ let alreadySubmitted = false;
 let submissionInProgress = false;
 
 function trackFormEvent(eventName, extraParams) {
+  if (LOCAL_TEST_MODE) return;
   if (typeof window.gtag !== 'function') return;
   window.gtag('event', eventName, Object.assign({
     form_id: ANALYTICS_FORM_ID,
@@ -905,6 +1278,7 @@ function trackFormEvent(eventName, extraParams) {
 }
 
 function trackGoogleAdsApplication() {
+  if (LOCAL_TEST_MODE) return;
   if (typeof window.gtag !== 'function') return;
   window.gtag('event', 'conversion', {
     send_to: 'AW-18355423972/rMOMCLz4vO0cEOSVxrBE',
@@ -914,7 +1288,12 @@ function trackGoogleAdsApplication() {
 }
 
 function showSubmitError() {
+  matchingViewActive = false;
+  matchingInProgress = false;
   current = Math.max(0, activeSteps.length - 1);
+  document.getElementById('formMain').style.display = 'block';
+  document.getElementById('bottombar').style.display = 'block';
+  document.querySelector('.topbar').style.display = 'block';
   renderStep();
   delete nextBtn.dataset.submitted;
   nextBtn.disabled = false;
@@ -956,13 +1335,34 @@ async function showSuccess(){
   const wrap = document.getElementById('successWrap');
   wrap.style.display = 'block';
 
-  if (TRIAL_MODE) {
+  if (LOCAL_TEST_MODE && !document.getElementById('localTestNotice')) {
+    const notice = document.createElement('div');
+    notice.id = 'localTestNotice';
+    notice.className = 'local-test-notice';
+    notice.setAttribute('role', 'status');
+    notice.textContent = '로컬 테스트 완료 · 실제 신청 정보는 저장되지 않았습니다.';
+    wrap.insertBefore(notice, document.getElementById('summaryBox'));
+  }
+
+  const successButton = wrap.querySelector('.btn-home');
+  if (a.matching_type === 'student_selected') {
+    document.querySelector('.success-title').textContent = TRIAL_MODE
+      ? '체험수업 신청이 완료되었습니다 🎉'
+      : '신청이 완료되었습니다 🎉';
+    document.querySelector('.success-text').innerHTML = TRIAL_MODE
+      ? '선택하신 선생님과의 체험수업 진행을 위해<br>결제 안내 및 선생님 연락 연결을 카카오톡에서 도와드립니다.'
+      : '선택하신 선생님과의 수업 진행을 위해<br>수업료 안내 및 선생님 연락 연결을 카카오톡에서 도와드립니다.';
+    successButton.textContent = '카카오톡으로 안내받기';
+    successButton.href = KAKAO_CHAT_URL;
+  }
+
+  if (a.matching_type !== 'student_selected' && TRIAL_MODE) {
     const isFreeTrial = a.trialType === '무료 체험';
     document.querySelector('.success-title').textContent = '체험수업 신청 완료!';
     document.querySelector('.success-text').innerHTML = isFreeTrial
       ? '매칭 준비 후 24시간 내에 카카오톡으로 보증금 입금 계좌를 안내드려요.<br>수업 참석 시 보증금은 전액 환불됩니다.'
       : '매칭 준비 후 24시간 내에 카카오톡으로 1회 수업 결제 방법을 안내드려요.';
-  } else {
+  } else if (a.matching_type !== 'student_selected') {
     document.querySelector('.success-text').innerHTML = '서울 및 인천 지역의 희망 장소를 확인한 뒤 24시간 내에 카카오톡으로 연락드려요.';
   }
 document.getElementById('summaryBox').innerHTML = ''
@@ -974,7 +1374,8 @@ document.getElementById('summaryBox').innerHTML = ''
     + '<strong>학습 목표</strong> · ' + ((a.goals||[]).map(g => g === '기타' && a.goalsOther ? '기타(' + a.goalsOther + ')' : g).join(', ') || '-') + '<br>'
     + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).join(', ') || '-') + '<br>'
     + '<strong>수업 장소</strong> · ' + placeLabel(a) + '<br>'
-    + (!TRIAL_MODE && a.placeType === '송도 할인 장소' ? '<strong>송도 지정 장소 할인</strong> · 월 -₩' + SONGDO_LOCATION_DISCOUNT.toLocaleString() + '<br>' : '')
+    + (!TRIAL_MODE && a.placeType === '송도 할인 장소' ? '<strong>송도 지정 장소 할인</strong> · 월 −₩' + SONGDO_LOCATION_DISCOUNT.toLocaleString() + '<br>' : '')
+    + (a.matching_type === 'student_selected' ? '<strong>선택 선생님</strong> · ' + escapeHtml(a.teacher_name || '-') + '<br>' : '')
     + '<strong>유입 경로</strong> · ' + ((a.referral||[]).join(', ') || '-') + '<br>'
     + '<strong>연락처</strong> · ' + (a.contact ? a.contact.name + ' · ' + a.contact.phone : '-');
   console.log('신청 데이터:', a);
