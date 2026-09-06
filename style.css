@@ -186,10 +186,6 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
 .success-badge{width:76px;height:76px;border-radius:50%;background:var(--accent-light);color:var(--accent-deep);display:flex;align-items:center;justify-content:center;font-size:2.2rem;margin:0 auto 1.4rem;}
 .success-title{font-size:1.5rem;font-weight:900;margin-bottom:.7rem;letter-spacing:-0.01em;}
 .success-text{font-size:.95rem;color:var(--gray);line-height:1.7;margin-bottom:2rem;}
-.trust-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:2rem;}
-.trust-item{background:var(--white);border:1px solid var(--line);border-radius:1rem;padding:1.1rem .5rem;}
-.trust-num{font-size:1.15rem;font-weight:900;color:var(--navy);}
-.trust-label{font-size:.72rem;color:var(--gray);margin-top:.2rem;}
 .summary-box{text-align:left;background:var(--white);border:1px solid var(--line);border-radius:1.2rem;padding:1.4rem 1.5rem;font-size:.88rem;line-height:2;color:var(--ink);margin-bottom:1.6rem;}
 .local-test-notice{margin:0 0 1rem;padding:.85rem 1rem;border:1px solid #f2d787;border-radius:1rem;background:#fff8dd;color:#765400;font-size:.86rem;font-weight:800;line-height:1.5;text-align:center;}
 .summary-box strong{color:var(--accent-deep);}
@@ -204,33 +200,38 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
 .matching-loading-card .qsub{margin-bottom:0;}
 .matching-spinner{width:48px;height:48px;margin:0 auto 1.25rem;border:4px solid var(--accent-light);border-top-color:var(--accent);border-radius:50%;animation:matching-spin .8s linear infinite;}
 @keyframes matching-spin{to{transform:rotate(360deg);}}
-.teacher-match-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;}
-.teacher-match-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:.8rem;width:100%;padding:1rem;border:1.5px solid var(--line);border-radius:1.1rem;background:var(--white);color:var(--ink);font-family:inherit;text-align:left;cursor:pointer;transition:border-color .16s,background .16s,transform .16s,box-shadow .16s;}
-.teacher-match-card:hover,.teacher-match-card:focus-visible{border-color:#b8d3f2;transform:translateY(-1px);box-shadow:0 8px 20px rgba(22,50,79,.08);outline:none;}
-.teacher-match-card.selected{border-color:var(--accent);background:var(--accent-light);}
-.teacher-match-photo{position:relative;display:grid;place-items:center;width:92px;height:92px;overflow:hidden;border-radius:1.2rem;background:linear-gradient(145deg,var(--accent-light),#d7e8fb);color:var(--accent-deep);font-size:1.9rem;font-weight:900;flex-shrink:0;}
-.teacher-match-photo.compact{width:62px;height:62px;border-radius:1rem;font-size:1.35rem;}
+.teacher-match-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;}
+.teacher-match-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:1rem;width:100%;padding:1.1rem;border:1.5px solid #eadfd3;border-radius:1.35rem;background:linear-gradient(145deg,#fffdfa,#fff8f1);color:var(--ink);font-family:inherit;text-align:left;cursor:pointer;box-shadow:0 8px 22px rgba(102,73,43,.07);transition:border-color .16s,background .16s,transform .16s,box-shadow .16s;}
+.teacher-match-card:hover,.teacher-match-card:focus-visible{border-color:#e6ad7b;transform:translateY(-2px);box-shadow:0 12px 28px rgba(139,84,42,.13);outline:none;}
+.teacher-match-card.selected{border-color:#e58b48;background:linear-gradient(145deg,#fff1e3,#fff8ee);box-shadow:0 12px 30px rgba(210,112,48,.15);}
+.teacher-match-photo{position:relative;display:grid;place-items:center;width:104px;height:104px;overflow:hidden;border:2px solid #f1c69f;border-radius:50%;background:linear-gradient(145deg,#fff0df,#f6d9bd);color:#b96831;font-size:1.9rem;font-weight:900;flex-shrink:0;}
+.teacher-match-photo.compact{width:72px;height:72px;border-radius:50%;font-size:1.35rem;}
 .teacher-match-photo img{width:100%;height:100%;object-fit:cover;}
 .teacher-photo-fallback{display:grid;place-items:center;width:100%;height:100%;}
 .teacher-photo-fallback[hidden]{display:none;}
-.teacher-match-copy{display:flex;min-width:0;flex-direction:column;gap:.25rem;}
-.teacher-match-copy strong{font-size:1rem;line-height:1.35;}
+.teacher-match-copy{display:flex;min-width:0;flex-direction:column;gap:.12rem;}
+.teacher-match-copy strong{margin-bottom:.15rem;font-size:1.04rem;line-height:1.35;}
 .teacher-match-copy small{color:var(--gray);font-size:.76rem;line-height:1.4;overflow-wrap:anywhere;}
-.teacher-match-copy .teacher-overlap-summary{color:var(--accent-deep);font-weight:700;}
-.teacher-card-arrow{color:var(--accent);font-size:1.7rem;line-height:1;}
-.teacher-match-detail{margin-top:1.2rem;padding:1.25rem;border:1px solid #cfe1f6;border-radius:1.2rem;background:#fbfdff;}
+.teacher-profile-school{color:#816343!important;font-weight:750;}
+.teacher-profile-school--mason{color:#006633!important;}
+.teacher-profile-school--utah{color:#b91c1c!important;}
+.teacher-profile-major{color:#8b8178!important;}
+.teacher-match-copy .teacher-overlap-summary{margin-top:.28rem;color:#b96831;font-weight:800;}
+.teacher-card-arrow{color:#dc7b39;font-size:1.8rem;line-height:1;}
+.teacher-match-detail{margin-top:1.3rem;padding:1.4rem;border:1.5px solid #ecd9c8;border-radius:1.4rem;background:linear-gradient(155deg,#fffdfa,#fff8f1);box-shadow:0 10px 28px rgba(102,73,43,.07);}
 .teacher-detail-head{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;}
-.teacher-detail-name{font-size:1.25rem;font-weight:900;line-height:1.35;}
+.teacher-detail-name{margin-bottom:.25rem;font-size:1.25rem;font-weight:900;line-height:1.35;}
+.teacher-detail-head .teacher-profile-school,.teacher-detail-head .teacher-profile-major{font-size:.84rem;line-height:1.45;}
 .teacher-detail-meta{margin-top:.25rem;color:var(--gray);font-size:.82rem;line-height:1.45;}
 .teacher-detail-bio{margin:.4rem 0 1rem;color:#334155;font-size:.92rem;line-height:1.7;white-space:pre-line;}
 .teacher-match-tags{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1rem;}
-.teacher-match-tags span{padding:.38rem .65rem;border-radius:999px;background:var(--accent-light);color:var(--accent-deep);font-size:.74rem;font-weight:700;}
-.teacher-overlap-box{margin-top:1rem;padding:1rem;border-radius:1rem;background:var(--white);border:1px solid var(--line);}
+.teacher-match-tags span{padding:.38rem .65rem;border-radius:999px;background:#f8e7d7;color:#9a582c;font-size:.74rem;font-weight:700;}
+.teacher-overlap-box{margin-top:1rem;padding:1rem;border-radius:1rem;background:rgba(255,255,255,.82);border:1px solid #eadfd3;}
 .teacher-overlap-box strong{display:block;margin-bottom:.65rem;font-size:.88rem;color:var(--navy);}
 .teacher-overlap-box div{display:flex;flex-wrap:wrap;gap:.45rem;}
-.teacher-overlap-box span{padding:.42rem .65rem;border-radius:.65rem;background:var(--accent-light);color:var(--accent-deep);font-size:.78rem;font-weight:800;}
-.teacher-select-btn{width:100%;margin-top:1rem;padding:1rem;border:0;border-radius:1rem;background:var(--accent);color:#fff;font-family:inherit;font-size:.98rem;font-weight:800;cursor:pointer;transition:background .16s;}
-.teacher-select-btn:hover{background:var(--accent-deep);}
+.teacher-overlap-box span{padding:.42rem .65rem;border-radius:.65rem;background:#fff0df;color:#ad602f;font-size:.78rem;font-weight:800;}
+.teacher-select-btn{width:100%;margin-top:1rem;padding:1rem;border:0;border-radius:1rem;background:#d87838;color:#fff;font-family:inherit;font-size:.98rem;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(190,91,32,.18);transition:background .16s,transform .16s;}
+.teacher-select-btn:hover{background:#bd6229;transform:translateY(-1px);}
 .pay-discount strong{color:#16825d;}
 
 /* SCHEDULE — DAY TABS */
@@ -271,7 +272,6 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
 @media (max-width:480px){
   .qcard{padding:1.6rem 1.2rem;border-radius:1.3rem;}
   .qtitle{font-size:1.3rem;}
-  .trust-row{gap:.5rem;}
   .preferred-place-wrap{padding:.75rem;}
   .place-option-meta{font-size:.75rem;}
   body.form-page[data-mode="trial"] .tier-opt-top{grid-template-columns:minmax(0,1fr);gap:.2rem;}

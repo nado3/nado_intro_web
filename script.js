@@ -1087,15 +1087,22 @@ function renderMatchingLoading() {
     + '</div>';
 }
 
+function teacherSchoolClass(school) {
+  const value = String(school || '').toLowerCase();
+  if (value.includes('mason')) return ' teacher-profile-school--mason';
+  if (value.includes('utah')) return ' teacher-profile-school--utah';
+  return '';
+}
+
 function openTeacherDetail(teacher, cardElements) {
   cardElements.forEach(card => card.classList.toggle('selected', Number(card.dataset.index) === teacher._index));
   const detail = document.getElementById('teacherMatchDetail');
-  const meta = [teacher.university, teacher.major].filter(Boolean).join(' · ');
   const extra = [teacher.languages, teacher.experience].filter(Boolean).join(' · ');
   detail.innerHTML = '<div class="teacher-detail-head">'
     + teacherPhotoMarkup(teacher, false)
     + '<div><div class="teacher-detail-name">' + escapeHtml(teacher.name) + ' 선생님</div>'
-    + (meta ? '<div class="teacher-detail-meta">' + escapeHtml(meta) + '</div>' : '')
+    + (teacher.university ? '<div class="teacher-profile-school' + teacherSchoolClass(teacher.university) + '">' + escapeHtml(teacher.university) + '</div>' : '')
+    + (teacher.major ? '<div class="teacher-profile-major">' + escapeHtml(teacher.major) + '</div>' : '')
     + (extra ? '<div class="teacher-detail-meta">' + escapeHtml(extra) + '</div>' : '')
     + '</div></div>'
     + (teacher.bio ? '<p class="teacher-detail-bio">' + escapeHtml(teacher.bio) + '</p>' : '')
@@ -1116,11 +1123,11 @@ function renderTeacherMatches(teachers) {
   delete nextBtn.dataset.submitted;
   const cards = teachers.map((teacher, index) => {
     teacher._index = index;
-    const meta = [teacher.university, teacher.major].filter(Boolean).join(' · ');
     return '<button type="button" class="teacher-match-card" data-index="' + index + '">'
       + teacherPhotoMarkup(teacher, true)
       + '<span class="teacher-match-copy"><strong>' + escapeHtml(teacher.name) + ' 선생님</strong>'
-      + (meta ? '<small>' + escapeHtml(meta) + '</small>' : '')
+      + (teacher.university ? '<small class="teacher-profile-school' + teacherSchoolClass(teacher.university) + '">' + escapeHtml(teacher.university) + '</small>' : '')
+      + (teacher.major ? '<small class="teacher-profile-major">' + escapeHtml(teacher.major) + '</small>' : '')
       + '<small class="teacher-overlap-summary">선택 시간과 ' + teacher.overlaps.length + '개 일치</small></span>'
       + '<span class="teacher-card-arrow" aria-hidden="true">›</span></button>';
   }).join('');
