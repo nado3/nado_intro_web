@@ -10,6 +10,14 @@ window.NADO_MEMBER_CONFIG = {
 
 // Keep the application flow aligned with current public policies.
 (() => {
+  const setText = (element, text) => {
+    if (element && element.textContent !== text) element.textContent = text;
+  };
+
+  const setHtml = (element, html) => {
+    if (element && element.innerHTML !== html) element.innerHTML = html;
+  };
+
   const syncCurrentPolicyCopy = () => {
     document.querySelectorAll('.tier-opt[data-value="스탠다드"] .tier-more').forEach(el => {
       const oldText = '가능 영어: 일상회화 · 비즈니스 · 여행영어 · 시험/면접 · 발음교정';
@@ -28,14 +36,12 @@ window.NADO_MEMBER_CONFIG = {
 
     if (qtitle === '마지막이에요! 연락처를 남겨주세요') {
       const qsub = qcard.querySelector('.qsub');
-      if (qsub) qsub.textContent = '신청 결과와 수업 관련 안내를 이 번호로 보내드려요.';
+      setText(qsub, '신청 결과와 수업 관련 안내를 이 번호로 보내드려요.');
     }
 
     if (document.body?.dataset.mode !== 'trial' && qtitle === '결제 안내') {
       const qsub = qcard.querySelector('.qsub');
-      if (qsub) {
-        qsub.textContent = '결제 금액을 확인해주세요. 선생님 연결 후 첫 수업 일정이 확정되면 카카오톡으로 입금 방법을 안내드립니다.';
-      }
+      setText(qsub, '결제 금액을 확인해주세요. 선생님 연결 후 첫 수업 일정이 확정되면 카카오톡으로 입금 방법을 안내드립니다.');
 
       const oldNote = qcard.querySelector('#firstMonthPaymentNote');
       if (oldNote) oldNote.remove();
@@ -48,27 +54,27 @@ window.NADO_MEMBER_CONFIG = {
       if (freeTrial && paidTrial) {
         const title = qcard.querySelector('.qtitle');
         const sub = qcard.querySelector('.qsub');
-        if (title) title.textContent = '어떤 체험수업을 원하시나요?';
-        if (sub) sub.textContent = '무료 체험 또는 원하는 장소에서 진행하는 1회 체험 중 선택해주세요.';
+        setText(title, '어떤 체험수업을 원하시나요?');
+        setText(sub, '무료 체험 또는 원하는 장소에서 진행하는 1회 체험 중 선택해주세요.');
 
         const freeName = freeTrial.querySelector('.tier-opt-name');
         const freePrice = freeTrial.querySelector('.tier-opt-price');
         const freeDesc = freeTrial.querySelector('.tier-opt-desc');
-        if (freeName) freeName.textContent = '무료 체험';
-        if (freePrice) freePrice.textContent = '무료';
-        if (freeDesc) freeDesc.textContent = '이코노미 · 1시간 · IGC 또는 트리플스트리트 · 보증금 2만원(참석 시 전액 환불)';
+        setText(freeName, '무료 체험');
+        setText(freePrice, '무료');
+        setText(freeDesc, '이코노미 · 1시간 · IGC 또는 트리플스트리트 · 보증금 2만원(참석 시 전액 환불)');
 
         const paidName = paidTrial.querySelector('.tier-opt-name');
         const paidPrice = paidTrial.querySelector('.tier-opt-price');
         const paidDesc = paidTrial.querySelector('.tier-opt-desc');
-        if (paidName) paidName.textContent = '원하는 장소에서 1회 체험';
-        if (paidPrice) paidPrice.textContent = '1회 수업료';
-        if (paidDesc) paidDesc.textContent = '원하는 플랜 · 1시간 · 서울 또는 인천 · 세부 장소는 선생님과 조율';
+        setText(paidName, '원하는 장소에서 1회 체험');
+        setText(paidPrice, '1회 수업료');
+        setText(paidDesc, '원하는 플랜 · 1시간 · 서울 또는 인천 · 세부 장소는 선생님과 조율');
       }
 
       if (qtitle === '1회 수업 결제 안내') {
         const title = qcard.querySelector('.qtitle');
-        if (title) title.textContent = '1회 체험 결제 안내';
+        setText(title, '1회 체험 결제 안내');
       }
     }
   };
@@ -83,9 +89,9 @@ window.NADO_MEMBER_CONFIG = {
     if (successText.textContent.includes('24시간')) return;
 
     if (summary.textContent.includes('무료 체험')) {
-      successText.innerHTML = '<span>보증금 입금 안내와 선생님 연락 연결은<br class="success-mobile-break">신청하신 연락처로 안내드려요.</span><span>수업에 참석하시면 보증금은 전액 환불됩니다.</span>';
+      setHtml(successText, '<span>보증금 입금 안내와 선생님 연락 연결은<br class="success-mobile-break">신청하신 연락처로 안내드려요.</span><span>수업에 참석하시면 보증금은 전액 환불됩니다.</span>');
     } else if (summary.textContent.includes('플랜 선택 체험')) {
-      successText.innerHTML = '<span>1회 체험 결제 안내와 선생님 연락 연결은<br class="success-mobile-break">신청하신 연락처로 안내드려요.</span><span>문의사항이 있다면 카카오톡으로 편하게 문의해주세요.</span>';
+      setHtml(successText, '<span>1회 체험 결제 안내와 선생님 연락 연결은<br class="success-mobile-break">신청하신 연락처로 안내드려요.</span><span>문의사항이 있다면 카카오톡으로 편하게 문의해주세요.</span>');
     }
   };
 
