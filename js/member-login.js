@@ -44,7 +44,7 @@
     } catch (error) {
       await api.client.auth.signOut({ scope: "local" });
       setBusy(false);
-      showError(error.message || "이 계정으로는 학생 포털을 이용할 수 없습니다.");
+      showError(error.message || "이 계정으로는 해당 포털을 이용할 수 없습니다.");
     }
   });
 
@@ -63,6 +63,6 @@
   });
 
   const params = new URLSearchParams(window.location.search);
-  if (params.get("error") === "access") showError("현재 이 계정은 학생 포털을 이용할 수 없습니다.");
+  if (params.get("error") === "access") showError("현재 이 계정으로는 해당 포털을 이용할 수 없습니다.");
   routeExistingSession().catch(() => {});
 })();
