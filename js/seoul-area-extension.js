@@ -9,8 +9,11 @@
     };
 
     ensureArea('Seocho', '서초', 'Gangnam');
-    ensureArea('Yangcheon-gu', '양천구', 'Hongdae');
-    ensureArea('Yeongdeungpo-gu', '영등포구', 'Yangcheon-gu');
+    ensureArea('Yeongdeungpo-gu', '영등포구', 'Hanti');
+    ensureArea('Seonyudo', '선유도', 'Yeongdeungpo-gu');
+    ensureArea('Yangcheon-gu', '양천구', 'Seonyudo');
+    ensureArea('Hapjeong', '합정', 'Yangcheon-gu');
+    ensureArea('Sinchon', '신촌', 'Hongdae');
   } catch (error) {
     console.warn('서울 지역 확장 적용 실패:', error);
   }
