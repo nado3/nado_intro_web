@@ -18,32 +18,40 @@
     return answers.schedule;
   };
 
-  const clearPendingVisual = () => {
-    document.querySelectorAll('.time-slot.range-start').forEach((cell) => {
-      cell.classList.remove('range-start');
-    });
-    pendingStart = null;
-    refreshMobileCopy();
-  };
-
   const refreshMobileCopy = () => {
     if (!isMobileRangeMode()) return;
     const grid = document.getElementById('timeSlotGrid');
     if (!grid) return;
 
     const qsub = document.querySelector('.qsub');
-    if (qsub) {
-      qsub.textContent = pendingStart
-        ? '끝 시간을 선택해주세요.'
-        : '시작 시간을 누른 뒤 끝 시간을 눌러주세요.';
+    const desiredSub = pendingStart
+      ? '끝 시간을 선택해주세요.'
+      : '시작 시간을 누른 뒤 끝 시간을 눌러주세요.';
+
+    // Important: only write when the text actually changed.
+    // Rewriting the same text inside a MutationObserver can trigger itself forever.
+    if (qsub && qsub.textContent !== desiredSub) {
+      qsub.textContent = desiredSub;
     }
 
+    const desiredHelp = '첫 번째 탭은 시작 시간, 두 번째 탭은 끝 시간이에요.<br>선택한 범위가 30분 단위로 자동 선택돼요.';
     const labels = grid.parentElement ? grid.parentElement.querySelectorAll('.field-label') : [];
     labels.forEach((label) => {
-      if (label.textContent.includes('30분 단위로 가능한 시간을')) {
-        label.innerHTML = '첫 번째 탭은 시작 시간, 두 번째 탭은 끝 시간이에요.<br>선택한 범위가 30분 단위로 자동 선택돼요.';
+      if (
+        label.textContent.includes('30분 단위로 가능한 시간을') &&
+        label.innerHTML !== desiredHelp
+      ) {
+        label.innerHTML = desiredHelp;
       }
     });
+  };
+
+  const clearPendingVisual = () => {
+    document.querySelectorAll('.time-slot.range-start').forEach((cell) => {
+      cell.classList.remove('range-start');
+    });
+    pendingStart = null;
+    refreshMobileCopy();
   };
 
   const commitRange = (startKey, endKey) => {
@@ -111,7 +119,7 @@
     handleMobileSlotTap(cell);
   }, { capture: true, passive: false });
 
-  // Prevent the desktop drag handler from firing as a synthetic mouse event after touch.
+  // Prevent the old desktop-style handler from firing as a synthetic mouse event after touch.
   document.addEventListener('mousedown', (event) => {
     if (!isMobileRangeMode()) return;
     const cell = event.target.closest && event.target.closest('.time-slot');
@@ -154,22 +162,33 @@
   `;
   document.head.appendChild(style);
 
-  const observer = new MutationObserver(() => {
-    if (!document.getElementById('timeSlotGrid')) {
+  const qcardWrapEl = document.getElementById('qcardWrap');
+  if (qcardWrapEl) {
+    const observer = new MutationObserver(() => {
+      if (!document.getElementById('timeSlotGrid')) {
+        pendingStart = null;
+        return;
+      }
+      refreshMobileCopy();
+    });
+
+    // Only watch replacement of the question card itself.
+    // Do not watch the entire subtree, because refreshMobileCopy changes text inside it.
+    observer.observe(qcardWrapEl, {
+      childList: true,
+      subtree: false
+    });
+  }
+
+  window.addEventListener('resize', () => {
+    if (!isMobileRangeMode()) {
       pendingStart = null;
+      document.querySelectorAll('.time-slot.range-start').forEach((cell) => {
+        cell.classList.remove('range-start');
+      });
       return;
     }
     refreshMobileCopy();
-  });
-
-  observer.observe(document.getElementById('qcardWrap') || document.body, {
-    childList: true,
-    subtree: true
-  });
-
-  window.addEventListener('resize', () => {
-    if (!isMobileRangeMode()) clearPendingVisual();
-    else refreshMobileCopy();
   });
 
   refreshMobileCopy();
