@@ -28,8 +28,6 @@
       ? '끝 시간을 선택해주세요.'
       : '시작 시간을 누른 뒤 끝 시간을 눌러주세요.';
 
-    // Important: only write when the text actually changed.
-    // Rewriting the same text inside a MutationObserver can trigger itself forever.
     if (qsub && qsub.textContent !== desiredSub) {
       qsub.textContent = desiredSub;
     }
@@ -119,7 +117,6 @@
     handleMobileSlotTap(cell);
   }, { capture: true, passive: false });
 
-  // Prevent the old desktop-style handler from firing as a synthetic mouse event after touch.
   document.addEventListener('mousedown', (event) => {
     if (!isMobileRangeMode()) return;
     const cell = event.target.closest && event.target.closest('.time-slot');
@@ -129,7 +126,6 @@
     event.stopImmediatePropagation();
   }, true);
 
-  // Changing the day while a range is half-complete starts fresh on the new day.
   document.addEventListener('click', (event) => {
     if (!isMobileRangeMode()) return;
     const tab = event.target.closest && event.target.closest('.day-tab');
@@ -140,6 +136,13 @@
 
   const style = document.createElement('style');
   style.textContent = `
+    /* Keep Korean duration descriptions from breaking inside words. */
+    .duration-opt-desc {
+      word-break: keep-all !important;
+      overflow-wrap: normal !important;
+      text-wrap: balance;
+    }
+
     @media (hover: none), (pointer: coarse) {
       .time-slot.range-start {
         position: relative;
@@ -172,8 +175,6 @@
       refreshMobileCopy();
     });
 
-    // Only watch replacement of the question card itself.
-    // Do not watch the entire subtree, because refreshMobileCopy changes text inside it.
     observer.observe(qcardWrapEl, {
       childList: true,
       subtree: false
