@@ -12,10 +12,12 @@
     const titles = {
       dashboard: [state.student ? `${state.student.full_name}님, 안녕하세요!` : "안녕하세요!", "오늘도 NADO와 함께 편하게 영어를 시작해보세요."],
       resources: ["NADO 회원 자료실", "활성 회원에게만 제공되는 영어 학습 자료입니다."],
-      classroom: ["선생님 공유 공간", "담당 선생님과 수업 자료를 안전하게 주고받으세요."]
+      classroom: ["선생님 공유 공간", "담당 선생님과 수업 자료를 안전하게 주고받으세요."],
+      audio: ["AI 말하기 연습", "커리큘럼을 선택해 녹음하고 AI 피드백을 받아보세요."]
     };
-    byId("pageTitle").textContent = titles[name][0];
-    byId("pageSubtitle").textContent = titles[name][1];
+    const current = titles[name] || titles.dashboard;
+    byId("pageTitle").textContent = current[0];
+    byId("pageSubtitle").textContent = current[1];
   }
 
   function renderProfile() {
@@ -103,6 +105,9 @@
     renderProfile();
     renderResources();
     renderFiles();
+
+    const requestedView = new URLSearchParams(window.location.search).get("view");
+    if (["dashboard", "resources", "classroom", "audio"].includes(requestedView)) switchView(requestedView);
   }
 
   async function downloadFile(id) {
