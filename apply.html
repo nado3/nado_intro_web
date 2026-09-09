@@ -31,50 +31,187 @@
 <link rel="stylesheet" href="responsive-overrides.css?v=6">
 <link rel="stylesheet" href="kakao-chat.css?v=1">
 <style>
-  .application-confirmed-note {
-    margin: 18px 0 14px;
-    padding: 14px 16px;
-    border-radius: 14px;
-    background: #f6f8fb;
+  /* Compact success screen: keep the whole confirmation visible without scrolling. */
+  #successWrap {
+    max-width: 500px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0 auto;
+    padding: max(26px, env(safe-area-inset-top)) 20px max(22px, env(safe-area-inset-bottom));
     text-align: center;
-    font-size: 14px;
+  }
+
+  #successWrap[style*="display: block"] {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #successWrap .success-badge {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 14px;
+    font-size: 1.7rem;
+  }
+
+  /* script.js still updates these nodes, but the regular application uses the concise copy below. */
+  #successWrap .success-title,
+  #successWrap .success-text,
+  #successWrap .summary-box {
+    display: none !important;
+  }
+
+  .success-heading {
+    margin: 0;
+    font-size: clamp(1.45rem, 6vw, 1.8rem);
+    line-height: 1.25;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    word-break: keep-all;
+  }
+
+  .success-message {
+    margin: 8px auto 20px;
+    color: var(--gray);
+    font-size: .92rem;
     line-height: 1.55;
-    font-weight: 700;
+    font-weight: 600;
+    word-break: keep-all;
   }
+
   .next-process-box {
-    margin: 14px 0 18px;
-    padding: 18px 16px;
-    border: 1px solid #e7e9ee;
-    border-radius: 16px;
-    background: #fff;
+    margin: 0 0 20px;
+    padding: 16px 14px 14px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--white);
+    box-shadow: 0 8px 24px rgba(22,50,79,.05);
   }
+
   .next-process-title {
-    margin-bottom: 14px;
-    font-size: 15px;
-    font-weight: 800;
+    margin-bottom: 12px;
+    color: var(--navy);
+    font-size: .82rem;
+    font-weight: 850;
   }
+
   .next-process-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .next-process-step {
+    position: relative;
+    min-width: 0;
+    padding: 8px 3px 7px;
+    border-radius: 12px;
+    background: var(--bg);
+    color: var(--navy);
+    font-size: .70rem;
+    line-height: 1.35;
+    font-weight: 800;
+    word-break: keep-all;
+  }
+
+  .next-process-step:first-child {
+    background: var(--accent-light);
+    color: var(--accent-deep);
+  }
+
+  .next-process-step:not(:last-child)::after {
+    content: '›';
+    position: absolute;
+    top: 50%;
+    right: -6px;
+    z-index: 2;
+    transform: translateY(-50%);
+    color: #a9b2bc;
+    font-size: 1rem;
+    font-weight: 900;
+  }
+
+  .process-number {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    flex-wrap: wrap;
-    font-size: 13px;
-    line-height: 1.5;
+    width: 20px;
+    height: 20px;
+    margin: 0 auto 5px;
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--accent-deep);
+    font-size: .68rem;
+    font-weight: 900;
   }
-  .next-process-step {
+
+  .success-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  #successWrap .success-kakao-btn {
+    display: block;
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 14px;
+    background: #FEE500;
+    color: #191919;
+    text-decoration: none;
+    font-size: .96rem;
+    font-weight: 850;
+  }
+
+  #successWrap .success-home-link {
+    display: inline-block;
+    padding: 7px 12px;
+    color: var(--gray);
+    text-decoration: none;
+    font-size: .82rem;
     font-weight: 700;
-    white-space: nowrap;
   }
-  .next-process-arrow {
-    opacity: .45;
+
+  /* Keep the floating Kakao button during the form, but remove it on the final screen. */
+  #successWrap[style*="display: block"] ~ .kakao-chat-button {
+    display: none !important;
   }
-  .kakao-help-text {
-    margin: 12px 0 0;
-    text-align: center;
-    font-size: 13px;
-    line-height: 1.5;
-    color: #666;
+
+  @media (max-height: 640px) {
+    #successWrap {
+      padding-top: 18px;
+      padding-bottom: 14px;
+    }
+    #successWrap .success-badge {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 10px;
+      font-size: 1.45rem;
+    }
+    .success-message {
+      margin: 6px auto 14px;
+    }
+    .next-process-box {
+      margin-bottom: 14px;
+      padding: 12px 10px 11px;
+    }
+    .next-process-title {
+      margin-bottom: 8px;
+    }
+    .next-process-step {
+      padding-top: 6px;
+      padding-bottom: 6px;
+      font-size: .66rem;
+    }
+    .process-number {
+      width: 18px;
+      height: 18px;
+      margin-bottom: 4px;
+    }
+    #successWrap .success-kakao-btn {
+      padding: 12px 16px;
+    }
   }
 </style>
 </head>
@@ -106,33 +243,29 @@
 
 <div class="success-wrap" id="successWrap">
   <div class="success-badge">✓</div>
-  <div class="success-title">신청이 정상적으로 접수되었습니다</div>
-  <p class="success-text">선택하신 조건을 확인한 후 나도가 카카오톡으로 다음 절차를 안내드릴게요.</p>
 
-  <div class="application-confirmed-note">
-    신청은 이미 완료되었습니다.<br>
-    같은 내용으로 다시 신청하지 않으셔도 됩니다.
-  </div>
+  <div class="success-title">신청이 완료되었습니다</div>
+  <p class="success-text">선생님 확인 후 카카오톡으로 안내드릴게요.</p>
+
+  <h2 class="success-heading">신청이 완료되었어요</h2>
+  <p class="success-message">선생님의 최종 확정 후 나도가 카카오톡으로 안내드릴게요.</p>
 
   <div class="next-process-box" aria-label="신청 후 진행 과정">
-    <div class="next-process-title">다음 진행 과정</div>
+    <div class="next-process-title">다음 진행</div>
     <div class="next-process-steps">
-      <span class="next-process-step">신청 완료</span>
-      <span class="next-process-arrow">→</span>
-      <span class="next-process-step">선생님 확인</span>
-      <span class="next-process-arrow">→</span>
-      <span class="next-process-step">카카오톡 연결</span>
-      <span class="next-process-arrow">→</span>
-      <span class="next-process-step">첫 수업 시간·장소 확정</span>
+      <div class="next-process-step"><span class="process-number">1</span>신청 완료</div>
+      <div class="next-process-step"><span class="process-number">2</span>선생님의<br>최종 확정</div>
+      <div class="next-process-step"><span class="process-number">3</span>카카오톡<br>안내</div>
+      <div class="next-process-step"><span class="process-number">4</span>첫 수업<br>확정</div>
     </div>
   </div>
 
   <div class="summary-box" id="summaryBox"></div>
+
   <div class="success-actions">
-    <a class="btn-home" href="index.html">홈으로 돌아가기</a>
-    <a class="btn-home btn-home-secondary" href="https://pf.kakao.com/_pbPJX/chat" target="_blank" rel="noopener noreferrer">카카오톡 문의하기</a>
+    <a class="success-kakao-btn" href="https://pf.kakao.com/_pbPJX/chat" target="_blank" rel="noopener noreferrer">카카오톡 문의하기</a>
+    <a class="success-home-link" href="index.html">홈으로 돌아가기</a>
   </div>
-  <p class="kakao-help-text">문의가 있으실 때만 카카오톡 버튼을 눌러주세요. 신청 완료를 위해 추가로 하실 일은 없습니다.</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
