@@ -58,3 +58,68 @@ body.form-page .kakao-chat-button {
     transition: none;
   }
 }
+
+/* Final application screen: Kakao is visible but clearly secondary to Home. */
+#successWrap .success-kakao-btn {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  padding: 14px 18px !important;
+  border: 1px solid #d8e0e8 !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+  color: #16324f !important;
+  box-shadow: none !important;
+  font-size: .86rem !important;
+  font-weight: 750 !important;
+}
+
+#successWrap .success-kakao-btn::before {
+  content: '';
+  width: 28px;
+  height: 28px;
+  margin-right: 10px;
+  flex: 0 0 28px;
+  border-radius: 50%;
+  background-color: #fee500;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px 18px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23191919' d='M12 4C6.477 4 2 7.358 2 11.5c0 2.56 1.71 4.82 4.32 6.17l-1.1 3.14c-.1.28.22.52.47.36l3.83-2.37c.8.13 1.63.2 2.48.2 5.523 0 10-3.358 10-7.5S17.523 4 12 4Z'/%3E%3C/svg%3E") !important;
+}
+
+#successWrap .success-kakao-btn:hover {
+  background: #f8fafc !important;
+  border-color: #cbd5df !important;
+}
+
+#successWrap .success-actions::after {
+  content: '문의가 있으실 때 이용해주세요.';
+  display: block;
+  margin-top: 2px;
+  color: #9aa5b1;
+  font-size: .72rem;
+  line-height: 1.4;
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (max-height: 640px) {
+  #successWrap .success-kakao-btn {
+    padding: 12px 16px !important;
+  }
+
+  #successWrap .success-kakao-btn::before {
+    width: 24px;
+    height: 24px;
+    flex-basis: 24px;
+    background-size: 15px 15px;
+  }
+
+  #successWrap .success-actions::after {
+    font-size: .68rem;
+  }
+}
