@@ -30,6 +30,53 @@
 <link rel="stylesheet" href="style.css?v=9">
 <link rel="stylesheet" href="responsive-overrides.css?v=6">
 <link rel="stylesheet" href="kakao-chat.css?v=1">
+<style>
+  .application-confirmed-note {
+    margin: 18px 0 14px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: #f6f8fb;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.55;
+    font-weight: 700;
+  }
+  .next-process-box {
+    margin: 14px 0 18px;
+    padding: 18px 16px;
+    border: 1px solid #e7e9ee;
+    border-radius: 16px;
+    background: #fff;
+  }
+  .next-process-title {
+    margin-bottom: 14px;
+    font-size: 15px;
+    font-weight: 800;
+  }
+  .next-process-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .next-process-step {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .next-process-arrow {
+    opacity: .45;
+  }
+  .kakao-help-text {
+    margin: 12px 0 0;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #666;
+  }
+</style>
 </head>
 <body class="form-page">
 
@@ -58,14 +105,34 @@
 </div>
 
 <div class="success-wrap" id="successWrap">
-  <div class="success-badge">🎉</div>
-  <div class="success-title">매칭 준비 완료!</div>
-  <p class="success-text">서울 및 인천 지역의 희망 장소를 확인한 뒤,<br>24시간 내에 카카오톡으로 연락드려요.</p>
+  <div class="success-badge">✓</div>
+  <div class="success-title">신청이 정상적으로 접수되었습니다</div>
+  <p class="success-text">선택하신 조건을 확인한 후 나도가 카카오톡으로 다음 절차를 안내드릴게요.</p>
+
+  <div class="application-confirmed-note">
+    신청은 이미 완료되었습니다.<br>
+    같은 내용으로 다시 신청하지 않으셔도 됩니다.
+  </div>
+
+  <div class="next-process-box" aria-label="신청 후 진행 과정">
+    <div class="next-process-title">다음 진행 과정</div>
+    <div class="next-process-steps">
+      <span class="next-process-step">신청 완료</span>
+      <span class="next-process-arrow">→</span>
+      <span class="next-process-step">선생님 확인</span>
+      <span class="next-process-arrow">→</span>
+      <span class="next-process-step">카카오톡 연결</span>
+      <span class="next-process-arrow">→</span>
+      <span class="next-process-step">첫 수업 시간·장소 확정</span>
+    </div>
+  </div>
+
   <div class="summary-box" id="summaryBox"></div>
   <div class="success-actions">
     <a class="btn-home" href="index.html">홈으로 돌아가기</a>
-    <a class="btn-home btn-home-secondary" href="https://pf.kakao.com/_pbPJX/chat" target="_blank" rel="noopener noreferrer">카카오톡으로 문의하기</a>
+    <a class="btn-home btn-home-secondary" href="https://pf.kakao.com/_pbPJX/chat" target="_blank" rel="noopener noreferrer">카카오톡 문의하기</a>
   </div>
+  <p class="kakao-help-text">문의가 있으실 때만 카카오톡 버튼을 눌러주세요. 신청 완료를 위해 추가로 하실 일은 없습니다.</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
