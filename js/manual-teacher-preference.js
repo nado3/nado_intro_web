@@ -82,8 +82,10 @@
         bottom:calc(100% + 9px);
         z-index:50;
         transform:none;
-        width:min(240px,68vw);
-        padding:9px 9px;
+        width:210px;
+        max-width:60vw;
+        box-sizing:border-box;
+        padding:8px 7px;
         border:1px solid #dce5ef;
         border-radius:12px;
         background:#fff;
@@ -203,8 +205,9 @@
           left:auto;
           right:-18px;
           transform:none;
-          width:min(220px,66vw);
-          padding:8px 8px;
+          width:190px;
+          max-width:58vw;
+          padding:7px 6px;
         }
         .teacher-preference-card{
           padding:24px 18px 18px;
