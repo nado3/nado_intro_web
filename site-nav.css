@@ -163,3 +163,34 @@ body.legal-page .wrap { padding-top: calc(var(--site-nav-height) + 3rem); }
   :root { --site-nav-gutter: 1.2rem; }
   .site-nav { padding-inline: var(--site-nav-gutter); }
 }
+
+/* Keep Korean words intact inside the homepage feature cards. */
+.features-section .feature-title,
+.features-section .feature-desc {
+  min-width: 0;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+.features-section .feature-title {
+  text-wrap: balance;
+}
+
+.features-section .feature-desc {
+  text-wrap: pretty;
+}
+
+/* Mobile cards keep the same word-safe wrapping without overflowing. */
+@media (max-width: 900px) {
+  .features-section .feature-card {
+    min-width: 0;
+  }
+
+  .features-section .feature-title,
+  .features-section .feature-desc {
+    width: 100%;
+    max-width: 100%;
+  }
+}
