@@ -3,6 +3,11 @@
 
   function fixDurationText(root = document) {
     root.querySelectorAll?.('.duration-opt-desc').forEach((el) => {
+      // Important: once fixed, do not rewrite innerHTML again.
+      // Rewriting it inside the MutationObserver callback would trigger
+      // the same observer forever and freeze the application form.
+      if (el.querySelector('.duration-no-break')) return;
+
       const text = (el.textContent || '').trim();
       if (text === '꾸준히 집중해서 배우기') {
         el.innerHTML = '꾸준히 집중해서 <span class="duration-no-break">배우기</span>';
@@ -27,16 +32,19 @@
   `;
   document.head.appendChild(style);
 
+  function observe(root) {
+    fixDurationText(root);
+    const observer = new MutationObserver(() => fixDurationText(root));
+    observer.observe(root, { childList: true, subtree: true });
+  }
+
   const root = document.getElementById('qcardWrap');
   if (root) {
-    fixDurationText(root);
-    new MutationObserver(() => fixDurationText(root)).observe(root, { childList: true, subtree: true });
+    observe(root);
   } else {
     document.addEventListener('DOMContentLoaded', () => {
       const q = document.getElementById('qcardWrap');
-      if (!q) return;
-      fixDurationText(q);
-      new MutationObserver(() => fixDurationText(q)).observe(q, { childList: true, subtree: true });
+      if (q) observe(q);
     }, { once: true });
   }
 })();
