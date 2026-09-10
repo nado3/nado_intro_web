@@ -1,16 +1,6 @@
 (() => {
   'use strict';
 
-  // Both apply.html and trial.html already load this file after script.js.
-  // Load the mobile-only range selector here so desktop drag behavior stays unchanged.
-  if (!document.querySelector('script[data-mobile-time-range]')) {
-    const mobileRangeScript = document.createElement('script');
-    mobileRangeScript.src = 'js/mobile-time-range.js?v=1';
-    mobileRangeScript.defer = true;
-    mobileRangeScript.dataset.mobileTimeRange = 'true';
-    document.head.appendChild(mobileRangeScript);
-  }
-
   let client = null;
   let syncing = false;
 
