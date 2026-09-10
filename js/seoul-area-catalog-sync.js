@@ -3,7 +3,7 @@
 
   if (!document.querySelector('script[data-duration-text-fix]')) {
     const script = document.createElement('script');
-    script.src = 'js/duration-text-fix.js?v=1';
+    script.src = 'js/duration-text-fix.js?v=2';
     script.defer = true;
     script.dataset.durationTextFix = 'true';
     document.head.appendChild(script);
