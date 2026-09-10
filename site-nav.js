@@ -236,3 +236,289 @@
       .replace(retiredCopy, '');
   });
 })();
+
+// Home hero: convert the existing teacher pile into a continuous draggable marquee.
+// This runs after index.html's inline teacher renderer, so the card contents stay exactly the same.
+(() => {
+  const initHeroTeacherMarquee = () => {
+    const hero = document.querySelector('.hero');
+    const heroInner = hero?.querySelector('.hero-inner');
+    const heroLeft = hero?.querySelector('.hero-left');
+    const heroRight = hero?.querySelector('.hero-right');
+    const sourceDeck = document.getElementById('randomTeachers');
+    if (!hero || !heroInner || !heroLeft || !heroRight || !sourceDeck || sourceDeck.dataset.marqueeConverted === 'true') return;
+
+    const sourceCards = [...sourceDeck.querySelectorAll('.flip-teacher-card')];
+    if (!sourceCards.length) return;
+    sourceDeck.dataset.marqueeConverted = 'true';
+
+    if (!document.getElementById('homeHeroTeacherMarqueeStyles')) {
+      const style = document.createElement('style');
+      style.id = 'homeHeroTeacherMarqueeStyles';
+      style.textContent = `
+        .hero .hero-inner {
+          max-width: 1180px;
+          grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr);
+          gap: .6rem;
+        }
+        .hero .hero-right {
+          min-width: 0;
+          overflow: visible;
+        }
+        .home-hero-teacher-marquee-shell {
+          width: 100%;
+          overflow: hidden;
+          padding: 6px 0 10px;
+          -webkit-mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+        }
+        .home-hero-teacher-marquee-track {
+          display: flex;
+          width: max-content;
+          will-change: transform;
+          cursor: grab;
+          user-select: none;
+          -webkit-user-select: none;
+          touch-action: pan-y;
+        }
+        .home-hero-teacher-marquee-track.is-dragging { cursor: grabbing; }
+        .home-hero-teacher-marquee-group {
+          display: flex;
+          gap: .65rem;
+          padding-right: .65rem;
+          flex-shrink: 0;
+        }
+        .home-hero-teacher-marquee-group .flip-teacher-card {
+          position: relative;
+          width: 290px;
+          flex: 0 0 290px;
+          min-width: 0;
+          min-height: 430px;
+          padding: 1.35rem;
+          display: flex;
+          flex-direction: column;
+          background: var(--white);
+          border: 1px solid var(--border);
+          border-radius: 1.5rem;
+          box-shadow: 0 16px 36px rgba(36,74,120,.18);
+          transform: none !important;
+          opacity: 1 !important;
+          pointer-events: auto !important;
+          cursor: inherit;
+        }
+        .home-hero-teacher-marquee-group .teach-avatar {
+          width: 128px;
+          height: 128px;
+          margin: 0 auto .5rem;
+        }
+        .home-hero-teacher-marquee-group .teach-avatar img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          pointer-events: none;
+          -webkit-user-drag: none;
+        }
+        .home-hero-teacher-marquee-group .teach-name {
+          font-size: 1.4rem;
+          font-weight: 800;
+        }
+        .home-hero-teacher-marquee-group .teach-school {
+          margin-top: .25rem;
+          font-size: .92rem;
+        }
+        .home-hero-teacher-marquee-group .teach-major {
+          margin: .1rem 0 0;
+          font-size: .92rem;
+        }
+        .home-hero-teacher-marquee-group .hero-teacher-bio {
+          min-height: 92px;
+          margin: .55rem 0 0;
+          color: var(--dark-gray);
+          font-size: .92rem;
+          line-height: 1.55;
+          text-align: left;
+          display: block;
+          overflow: visible;
+        }
+        .home-hero-teacher-marquee-group .teach-tags {
+          min-height: 29px;
+          margin-top: auto;
+          padding-top: .45rem;
+          align-items: center;
+        }
+        .home-hero-teacher-marquee-group .flip-teacher-hint { display: none; }
+
+        @media (max-width: 900px) {
+          .hero {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+          }
+          .hero .hero-inner {
+            display: block;
+            max-width: none;
+          }
+          .hero .hero-left {
+            padding-left: var(--page-gutter, 1.5rem);
+            padding-right: var(--page-gutter, 1.5rem);
+            max-width: 760px;
+            margin: 0 auto .7rem;
+          }
+          .hero .hero-right { min-height: 0; }
+          .home-hero-teacher-marquee-shell {
+            width: 100vw;
+            padding: 4px 0 10px;
+            -webkit-mask-image: none;
+            mask-image: none;
+          }
+        }
+
+        @media (max-width: 599px) {
+          .hero { padding-bottom: 1.3rem !important; }
+          .hero .hero-left { margin-bottom: .3rem; }
+          .home-hero-teacher-marquee-shell { padding: 2px 0 6px; }
+          .home-hero-teacher-marquee-group .flip-teacher-card {
+            width: 260px;
+            flex-basis: 260px;
+            min-height: 382px;
+            padding: .9rem;
+            border-radius: 1.25rem;
+          }
+          .home-hero-teacher-marquee-group .teach-avatar {
+            width: 148px;
+            height: 148px;
+            margin: 0 auto .35rem;
+          }
+          .home-hero-teacher-marquee-group .teach-name {
+            font-size: 1.22rem;
+            margin-bottom: .15rem;
+          }
+          .home-hero-teacher-marquee-group .teach-school,
+          .home-hero-teacher-marquee-group .teach-major {
+            font-size: .84rem;
+            line-height: 1.35;
+          }
+          .home-hero-teacher-marquee-group .teach-major { margin-bottom: 0; }
+          .home-hero-teacher-marquee-group .hero-teacher-bio {
+            min-height: 68px;
+            margin: .45rem 0 0;
+            font-size: .84rem;
+            line-height: 1.45;
+          }
+          .home-hero-teacher-marquee-group .tag {
+            padding: .23rem .55rem;
+            font-size: .76rem;
+          }
+          .home-hero-teacher-marquee-group .teach-tags {
+            min-height: 27px;
+            padding-top: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    const cardsHtml = sourceCards.map(card => {
+      const clone = card.cloneNode(true);
+      clone.removeAttribute('data-position');
+      clone.removeAttribute('role');
+      clone.removeAttribute('tabindex');
+      clone.removeAttribute('aria-hidden');
+      clone.removeAttribute('aria-label');
+      clone.querySelector('.flip-teacher-hint')?.remove();
+      return clone.outerHTML;
+    }).join('');
+
+    heroRight.innerHTML = `
+      <div class="home-hero-teacher-marquee-shell" aria-label="추천 선생님 카드">
+        <div class="home-hero-teacher-marquee-track">
+          <div class="home-hero-teacher-marquee-group">${cardsHtml}</div>
+          <div class="home-hero-teacher-marquee-group" aria-hidden="true">${cardsHtml}</div>
+        </div>
+      </div>
+    `;
+
+    const shell = heroRight.querySelector('.home-hero-teacher-marquee-shell');
+    const track = heroRight.querySelector('.home-hero-teacher-marquee-track');
+    const firstGroup = heroRight.querySelector('.home-hero-teacher-marquee-group');
+    if (!shell || !track || !firstGroup) return;
+
+    let x = 0;
+    let groupWidth = 0;
+    let dragging = false;
+    let lastPointerX = 0;
+    let lastFrame = performance.now();
+    let animationFrame = 0;
+
+    const pixelsPerSecond = () => window.matchMedia('(max-width: 599px)').matches ? 18 : 20;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const normalizeX = () => {
+      if (!groupWidth) return;
+      while (x >= 0) x -= groupWidth;
+      while (x < -groupWidth) x += groupWidth;
+    };
+
+    const renderTrack = () => {
+      track.style.transform = `translate3d(${x}px, 0, 0)`;
+    };
+
+    const measure = () => {
+      groupWidth = firstGroup.getBoundingClientRect().width;
+      if (!groupWidth) return;
+      if (!Number.isFinite(x) || x === 0) x = -groupWidth;
+      normalizeX();
+      renderTrack();
+    };
+
+    const animate = now => {
+      const dt = Math.min((now - lastFrame) / 1000, .05);
+      lastFrame = now;
+      if (!dragging && groupWidth && !reducedMotion.matches) {
+        x += pixelsPerSecond() * dt;
+        normalizeX();
+        renderTrack();
+      }
+      animationFrame = requestAnimationFrame(animate);
+    };
+
+    track.addEventListener('pointerdown', event => {
+      dragging = true;
+      lastPointerX = event.clientX;
+      track.classList.add('is-dragging');
+      track.setPointerCapture?.(event.pointerId);
+    });
+
+    track.addEventListener('pointermove', event => {
+      if (!dragging) return;
+      const dx = event.clientX - lastPointerX;
+      lastPointerX = event.clientX;
+      x += dx;
+      normalizeX();
+      renderTrack();
+    });
+
+    const endDrag = event => {
+      if (!dragging) return;
+      dragging = false;
+      track.classList.remove('is-dragging');
+      try { track.releasePointerCapture?.(event.pointerId); } catch (_) {}
+    };
+
+    track.addEventListener('pointerup', endDrag);
+    track.addEventListener('pointercancel', endDrag);
+    track.addEventListener('dragstart', event => event.preventDefault());
+    window.addEventListener('resize', measure, { passive: true });
+
+    requestAnimationFrame(() => {
+      measure();
+      lastFrame = performance.now();
+      animationFrame = requestAnimationFrame(animate);
+    });
+
+    window.addEventListener('pagehide', () => cancelAnimationFrame(animationFrame), { once: true });
+  };
+
+  // index.html renders the source cards in the immediately following inline script.
+  setTimeout(initHeroTeacherMarquee, 0);
+})();
