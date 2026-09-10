@@ -13,7 +13,32 @@
     no_preference: '상관없어요'
   };
 
+  patchPlanCopy();
   injectPreferenceStyles();
+
+  function patchPlanCopy() {
+    try {
+      if (typeof steps === 'undefined' || !Array.isArray(steps)) return;
+      const tierStep = steps.find(step => step && step.key === 'tier');
+      if (!tierStep || !Array.isArray(tierStep.options)) return;
+
+      tierStep.options.forEach(option => {
+        if (!option || typeof option.more !== 'string') return;
+        option.more = option.more.replace(/가능 영어:/g, '수업 타입:');
+
+        if (option.name === '프리미엄' && !option.more.includes('premium-best-teacher-help')) {
+          option.more = option.more.replace(
+            '· 나도 <strong>최우수 선생님 배정</strong>',
+            '· 나도 <span class="premium-best-teacher-help"><strong>최우수 선생님 배정</strong><button type="button" class="premium-help-btn" aria-label="최우수 선생님 설명" aria-expanded="false">?</button><span class="premium-help-tooltip" role="tooltip">최우수 선생님은 학생 만족도, 수업 지속률, 피드백 평가 등을 종합하여 선정된 상위 선생님입니다.</span></span>'
+          );
+        }
+      });
+
+      if (typeof renderStep === 'function') renderStep();
+    } catch (error) {
+      console.warn('요금제 설명 보정 중 오류:', error);
+    }
+  }
 
   function injectPreferenceStyles() {
     if (document.getElementById('manualTeacherPreferenceStyles')) return;
@@ -21,6 +46,57 @@
     const style = document.createElement('style');
     style.id = 'manualTeacherPreferenceStyles';
     style.textContent = `
+      .premium-best-teacher-help{
+        position:relative;
+        display:inline-flex;
+        align-items:center;
+        gap:5px;
+        vertical-align:middle;
+      }
+      .premium-help-btn{
+        width:18px;
+        height:18px;
+        min-width:18px;
+        padding:0;
+        border:1.5px solid #9aa8b8;
+        border-radius:50%;
+        background:#fff;
+        color:#708196;
+        font:800 11px/1 Pretendard, sans-serif;
+        cursor:pointer;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+      }
+      .premium-help-btn:hover,
+      .premium-help-btn:focus-visible{
+        border-color:var(--accent);
+        color:var(--accent-deep);
+        outline:none;
+      }
+      .premium-help-tooltip{
+        display:none;
+        position:absolute;
+        left:50%;
+        bottom:calc(100% + 9px);
+        z-index:50;
+        transform:translateX(-50%);
+        width:min(280px,72vw);
+        padding:10px 12px;
+        border:1px solid #dce5ef;
+        border-radius:12px;
+        background:#fff;
+        box-shadow:0 10px 28px rgba(22,50,79,.14);
+        color:#526173;
+        font-size:.78rem;
+        line-height:1.5;
+        font-weight:650;
+        text-align:left;
+        word-break:keep-all;
+      }
+      .premium-best-teacher-help.open .premium-help-tooltip{
+        display:block;
+      }
       .teacher-preference-card{
         padding:28px 22px 22px;
         border-radius:28px;
@@ -122,6 +198,12 @@
         color:#fff;
       }
       @media (max-width:480px){
+        .premium-help-tooltip{
+          left:auto;
+          right:-8px;
+          transform:none;
+          width:min(250px,72vw);
+        }
         .teacher-preference-card{
           padding:24px 18px 18px;
           border-radius:24px;
@@ -241,6 +323,24 @@
   };
 
   document.addEventListener('click', (event) => {
+    const helpButton = event.target.closest?.('.premium-help-btn');
+    if (helpButton) {
+      event.preventDefault();
+      event.stopPropagation();
+      const wrap = helpButton.closest('.premium-best-teacher-help');
+      const willOpen = !wrap.classList.contains('open');
+      document.querySelectorAll('.premium-best-teacher-help.open').forEach(item => item.classList.remove('open'));
+      wrap.classList.toggle('open', willOpen);
+      helpButton.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+      return;
+    }
+
+    document.querySelectorAll('.premium-best-teacher-help.open').forEach(item => {
+      item.classList.remove('open');
+      const button = item.querySelector('.premium-help-btn');
+      if (button) button.setAttribute('aria-expanded', 'false');
+    });
+
     if (!preferenceViewActive) return;
     const back = event.target.closest?.('#backBtn');
     if (!back) return;
