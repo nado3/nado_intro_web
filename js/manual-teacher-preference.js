@@ -28,7 +28,7 @@
       + '<div class="qsub">선호도를 참고해 매칭해드리며, 가능한 선생님의 일정과 지역에 따라 다른 유형의 선생님을 제안드릴 수 있어요.</div>'
       + '<div class="opt-list teacher-preference-list">'
       + preferenceOption('foreign', '외국인 선생님', '다양한 문화권의 영어 사용자와 자연스럽게 대화하고 싶은 분께 추천해요.', selected)
-      + preferenceOption('korean', '한국인 선생님', '한국어로도 편하게 질문하며 영어 회화를 배우고 싶은 분께 추천해요.', selected)
+      + preferenceOption('korean', '한국인 선생님', '기초 영어 레벨이거나 한국어로도 편하게 질문하며 배우고 싶은 분께 추천해요.', selected)
       + preferenceOption('no_preference', '상관없어요', '선호 유형 없이 일정과 조건이 가장 잘 맞는 선생님을 추천해드려요.', selected)
       + '</div>'
       + '<button type="button" class="btn-next teacher-preference-submit" id="teacherPreferenceSubmit" disabled>신청 완료하기</button>'
