@@ -77,10 +77,11 @@
       .premium-help-tooltip{
         display:none;
         position:absolute;
-        left:50%;
+        left:auto;
+        right:-18px;
         bottom:calc(100% + 9px);
         z-index:50;
-        transform:translateX(-50%);
+        transform:none;
         width:min(280px,72vw);
         padding:10px 12px;
         border:1px solid #dce5ef;
@@ -200,7 +201,7 @@
       @media (max-width:480px){
         .premium-help-tooltip{
           left:auto;
-          right:-8px;
+          right:-18px;
           transform:none;
           width:min(250px,72vw);
         }
