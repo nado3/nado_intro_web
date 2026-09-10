@@ -15,6 +15,17 @@
       .replace(/'/g, '&#039;');
   }
 
+  function enableNextForSelectedArea() {
+    const next = document.getElementById('nextBtn');
+    if (!next) return;
+    try {
+      if (typeof answers !== 'undefined' && answers.placeType === '인천 원하는 장소' && answers.areaCode) {
+        next.disabled = false;
+        next.classList.add('active');
+      }
+    } catch (_) {}
+  }
+
   async function loadAreas() {
     if (loading || !config.SUPABASE_URL || !config.SUPABASE_ANON_KEY) return;
     loading = true;
@@ -48,7 +59,10 @@
       if (answers.placeType !== '인천 원하는 장소') return;
 
       const oldWrap = root.querySelector('.preferred-place-wrap');
-      if (!oldWrap || oldWrap.dataset.incheonEnhanced === '1') return;
+      if (!oldWrap || oldWrap.dataset.incheonEnhanced === '1') {
+        enableNextForSelectedArea();
+        return;
+      }
 
       oldWrap.dataset.incheonEnhanced = '1';
       const currentCode = answers.areaCode || '';
@@ -59,7 +73,7 @@
         : (rawPreferred === currentLabel ? '' : rawPreferred);
 
       const wrap = document.createElement('div');
-      wrap.className = 'service-area-wrap';
+      wrap.className = 'service-area-wrap incheon-service-area-wrap';
       wrap.innerHTML = `
         <div class="field-label">수업 가능한 지역을 선택해주세요</div>
         <div class="service-area-options">
@@ -81,13 +95,18 @@
           window.NADO_INCHEON_SELECTED_AREA = code;
           wrap.querySelectorAll('[data-incheon-area-code]').forEach(el => el.classList.remove('selected'));
           button.classList.add('selected');
+
           const input = wrap.querySelector('#preferredPlaceInput');
           const exact = String(input?.value || '').trim();
+          // Existing form validation expects preferredPlace to be non-empty for Incheon.
+          // Store the selected service-area label even when the optional exact-place field is blank.
           answers.preferredPlace = [area?.label || code, exact].filter(Boolean).join(' / ');
           answers.payment = false;
+
           if (typeof setNextState === 'function' && typeof activeSteps !== 'undefined' && typeof current !== 'undefined') {
             setNextState(activeSteps[current]);
           }
+          enableNextForSelectedArea();
         });
       });
 
@@ -101,6 +120,7 @@
           if (typeof setNextState === 'function' && typeof activeSteps !== 'undefined' && typeof current !== 'undefined') {
             setNextState(activeSteps[current]);
           }
+          enableNextForSelectedArea();
         });
       }
 
@@ -111,6 +131,7 @@
         if (typeof setNextState === 'function' && typeof activeSteps !== 'undefined' && typeof current !== 'undefined') {
           setNextState(activeSteps[current]);
         }
+        enableNextForSelectedArea();
       }
     } catch (error) {
       console.warn('인천 지역 선택 UI 적용 실패:', error);
