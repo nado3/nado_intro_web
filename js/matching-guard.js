@@ -2,6 +2,7 @@
   'use strict';
 
   window.NADO_MATCH_DURATION_MINUTES = 60;
+  window.NADO_INCHEON_SELECTED_AREA = window.NADO_INCHEON_SELECTED_AREA || '';
 
   document.addEventListener('click', (event) => {
     const option = event.target.closest?.('.duration-opt[data-index]');
@@ -39,12 +40,22 @@
     if (!client?.rpc || client.__nadoDurationGuardInstalled) return client;
     const originalRpc = client.rpc.bind(client);
     client.rpc = async function(name, args, options) {
-      const result = await originalRpc(name, args, options);
+      let effectiveArgs = args;
+      if (
+        name === 'get_available_teachers' &&
+        args?.p_region === 'Incheon' &&
+        !args?.p_area &&
+        window.NADO_INCHEON_SELECTED_AREA
+      ) {
+        effectiveArgs = { ...args, p_area: window.NADO_INCHEON_SELECTED_AREA };
+      }
+
+      const result = await originalRpc(name, effectiveArgs, options);
       if (name === 'get_available_teachers' && result && !result.error) {
         if (Array.isArray(result.data)) {
-          result.data = filterRows(result.data, args);
+          result.data = filterRows(result.data, effectiveArgs);
         } else if (Array.isArray(result.data?.teachers)) {
-          result.data.teachers = filterRows(result.data.teachers, args);
+          result.data.teachers = filterRows(result.data.teachers, effectiveArgs);
         }
       }
       return result;
