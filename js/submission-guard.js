@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'nado:last-successful-application:v1';
+  const STORAGE_KEY = 'nado:last-successful-application:v2';
   const DUPLICATE_WINDOW_MS = 12 * 60 * 60 * 1000;
   const RECENT_BANNER_WINDOW_MS = 24 * 60 * 60 * 1000;
   const SUBMIT_ENDPOINT = 'https://nado-intro-web.vercel.app/api/submit';
@@ -46,8 +46,9 @@
   function applicationSignature(params) {
     if (!params) return '';
 
-    // Use identity + core lesson choices. Small non-core changes such as referral
-    // answers should not create a second application by accident.
+    // Identity + lesson choices only. Matching results are intentionally excluded:
+    // the same student/application should not become a second submission merely
+    // because a different teacher was returned by the live matching step.
     const fields = [
       'submission[3]',          // name
       'submission[4][full]',   // phone
@@ -57,10 +58,7 @@
       'submission[34]',        // start date
       'submission[40]',        // frequency
       'submission[41]',        // duration
-      'submission[43]',        // regular / trial
-      'submission[62]',        // matching type
-      'submission[63]',        // teacher name
-      'submission[64]'         // teacher id
+      'submission[43]'         // regular / trial
     ];
 
     return fields
@@ -114,6 +112,7 @@
       return makeDuplicateSuccessResponse(recent);
     }
 
+    window.__NADO_DUPLICATE_SUBMISSION_PREVENTED__ = false;
     const response = await originalFetch(input, init);
 
     if (response.ok && fingerprint) {
