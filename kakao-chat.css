@@ -34,8 +34,18 @@
   outline-offset: 3px;
 }
 
+/* Application form: keep Kakao visually attached to the current card instead of floating alone. */
 body.form-page .kakao-chat-button {
-  bottom: max(94px, calc(78px + env(safe-area-inset-bottom)));
+  position: static;
+  right: auto;
+  bottom: auto;
+  z-index: auto;
+  display: flex;
+  width: max-content;
+  min-height: 48px;
+  margin: 14px 0 0 auto;
+  padding: 0 18px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
 }
 
 @media (max-width: 640px) {
@@ -49,7 +59,13 @@ body.form-page .kakao-chat-button {
   }
 
   body.form-page .kakao-chat-button {
-    bottom: max(90px, calc(74px + env(safe-area-inset-bottom)));
+    position: static;
+    right: auto;
+    bottom: auto;
+    min-height: 46px;
+    margin: 12px 0 0 auto;
+    padding: 0 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   }
 }
 
