@@ -29,7 +29,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 <link rel="stylesheet" href="style.css?v=9">
 <link rel="stylesheet" href="responsive-overrides.css?v=6">
-<link rel="stylesheet" href="kakao-chat.css?v=1">
+<link rel="stylesheet" href="kakao-chat.css?v=2">
 <style>
   #successWrap {max-width:500px;min-height:100vh;min-height:100dvh;margin:0 auto;padding:max(26px,env(safe-area-inset-top)) 20px max(22px,env(safe-area-inset-bottom));text-align:center}
   #successWrap[style*="display: block"]{display:flex!important;flex-direction:column;justify-content:center}
@@ -55,7 +55,7 @@
 </head>
 <body class="form-page">
 <div class="topbar"><div class="topbar-inner"><button class="icon-btn" id="backBtn" aria-label="이전">←</button><div class="topbar-title">나도 영어 회화 신청</div><a class="icon-btn" href="index.html" aria-label="닫기">✕</a></div><div class="progress-track" style="position:relative;"><div class="progress-fill" id="progressFill"></div></div></div>
-<main id="formMain"><h1 class="sr-only">나도 영어 회화 신청</h1><div class="history" id="history"></div><div id="qcardWrap"></div></main>
+<main id="formMain"><h1 class="sr-only">나도 영어 회화 신청</h1><div class="history" id="history"></div><div id="qcardWrap"></div><a class="kakao-chat-button" href="https://pf.kakao.com/_pbPJX/chat" target="_blank" rel="noopener noreferrer" aria-label="카카오톡 채널에서 문의하기">카카오톡 문의</a></main>
 <div class="bottombar" id="bottombar"><div class="bottombar-inner"><button class="btn-skip" id="skipBtn" style="display:none;">건너뛰기</button><button class="btn-next" id="nextBtn">다음</button></div></div>
 <div class="success-wrap" id="successWrap"><div class="success-badge">✓</div><div class="success-title">신청이 완료되었습니다</div><p class="success-text">선생님 확인 후 카카오톡으로 안내드릴게요.</p><h2 class="success-heading">신청이 완료되었어요</h2><p class="success-message">선생님의 최종 확정 후 나도가 카카오톡으로 안내드릴게요.</p><div class="next-process-box" aria-label="신청 후 진행 과정"><div class="next-process-title">다음 진행</div><div class="next-process-steps"><div class="next-process-step"><span class="process-number">1</span>신청 완료</div><div class="next-process-step"><span class="process-number">2</span>선생님의<br>최종 확정</div><div class="next-process-step"><span class="process-number">3</span>카카오톡<br>안내</div><div class="next-process-step"><span class="process-number">4</span>첫 수업<br>확정</div></div></div><div class="summary-box" id="summaryBox"></div><div class="success-actions"><a class="success-home-link" href="index.html">홈으로 돌아가기</a><a class="success-kakao-btn" href="https://pf.kakao.com/_pbPJX/chat" target="_blank" rel="noopener noreferrer">카카오톡 문의하기</a></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
@@ -71,6 +71,5 @@
 <script src="js/incheon-area-extension.js?v=2" defer></script>
 <script src="js/seoul-area-extension.js?v=2" defer></script>
 <script src="js/seoul-area-catalog-sync.js?v=4" defer></script>
-<a class="kakao-chat-button" href="https://pf.kakao.com/_pbPJX/chat" target="_blank" rel="noopener noreferrer" aria-label="카카오톡 채널에서 문의하기">카카오톡 문의</a>
 </body>
 </html>
