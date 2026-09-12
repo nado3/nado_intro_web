@@ -19,6 +19,19 @@
     return parts[0] * 60 + parts[1];
   }
 
+  function currentIncheonArea() {
+    try {
+      if (
+        typeof answers !== 'undefined' &&
+        answers.placeType === '인천 원하는 장소' &&
+        answers.areaCode
+      ) {
+        return answers.areaCode;
+      }
+    } catch (_) {}
+    return '';
+  }
+
   function filterRows(rows, args) {
     if (!Array.isArray(rows)) return rows;
     const start = minutes(args?.p_time);
@@ -41,13 +54,14 @@
     const originalRpc = client.rpc.bind(client);
     client.rpc = async function(name, args, options) {
       let effectiveArgs = args;
+      const selectedIncheonArea = currentIncheonArea();
       if (
         name === 'get_available_teachers' &&
         args?.p_region === 'Incheon' &&
         !args?.p_area &&
-        window.NADO_INCHEON_SELECTED_AREA
+        selectedIncheonArea
       ) {
-        effectiveArgs = { ...args, p_area: window.NADO_INCHEON_SELECTED_AREA };
+        effectiveArgs = { ...args, p_area: selectedIncheonArea };
       }
 
       const result = await originalRpc(name, effectiveArgs, options);
