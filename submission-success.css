@@ -1,0 +1,345 @@
+/* NADO application receipt and duplicate-submission recovery. */
+body.form-page.application-complete{
+  min-height:100vh;
+  min-height:100dvh;
+  background:
+    radial-gradient(circle at 50% -10%,rgba(74,144,226,.13),transparent 34rem),
+    var(--bg);
+}
+
+#successWrap.application-success{
+  box-sizing:border-box;
+  width:100%;
+  max-width:720px;
+  min-height:100vh;
+  min-height:100dvh;
+  margin:0 auto;
+  padding:max(34px,env(safe-area-inset-top)) 20px max(28px,env(safe-area-inset-bottom));
+  text-align:left;
+}
+
+#successWrap.application-success.is-visible{
+  display:flex!important;
+  align-items:center;
+}
+
+.application-success .success-shell{
+  width:100%;
+}
+
+.application-success .success-hero{
+  margin-bottom:18px;
+  text-align:center;
+}
+
+.application-success .success-badge{
+  width:64px;
+  height:64px;
+  margin:0 auto 12px;
+  border:1px solid rgba(39,150,91,.18);
+  background:#eaf8f0;
+  box-shadow:0 10px 28px rgba(26,103,63,.10);
+  color:#187a46;
+  font-size:1.85rem;
+  font-weight:950;
+}
+
+.application-success .success-status-pill{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  margin-bottom:9px;
+  padding:5px 11px;
+  border-radius:999px;
+  background:#eaf8f0;
+  color:#187a46;
+  font-size:.78rem;
+  font-weight:900;
+}
+
+.application-success .success-title{
+  margin:0;
+  color:var(--ink);
+  font-size:clamp(1.7rem,5vw,2.15rem);
+  line-height:1.24;
+  letter-spacing:-.035em;
+  word-break:keep-all;
+}
+
+.application-success .success-text{
+  max-width:530px;
+  margin:9px auto 0;
+  color:var(--gray);
+  font-size:.96rem;
+  line-height:1.65;
+  font-weight:650;
+  word-break:keep-all;
+}
+
+.application-success .success-text strong{
+  display:block;
+  margin-bottom:2px;
+  color:#26394d;
+  font-weight:900;
+}
+
+.application-success .success-restored-note{
+  display:none;
+  max-width:530px;
+  margin:10px auto 0;
+  padding:10px 13px;
+  border:1px solid #cfe5d8;
+  border-radius:12px;
+  background:#f3fbf6;
+  color:#306a49;
+  font-size:.84rem;
+  line-height:1.5;
+  font-weight:750;
+  text-align:center;
+  word-break:keep-all;
+}
+
+.application-success .success-restored-note.is-visible{
+  display:block;
+}
+
+.application-success .receipt-card,
+.application-success .next-process-box{
+  border:1px solid #dfe7ef;
+  border-radius:20px;
+  background:rgba(255,255,255,.96);
+  box-shadow:0 10px 30px rgba(22,50,79,.06);
+}
+
+.application-success .receipt-card{
+  margin-bottom:12px;
+  padding:17px 18px 15px;
+}
+
+.application-success .receipt-card-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:11px;
+}
+
+.application-success .receipt-card h3,
+.application-success .next-process-title{
+  margin:0;
+  color:var(--navy);
+  font-size:.95rem;
+  font-weight:900;
+  letter-spacing:-.015em;
+}
+
+.application-success .receipt-time{
+  color:#7a8897;
+  font-size:.76rem;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.application-success .summary-box{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px 22px;
+  margin:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--ink);
+  font-size:.87rem;
+  line-height:1.45;
+}
+
+.application-success .receipt-row{
+  display:grid;
+  grid-template-columns:82px minmax(0,1fr);
+  gap:8px;
+  min-width:0;
+}
+
+.application-success .receipt-row dt{
+  color:#718092;
+  font-weight:750;
+}
+
+.application-success .receipt-row dd{
+  min-width:0;
+  margin:0;
+  color:#26394d;
+  font-weight:850;
+  overflow-wrap:anywhere;
+}
+
+.application-success .next-process-box{
+  margin:0 0 14px;
+  padding:16px 18px;
+}
+
+.application-success .next-process-title{
+  margin-bottom:12px;
+}
+
+.application-success .next-process-steps{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+
+.application-success .next-process-step{
+  position:relative;
+  min-width:0;
+  padding:11px 8px 10px;
+  border-radius:14px;
+  background:var(--bg);
+  color:#415264;
+  font-size:.76rem;
+  line-height:1.4;
+  font-weight:800;
+  text-align:center;
+  word-break:keep-all;
+}
+
+.application-success .next-process-step.is-complete{
+  background:#eaf8f0;
+  color:#187a46;
+}
+
+.application-success .next-process-step:not(:last-child)::after{
+  content:'›';
+  position:absolute;
+  top:50%;
+  right:-7px;
+  z-index:2;
+  transform:translateY(-50%);
+  color:#9cabb9;
+  font-size:1.05rem;
+  font-weight:950;
+}
+
+.application-success .process-number{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:22px;
+  height:22px;
+  margin:0 auto 6px;
+  border-radius:50%;
+  background:#fff;
+  color:var(--accent-deep);
+  font-size:.7rem;
+  font-weight:950;
+}
+
+.application-success .next-process-step.is-complete .process-number{
+  color:#187a46;
+}
+
+.application-success .process-helper{
+  display:block;
+  margin-top:10px;
+  color:#6f7e8e;
+  font-size:.78rem;
+  line-height:1.5;
+  font-weight:700;
+  text-align:center;
+  word-break:keep-all;
+}
+
+.application-success .success-actions{
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+  gap:10px;
+}
+
+.application-success .success-action{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  min-height:52px;
+  padding:13px 16px;
+  border-radius:15px;
+  text-decoration:none;
+  font-size:.93rem;
+  font-weight:900;
+  text-align:center;
+}
+
+.application-success .success-kakao-btn{
+  border:1px solid #e3ca00;
+  background:#fee500;
+  color:#3d3600;
+  box-shadow:0 8px 20px rgba(158,137,0,.12);
+}
+
+.application-success .success-home-link{
+  border:1px solid #d9e3ed;
+  background:#fff;
+  color:var(--navy);
+}
+
+.application-success .new-application-button{
+  display:block;
+  margin:13px auto 0;
+  padding:6px 10px;
+  border:0;
+  background:transparent;
+  color:#738294;
+  font:750 .8rem/1.4 'Pretendard',sans-serif;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  cursor:pointer;
+}
+
+.application-success .local-test-notice{
+  max-width:530px;
+  margin:0 auto 12px;
+}
+
+@media (max-width:600px){
+  #successWrap.application-success{
+    min-height:auto;
+    padding-top:max(22px,env(safe-area-inset-top));
+    padding-right:14px;
+    padding-bottom:max(20px,env(safe-area-inset-bottom));
+    padding-left:14px;
+  }
+
+  #successWrap.application-success.is-visible{
+    align-items:flex-start;
+  }
+
+  .application-success .success-hero{margin-bottom:14px;}
+  .application-success .success-badge{width:54px;height:54px;margin-bottom:9px;font-size:1.55rem;}
+  .application-success .success-status-pill{min-height:24px;margin-bottom:7px;padding:3px 9px;font-size:.72rem;}
+  .application-success .success-title{font-size:1.52rem;}
+  .application-success .success-text{margin-top:7px;font-size:.88rem;line-height:1.55;}
+  .application-success .success-restored-note{margin-top:8px;padding:8px 10px;font-size:.78rem;}
+  .application-success .receipt-card{padding:14px 14px 13px;border-radius:17px;}
+  .application-success .receipt-card-head{margin-bottom:9px;}
+  .application-success .receipt-card h3{font-size:.9rem;}
+  .application-success .receipt-time{font-size:.7rem;}
+  .application-success .summary-box{grid-template-columns:1fr;gap:6px;}
+  .application-success .receipt-row{grid-template-columns:78px minmax(0,1fr);font-size:.81rem;}
+  .application-success .next-process-box{padding:14px;border-radius:17px;}
+  .application-success .next-process-title{margin-bottom:9px;font-size:.9rem;}
+  .application-success .next-process-step{padding:9px 4px 8px;font-size:.68rem;}
+  .application-success .process-number{width:20px;height:20px;margin-bottom:4px;font-size:.65rem;}
+  .application-success .process-helper{margin-top:8px;font-size:.72rem;}
+  .application-success .success-actions{grid-template-columns:1fr;gap:8px;}
+  .application-success .success-action{min-height:48px;padding:11px 14px;font-size:.88rem;}
+  .application-success .new-application-button{margin-top:9px;font-size:.75rem;}
+}
+
+@media (max-height:700px) and (min-width:601px){
+  #successWrap.application-success{padding-top:22px;padding-bottom:20px;}
+  #successWrap.application-success.is-visible{align-items:flex-start;}
+  .application-success .success-badge{width:52px;height:52px;margin-bottom:8px;font-size:1.5rem;}
+  .application-success .success-hero{margin-bottom:13px;}
+  .application-success .receipt-card{padding-top:14px;padding-bottom:13px;}
+  .application-success .next-process-box{padding-top:13px;padding-bottom:13px;}
+}
