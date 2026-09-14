@@ -81,6 +81,7 @@ window.NADO_MEMBER_CONFIG = {
 
   const syncTrialSuccessCopy = () => {
     if (document.body?.dataset.mode !== 'trial') return;
+    if (document.getElementById('successWrap')?.classList.contains('application-success')) return;
     const summary = document.getElementById('summaryBox');
     const successText = document.querySelector('.success-text');
     if (!summary || !successText) return;
