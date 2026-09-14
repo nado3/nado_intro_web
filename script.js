@@ -167,8 +167,11 @@ const steps = [
   }
 ];
 const TRIAL_MODE = document.body.dataset.mode === 'trial';
-const LOCAL_TEST_MODE = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
-  && new URLSearchParams(window.location.search).get('test') === '1';
+const SITES_REVIEW_MODE = window.location.hostname.endsWith('.chatgpt.site');
+const LOCAL_TEST_MODE = SITES_REVIEW_MODE || (
+  ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
+  && new URLSearchParams(window.location.search).get('test') === '1'
+);
 let current = 0;
 const answers = {
   frequency: TRIAL_MODE ? '체험 1회' : '주 1회',
@@ -200,7 +203,7 @@ const dragState = { isDragging: false, mode: true };
 if (LOCAL_TEST_MODE) {
   document.body.classList.add('local-test-mode');
   const topbarTitle = document.querySelector('.topbar-title');
-  if (topbarTitle) topbarTitle.insertAdjacentHTML('beforeend', '<span class="local-test-badge">로컬 테스트</span>');
+  if (topbarTitle) topbarTitle.insertAdjacentHTML('beforeend', '<span class="local-test-badge">' + (SITES_REVIEW_MODE ? '비공개 검토' : '로컬 테스트') + '</span>');
 }
 document.addEventListener('mouseup', () => { dragState.isDragging = false; });
 let scheduleActiveDay = '월';
@@ -1210,7 +1213,7 @@ backBtn.addEventListener('click', () => {
 async function submitToJotform(a) {
   if (LOCAL_TEST_MODE) {
     await new Promise(resolve => setTimeout(resolve, 350));
-    return { success: true, test: true };
+    return { success: true, test: true, review: SITES_REVIEW_MODE, submittedAt: Date.now() };
   }
   const params = new URLSearchParams();
   params.append('submission[3]', a.contact.name);                     // 이름
@@ -1314,8 +1317,9 @@ async function showSuccess(){
   nextBtn.textContent = '제출 중…';
 
   const a = answers;
+  let submissionResult;
   try {
-    await submitToJotform(a);
+    submissionResult = await submitToJotform(a);
   } catch (err) {
     submissionInProgress = false;
     console.error('Jotform 제출 실패:', err);
@@ -1325,55 +1329,73 @@ async function showSuccess(){
   }
 
   alreadySubmitted = true;
-  trackFormEvent('form_submit');
-  trackFormEvent('generate_lead', { currency: 'KRW', value: 1 });
-  trackGoogleAdsApplication();
+  const duplicatePrevented = Boolean(submissionResult && submissionResult.duplicatePrevented);
+  if (!duplicatePrevented) {
+    trackFormEvent('form_submit');
+    trackFormEvent('generate_lead', { currency: 'KRW', value: 1 });
+    trackGoogleAdsApplication();
+  }
   document.getElementById('formMain').style.display = 'none';
   document.getElementById('bottombar').style.display = 'none';
   document.querySelector('.topbar').style.display = 'none';
   const wrap = document.getElementById('successWrap');
   wrap.style.display = 'block';
+  wrap.classList.add('is-visible');
+  document.body.classList.add('application-complete');
 
   if (LOCAL_TEST_MODE && !document.getElementById('localTestNotice')) {
     const notice = document.createElement('div');
     notice.id = 'localTestNotice';
     notice.className = 'local-test-notice';
     notice.setAttribute('role', 'status');
-    notice.textContent = '로컬 테스트 완료 · 실제 신청 정보는 저장되지 않았습니다.';
-    wrap.insertBefore(notice, document.getElementById('summaryBox'));
+    notice.textContent = SITES_REVIEW_MODE
+      ? '비공개 검토 모드 · 화면 동작만 확인하며 실제 신청 정보는 전송되지 않습니다.'
+      : '로컬 테스트 완료 · 실제 신청 정보는 저장되지 않았습니다.';
+    const receiptCard = wrap.querySelector('.receipt-card');
+    wrap.querySelector('.success-shell').insertBefore(notice, receiptCard);
   }
 
   if (a.matching_type === 'student_selected') {
     document.querySelector('.success-title').textContent = TRIAL_MODE
-      ? '체험수업 신청이 완료되었습니다 🎉'
-      : '신청이 완료되었습니다 🎉';
+      ? '체험수업 신청이 정상적으로 접수됐어요'
+      : '신청이 정상적으로 접수됐어요';
     document.querySelector('.success-text').innerHTML = TRIAL_MODE
-      ? '<span>결제 안내와 선생님 연락 연결은<br class="success-mobile-break">신청하신 연락처로 안내드려요.</span><span>문의사항이 있다면 카카오톡으로 편하게 문의해주세요.</span>'
-      : '<span>수업료 안내와 선생님 연락 연결은<br class="success-mobile-break">신청하신 연락처로 안내드려요.</span><span>문의사항이 있다면 카카오톡으로 편하게 문의해주세요.</span>';
+      ? '<strong>이 화면이 보이면 제출이 완료된 상태예요.</strong>선생님의 최종 확인 후 입력하신 연락처로 카카오톡 안내를 보내드려요.'
+      : '<strong>이 화면이 보이면 제출이 완료된 상태예요.</strong>선생님의 최종 확인 후 입력하신 연락처로 카카오톡 안내를 보내드려요.';
   }
 
   if (a.matching_type !== 'student_selected' && TRIAL_MODE) {
     const isFreeTrial = a.trialType === '무료 체험';
-    document.querySelector('.success-title').textContent = '체험수업 신청 완료!';
+    document.querySelector('.success-title').textContent = '체험수업 신청이 정상적으로 접수됐어요';
     document.querySelector('.success-text').innerHTML = isFreeTrial
-      ? '매칭 준비 후 24시간 내에 카카오톡으로 보증금 입금 계좌를 안내드려요.<br>수업 참석 시 보증금은 전액 환불됩니다.'
-      : '매칭 준비 후 24시간 내에 카카오톡으로 1회 수업 결제 방법을 안내드려요.';
+      ? '<strong>이 화면이 보이면 제출이 완료된 상태예요.</strong>24시간 내에 카카오톡으로 보증금 입금 계좌를 안내드려요. 수업 참석 시 전액 환불됩니다.'
+      : '<strong>이 화면이 보이면 제출이 완료된 상태예요.</strong>24시간 내에 카카오톡으로 1회 수업 결제 방법을 안내드려요.';
   } else if (a.matching_type !== 'student_selected') {
-    document.querySelector('.success-text').innerHTML = '서울 및 인천 지역의 희망 장소를 확인한 뒤 24시간 내에 카카오톡으로 연락드려요.';
+    document.querySelector('.success-title').textContent = '신청이 정상적으로 접수됐어요';
+    document.querySelector('.success-text').innerHTML = '<strong>이 화면이 보이면 제출이 완료된 상태예요.</strong>희망 조건을 확인한 뒤 24시간 내에 입력하신 연락처로 카카오톡 안내를 보내드려요.';
   }
-document.getElementById('summaryBox').innerHTML = ''
-    + (TRIAL_MODE ? '<strong>체험 방식</strong> · ' + (a.trialType || '-') + '<br>' : '')
-    + '<strong>선택 플랜</strong> · ' + (a.tier || '-') + ' · ' + freqLabel(a.frequency || '-') + ' · ' + (a.duration ? durationLabel(a.duration.index, a.tier) : '-') + '<br>'
-    + (TRIAL_MODE && a.trialType === '플랜 선택 체험' ? '<strong>1회 체험 금액</strong> · ₩' + calcPrice(a.tier, a.duration ? a.duration.index : 0, a.frequency).toLocaleString() + '<br>' : '')
-    + '<strong>나이대</strong> · ' + (a.ageGroup || '-') + '<br>'
-    + '<strong>영어 수준</strong> · ' + (a.level || '-') + '<br>'
-    + '<strong>학습 목표</strong> · ' + ((a.goals||[]).map(g => g === '기타' && a.goalsOther ? '기타(' + a.goalsOther + ')' : g).join(', ') || '-') + '<br>'
-    + '<strong>희망 시간대</strong> · ' + ((a.schedule||[]).join(', ') || '-') + '<br>'
-    + '<strong>수업 장소</strong> · ' + placeLabel(a) + '<br>'
-    + (!TRIAL_MODE && a.placeType === '송도 할인 장소' ? '<strong>송도 지정 장소 할인</strong> · 월 −₩' + SONGDO_LOCATION_DISCOUNT.toLocaleString() + '<br>' : '')
-    + (a.matching_type === 'student_selected' ? '<strong>선택 선생님</strong> · ' + escapeHtml(a.teacher_name || '-') + '<br>' : '')
-    + '<strong>유입 경로</strong> · ' + ((a.referral||[]).join(', ') || '-') + '<br>'
-    + '<strong>연락처</strong> · ' + (a.contact ? a.contact.name + ' · ' + a.contact.phone : '-');
+
+  const preferenceLabels = {
+    foreign: '외국인 선생님 선호',
+    korean: '한국인 선생님 선호',
+    no_preference: '선생님 유형 무관'
+  };
+  const receiptDetails = {
+    frequency: freqLabel(a.frequency || '-'),
+    duration: a.duration ? durationLabel(a.duration.index, a.tier) : '',
+    place: placeLabel(a),
+    teacherPreference: a.matching_type === 'student_selected'
+      ? (a.teacher_name || '')
+      : ('나도 추천 매칭' + (a.teacher_preference ? ' · ' + (preferenceLabels[a.teacher_preference] || a.teacher_preference) : ''))
+  };
+  if (window.NADO_SUBMISSION_GUARD?.recordAndRender) {
+    window.NADO_SUBMISSION_GUARD.recordAndRender({
+      answers: a,
+      mode: TRIAL_MODE ? 'trial' : 'regular',
+      result: submissionResult,
+      details: receiptDetails
+    });
+  }
   console.log('신청 데이터:', a);
 }
 
