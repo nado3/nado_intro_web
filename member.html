@@ -6,7 +6,7 @@
   <title>내 학습공간 | NADO</title>
   <meta name="robots" content="noindex,nofollow" />
   <link rel="icon" href="img/clogo.png" />
-  <link rel="stylesheet" href="member.css?v=4" />
+  <link rel="stylesheet" href="member.css?v=5" />
   <style media="(max-width: 900px)">
     /* 모바일 메뉴 안전장치: 이전 CSS 캐시가 남아도 카테고리를 표시합니다. */
     .mobile-member-nav {
@@ -95,7 +95,7 @@
         <section id="view-audio" class="member-view">
           <div class="member-grid">
             <article class="member-card">
-              <div class="member-card-head"><div><h2>3분 음성 연습</h2><p>영어로 말한 뒤 AI 학습 노트와 선생님 피드백을 받아보세요.</p></div><span class="beta-chip">AI BETA</span></div>
+              <div class="member-card-head"><div><h2>AI 말하기 연습</h2><p>커리큘럼을 골라 말하고, AI 피드백으로 같은 질문에 다시 도전해보세요.</p></div><span class="beta-chip">AI BETA</span></div>
               <div id="audioConsentPanel" class="audio-consent">
                 <h3>음성·AI 처리 동의가 필요해요</h3><p>녹음은 담당 선생님과 NADO 관리자만 듣고, 전사·요약을 위해 OpenAI에서 처리됩니다. 원본 음성은 업로드 후 90일 뒤 자동 삭제됩니다.</p>
                 <label class="audio-age-field">학생 연령 확인<select id="audioAgeGroup"><option value="">선택해주세요</option><option value="14plus">만 14세 이상</option><option value="under14">만 14세 미만</option></select></label>
@@ -103,7 +103,56 @@
                 <label id="guardianConsentLabel" class="consent-check hidden"><input id="guardianConsentCheck" type="checkbox" /> 법정대리인이 음성 녹음 및 AI 처리에 동의했고, NADO가 동의 여부를 확인할 수 있도록 필요한 정보를 제공하는 데 동의합니다.</label>
                 <button id="saveAudioConsent" class="member-button primary" type="button">동의하고 시작하기</button><p class="member-help">만 14세 미만 학생은 법정대리인 동의 확인 후 이용할 수 있습니다. 문의: nado26327@gmail.com</p>
               </div>
-              <div id="audioRecorderPanel" class="audio-recorder hidden"><div class="audio-fields"><label>연습 제목 <input id="audioTitle" maxlength="120" placeholder="예: 오늘 있었던 일 말하기" /></label><label>주제 또는 상황 <textarea id="audioTopic" maxlength="500" rows="3" placeholder="예: 친구에게 주말 계획을 설명하기"></textarea></label></div><div class="recorder-console"><div class="record-time"><span id="recordingDot"></span><strong id="recordingTime">00:00</strong><small>최대 03:00</small></div><div class="record-actions"><button id="startRecording" class="member-button primary" type="button">● 녹음 시작</button><button id="pauseRecording" class="member-button secondary hidden" type="button">일시정지</button><button id="stopRecording" class="member-button danger hidden" type="button">정지</button></div></div><div id="audioPreviewPanel" class="audio-preview hidden"><audio id="audioPreview" controls></audio><div><button id="resetRecording" class="member-button ghost" type="button">다시 녹음</button><button id="submitRecording" class="member-button primary" type="button">선생님께 제출</button></div></div><p class="ai-disclaimer">AI 결과는 학습 보조용이며 정확하지 않을 수 있습니다. 발음 점수나 공식 평가로 사용하지 않습니다.</p></div>
+              <div id="practiceAppPanel" class="practice-app hidden">
+                <div class="practice-access-overview">
+                  <div class="practice-stat-grid">
+                    <div class="practice-stat"><span>현재 플랜</span><strong id="practicePlanLabel">불러오는 중</strong></div>
+                    <div class="practice-stat"><span>이번 주 사용</span><strong id="practiceUsageLabel">-</strong></div>
+                    <div class="practice-stat"><span>남은 연습</span><strong id="practiceRemainingLabel">-</strong></div>
+                  </div>
+                  <div class="practice-usage-row"><span id="practiceWeekLabel">이번 주 이용량을 확인하고 있습니다.</span><strong id="maxRecordingLabel">최대 --:--</strong></div>
+                  <div class="practice-usage-track" aria-hidden="true"><span id="practiceUsageBar"></span></div>
+                </div>
+
+                <div class="practice-library">
+                  <div class="practice-library-head">
+                    <div><h3>커리큘럼 선택</h3><p>지금 연습하고 싶은 상황을 하나 골라주세요.</p></div>
+                    <div class="practice-library-actions"><span id="practiceCompletedLabel">완료 0 / 0</span><button id="refreshPracticeModules" class="member-button secondary" type="button">새로고침</button></div>
+                  </div>
+                  <div class="practice-filter-grid">
+                    <label>난이도<select id="practiceLevelFilter"><option value="all">전체 난이도</option><option value="starter">Starter</option><option value="basic">Basic</option><option value="intermediate">Intermediate</option></select></label>
+                    <label>주제<select id="practiceCategoryFilter"><option value="all">전체 주제</option></select></label>
+                  </div>
+                  <div id="practiceModuleGrid" class="practice-module-grid"><div class="empty-box">커리큘럼을 불러오는 중입니다.</div></div>
+                </div>
+
+                <div id="selectedPracticePanel" class="selected-practice hidden">
+                  <div class="selected-practice-head">
+                    <div><div id="selectedPracticeTags" class="selected-practice-tags"></div><h3 id="selectedPracticeTitle">선택한 연습</h3><p id="selectedPracticeObjective"></p></div>
+                    <button id="closeSelectedPractice" class="member-button ghost" type="button" aria-label="선택한 연습 닫기">닫기</button>
+                  </div>
+
+                  <div class="practice-prompt-box">
+                    <span>오늘의 질문</span>
+                    <strong id="selectedPracticePromptEn"></strong>
+                    <p id="selectedPracticePromptKo"></p>
+                  </div>
+
+                  <div class="practice-guide-grid">
+                    <section><h4>핵심 표현</h4><div id="selectedPracticeExpressions" class="practice-expression-grid"></div></section>
+                    <section><h4>답변 순서</h4><ol id="selectedPracticeFramework"></ol></section>
+                    <section><h4>예시 답변</h4><p id="selectedPracticeSample" class="practice-sample"></p></section>
+                    <section><h4>이어지는 질문</h4><ul id="selectedPracticeFollowups"></ul></section>
+                  </div>
+
+                  <div class="practice-recorder">
+                    <div class="practice-attempt-head"><div><h4>내 답변 녹음</h4><p id="practiceAttemptNote">첫 번째 답변입니다.</p></div><label id="teacherReviewOption" class="practice-teacher-review hidden"><input id="teacherReviewRequested" type="checkbox" /> 선생님 검토 요청</label></div>
+                    <div class="recorder-console"><div class="record-time"><span id="recordingDot"></span><strong id="recordingTime">00:00</strong><small id="recordingLimitHint">녹음 준비</small></div><div class="record-actions"><button id="startRecording" class="member-button primary" type="button">● 녹음 시작</button><button id="pauseRecording" class="member-button secondary hidden" type="button">일시정지</button><button id="stopRecording" class="member-button danger hidden" type="button">정지</button></div></div>
+                    <div id="audioPreviewPanel" class="audio-preview hidden"><audio id="audioPreview" controls></audio><div><button id="resetRecording" class="member-button ghost" type="button">다시 녹음</button><button id="submitRecording" class="member-button primary" type="button">AI 피드백 받기</button></div></div>
+                    <p class="ai-disclaimer">AI 결과는 학습 보조용이며 정확하지 않을 수 있습니다. 발음 점수나 공식 평가로 사용하지 않습니다.</p>
+                  </div>
+                </div>
+              </div>
             </article>
             <article class="member-card"><div class="member-card-head"><div><h2>내 음성 연습 기록</h2><p>AI 학습 노트와 선생님 피드백을 확인하세요.</p></div><button id="refreshAudioList" class="member-button secondary" type="button">새로고침</button></div><div id="studentAudioList" class="audio-list"><div class="empty-box">음성 기록을 불러오는 중입니다.</div></div></article>
           </div>
@@ -115,6 +164,6 @@
   <script src="js/member-config.js"></script>
   <script src="js/member-common.js"></script>
   <script src="js/member.js?v=4"></script>
-  <script src="js/audio-practice.js?v=3"></script>
+  <script src="js/audio-practice.js?v=4"></script>
 </body>
 </html>
