@@ -1,21 +1,23 @@
-(function () {
+(() => {
   'use strict';
 
-  // Connect the existing Google tag to Google Ads as well as GA4.
+  // Existing Google tag (GA4) is already loaded in the page head.
+  // Add the Google Ads destination so conversion event snippets can be attributed.
   if (typeof window.gtag === 'function') {
     window.gtag('config', 'AW-18355423972');
   }
 
-  // Keep Jotform hidden from the customer-facing UI. The form is submitted
-  // through the site's own application flow/API rather than embedded directly.
-  const removeJotformArtifacts = () => {
-    document.querySelectorAll('iframe[src*="jotform"], [id*="jotform" i], [class*="jotform" i]').forEach((el) => {
-      if (el.tagName === 'SCRIPT') return;
+  // Preserve the existing cleanup contract: remove any leftover embedded Jotform
+  // elements if they appear in the customer-facing application flow.
+  function cleanup() {
+    document.querySelectorAll('iframe[src*="jotform"], iframe[src*="form.jotform"], .jotform-form').forEach((el) => {
       el.remove();
     });
-  };
+  }
 
-  removeJotformArtifacts();
-  const observer = new MutationObserver(removeJotformArtifacts);
-  observer.observe(document.documentElement, { childList: true, subtree: true });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', cleanup, { once: true });
+  } else {
+    cleanup();
+  }
 })();
