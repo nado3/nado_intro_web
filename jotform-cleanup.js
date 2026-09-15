@@ -21,8 +21,3 @@
     return originalFetch(input, init);
   };
 })();
-
-// Connect the existing Google tag to Google Ads conversion measurement.
-if (typeof window.gtag === 'function') {
-  window.gtag('config', 'AW-18355423972');
-}
