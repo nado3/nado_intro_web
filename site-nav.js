@@ -1,3 +1,8 @@
+// Connect shared marketing pages to Google Ads conversion measurement.
+if (typeof window.gtag === 'function') {
+  window.gtag('config', 'AW-18355423972');
+}
+
 (() => {
   const navToggle = document.getElementById('navToggle');
   const navLinks = document.getElementById('navLinks');
