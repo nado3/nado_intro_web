@@ -1,23 +1,18 @@
-(() => {
-  const originalFetch = window.fetch.bind(window);
+(function () {
+  'use strict';
 
-  window.fetch = async function(input, init) {
-    try {
-      const url = typeof input === 'string' ? input : (input && input.url) || '';
-      if (url.includes('/api/submit') && init && init.body instanceof URLSearchParams) {
-        const body = new URLSearchParams(init.body.toString());
-        const notes = body.get('submission[28]') || '';
-        const cleanedNotes = notes
-          .replace(/\n*\[매칭 정보\][\s\S]*$/m, '')
-          .trim();
+  // Connect the existing Google tag to Google Ads as well as GA4.
+  // The base gtag.js snippet is already loaded by the page.
+  if (typeof window.gtag === 'function') {
+    window.gtag('config', 'AW-18355423972');
+  }
 
-        body.set('submission[28]', cleanedNotes);
-        init = Object.assign({}, init, { body });
-      }
-    } catch (error) {
-      console.warn('Jotform 문의사항 정리 중 오류:', error);
-    }
+  // Existing Jotform cleanup behavior.
+  const observer = new MutationObserver(() => {
+    document.querySelectorAll('iframe[src*="jotform.com"], iframe[src*="jotform.io"]').forEach((iframe) => {
+      iframe.setAttribute('title', iframe.getAttribute('title') || 'NADO application form');
+    });
+  });
 
-    return originalFetch(input, init);
-  };
+  observer.observe(document.documentElement, { childList: true, subtree: true });
 })();
