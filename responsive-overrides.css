@@ -162,7 +162,7 @@ body.form-page .duration-opt-desc,
 body.form-page .field-label,
 body.form-page .consent-detail { font-size: max(.88rem, 14px); }
 body.form-page .history-edit,
-body.form-page .trust-label { font-size: max(.8rem, 13px); }
+body.form-page .trust-label { font-size: max(.9rem, 14px); }
 body.form-page .tier-opt-badge { font-size: .875rem; }
 body.form-page #freqToggle span { font-size: .8rem !important; }
 body.form-page .teacher-match-copy small,
@@ -300,13 +300,13 @@ body.legal-page table { font-size: .92rem; }
   }
 
   body.form-page .qtitle {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     line-height: 1.35;
     margin-bottom: 0.45rem;
   }
 
   body.form-page .qsub {
-    font-size: 0.88rem;
+    font-size: 0.94rem;
     line-height: 1.5;
     margin-bottom: 1rem;
   }
@@ -316,7 +316,7 @@ body.legal-page table { font-size: .92rem; }
   }
 
   body.form-page .opt-label {
-    font-size: 0.92rem;
+    font-size: 1rem;
     line-height: 1.4;
   }
 }

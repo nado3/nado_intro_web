@@ -2,7 +2,8 @@
   "name": "hellonado-site",
   "private": true,
   "scripts": {
+    "dev": "node tools/serve.js",
     "start": "node tools/serve.js",
-    "test": "node --check script.js && node --check js/audio-practice.js && node --test tests/*.test.js"
+    "test": "node --check script.js && node --check site-nav.js && node --check teacher-directory.js && node --check teacher-directory-data.js && node --check homepage-teacher-carousel.js && node --check homepage-teacher-finder.js && node --check application-path-chooser.js && node --check js/submission-guard.js && node --check api/submit.js && node --test tests/*.test.js"
   }
 }

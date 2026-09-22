@@ -41,7 +41,7 @@ window.NADO_MEMBER_CONFIG = {
 
     if (document.body?.dataset.mode !== 'trial' && qtitle === '결제 안내') {
       const qsub = qcard.querySelector('.qsub');
-      setText(qsub, '결제 금액을 확인해주세요. 선생님 연결 후 첫 수업 일정이 확정되면 카카오톡으로 입금 방법을 안내드립니다.');
+      setText(qsub, '선생님 연결과 일정 확정 후, 카카오톡으로 결제를 안내드려요.');
 
       const oldNote = qcard.querySelector('#firstMonthPaymentNote');
       if (oldNote) oldNote.remove();
@@ -55,21 +55,28 @@ window.NADO_MEMBER_CONFIG = {
         const title = qcard.querySelector('.qtitle');
         const sub = qcard.querySelector('.qsub');
         setText(title, '어떤 체험수업을 원하시나요?');
-        setText(sub, '무료 체험 또는 원하는 장소에서 진행하는 1회 체험 중 선택해주세요.');
+        setText(sub, '원하는 체험 방식을 선택해주세요.');
 
         const freeName = freeTrial.querySelector('.tier-opt-name');
         const freePrice = freeTrial.querySelector('.tier-opt-price');
         const freeDesc = freeTrial.querySelector('.tier-opt-desc');
-        setText(freeName, '무료 체험');
+        setText(freeName, '송도 지정장소 무료체험');
         setText(freePrice, '무료');
-        setText(freeDesc, '이코노미 · 1시간 · IGC 또는 트리플스트리트 · 보증금 2만원(참석 시 전액 환불)');
+        setHtml(freeDesc, '<span class="trial-facts"><span><strong>장소</strong><span>IGC 또는 트리플스트리트</span></span><span><strong>보증금</strong><span>2만원 · 참석 시 전액 환불</span></span></span>');
 
         const paidName = paidTrial.querySelector('.tier-opt-name');
         const paidPrice = paidTrial.querySelector('.tier-opt-price');
         const paidDesc = paidTrial.querySelector('.tier-opt-desc');
-        setText(paidName, '원하는 장소에서 1회 체험');
+        setText(paidName, '1회 유료 체험');
         setText(paidPrice, '1회 수업료');
-        setText(paidDesc, '원하는 플랜 · 1시간 · 서울 또는 인천 · 세부 장소는 선생님과 조율');
+        [[freeTrial, 'Economy · 1시간'], [paidTrial, '선택한 플랜 · 1시간']].forEach(([card, label]) => {
+          if (card.querySelector('.trial-header-badge')) return;
+          const badge = document.createElement('span');
+          badge.className = 'trial-facts-badge trial-header-badge';
+          badge.textContent = label;
+          card.querySelector('.tier-opt-top').appendChild(badge);
+        });
+        setHtml(paidDesc, '<span class="trial-facts"><span><strong>지역</strong><span>서울 또는 송도 어디서나</span></span><span><strong>플랜</strong><span>Economy · Standard · Premium</span></span><span class="trial-facts-note">초등학생 이하는 Standard만 가능</span></span>');
       }
 
       if (qtitle === '1회 수업 결제 안내') {
@@ -81,6 +88,7 @@ window.NADO_MEMBER_CONFIG = {
 
   const syncTrialSuccessCopy = () => {
     if (document.body?.dataset.mode !== 'trial') return;
+    if (document.getElementById('successWrap')?.classList.contains('application-success')) return;
     const summary = document.getElementById('summaryBox');
     const successText = document.querySelector('.success-text');
     if (!summary || !successText) return;

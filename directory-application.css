@@ -1,0 +1,315 @@
+.directory-selection-summary {
+  margin: 0 0 1rem;
+  padding: 1.2rem 1.25rem;
+  border: 1px solid #cfe1f6;
+  border-radius: 1.35rem;
+  background: linear-gradient(145deg, #f7fbff, #eef6ff);
+  box-shadow: 0 10px 26px rgba(22, 50, 79, .07);
+}
+
+.directory-selection-summary[hidden] { display: none; }
+
+.directory-selection-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.directory-selection-kicker {
+  display: block;
+  margin-bottom: .25rem;
+  color: var(--accent-deep);
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.directory-selection-heading h2 {
+  margin: 0;
+  color: var(--navy);
+  font-size: 1.12rem;
+  line-height: 1.4;
+  letter-spacing: -.02em;
+}
+
+.directory-selection-heading a {
+  flex: 0 0 auto;
+  padding: .45rem .7rem;
+  border: 1px solid #c2d8f2;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--accent-deep);
+  font-size: .76rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.directory-selection-summary dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .65rem .9rem;
+  margin: 0;
+}
+
+.directory-selection-summary dl > div { min-width: 0; }
+
+.directory-selection-summary dt {
+  margin-bottom: .18rem;
+  color: var(--gray);
+  font-size: .72rem;
+  font-weight: 700;
+}
+
+.directory-selection-summary dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: .88rem;
+  font-weight: 800;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.directory-duration-picker {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin: .95rem 0 0;
+  padding: .8rem 0 0;
+  border: 0;
+  border-top: 1px solid #d9e8f8;
+}
+
+.directory-duration-picker[hidden] { display: none; }
+
+.directory-duration-picker legend {
+  float: left;
+  margin: 0;
+  color: #65758a;
+  font-size: .76rem;
+  font-weight: 800;
+}
+
+.directory-duration-picker > div { display: flex; gap: .4rem; }
+
+.directory-duration-picker button {
+  min-height: 36px;
+  padding: .4rem .75rem;
+  border: 1px solid #bfd5ef;
+  border-radius: 999px;
+  background: #fff;
+  color: #315272;
+  font: 800 .78rem/1 'Pretendard', sans-serif;
+  cursor: pointer;
+}
+
+.directory-duration-picker button[aria-pressed="true"] {
+  border-color: var(--accent-deep);
+  background: var(--accent-deep);
+  color: #fff;
+}
+
+.directory-duration-picker button:focus-visible,
+.inline-duration-picker button:focus-visible {
+  outline: 3px solid rgba(47, 128, 237, .35);
+  outline-offset: 2px;
+}
+
+.directory-duration-picker button:disabled { opacity: .45; cursor: not-allowed; }
+.directory-duration-picker small { color: #65758a; font-size: .72rem; line-height: 1.4; }
+
+.directory-selection-summary > p {
+  margin: .9rem 0 0;
+  padding-top: .8rem;
+  border-top: 1px solid #d9e8f8;
+  color: #65758a;
+  font-size: .76rem;
+  font-weight: 650;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+body.has-directory-selection main { padding-top: 5.8rem; }
+
+body.has-directory-selection .duration-opt:disabled {
+  border-color: var(--line);
+  background: #f4f6f8;
+  color: var(--gray);
+  cursor: not-allowed;
+  opacity: .66;
+  transform: none;
+}
+
+body.has-directory-selection .duration-opt:disabled .duration-opt-time { color: var(--gray); }
+
+body.has-directory-selection #dateInput {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: .85rem 1rem;
+  border: 1.5px solid var(--line);
+  border-radius: 1rem;
+  background: var(--bg);
+  color: var(--ink);
+  font: 700 .95rem/1.4 'Pretendard', sans-serif;
+}
+
+body.has-directory-selection #dateInput:focus {
+  border-color: var(--accent);
+  background: var(--white);
+  outline: none;
+}
+
+body.has-directory-selection #dateInput[aria-invalid="true"] { border-color: #d74646; }
+
+.directory-date-guidance,
+.directory-date-error {
+  margin: .65rem 0 0;
+  font-size: .78rem;
+  font-weight: 650;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.directory-date-guidance { color: var(--gray); }
+.directory-date-error { color: #b3261e; }
+.directory-date-error:empty { display: none; }
+
+.directory-error-back-link {
+  display: block;
+  width: fit-content;
+  margin-top: .65rem;
+  color: #174f86;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: .18em;
+}
+
+.inline-duration-picker {
+  margin: 1rem 0 0;
+  padding: .9rem;
+  border: 1px solid #d7e5f5;
+  border-radius: 1rem;
+  background: #f6faff;
+}
+
+.inline-duration-picker legend {
+  padding: 0 .25rem;
+  color: #344054;
+  font-size: .8rem;
+  font-weight: 900;
+}
+
+.inline-duration-picker > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .55rem;
+}
+
+.inline-duration-picker button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  min-height: 48px;
+  padding: .7rem .85rem;
+  border: 1.5px solid #cddded;
+  border-radius: .8rem;
+  background: #fff;
+  color: #334155;
+  font: inherit;
+  cursor: pointer;
+}
+
+.inline-duration-picker button[aria-pressed="true"] {
+  border-color: var(--accent-deep);
+  background: #eaf4ff;
+  color: var(--accent-deep);
+}
+
+.inline-duration-picker button strong { font-size: .86rem; font-weight: 900; }
+.inline-duration-picker button small { font-size: .72rem; font-weight: 750; }
+.inline-duration-picker p { margin: .55rem 0 0; color: #718096; font-size: .7rem; line-height: 1.45; }
+
+.premium-consultation-box {
+  border: 1px solid #ead9a5;
+  background: #fffbef;
+}
+
+.premium-consultation-note {
+  margin-top: .8rem !important;
+  padding: .85rem 1rem;
+  border-radius: .85rem;
+  background: #fff8e2;
+  color: #66552b !important;
+  line-height: 1.6;
+}
+
+.premium-consultation-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .45rem;
+  margin: .9rem 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: premium-step;
+}
+
+.premium-consultation-steps li {
+  padding: .65rem .5rem;
+  border: 1px solid #eadfbf;
+  border-radius: .75rem;
+  background: #fff;
+  color: #66552b;
+  font-size: .69rem;
+  font-weight: 800;
+  line-height: 1.4;
+  text-align: center;
+  counter-increment: premium-step;
+}
+
+.premium-consultation-steps li::before {
+  display: block;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin: 0 auto .35rem;
+  border-radius: 50%;
+  background: #f2dd99;
+  color: #694f00;
+  content: counter(premium-step);
+  font-size: .66rem;
+  line-height: 1.35rem;
+}
+
+@media (max-width: 480px) {
+  .inline-duration-picker > div { grid-template-columns: 1fr; }
+  .premium-consultation-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.directory-error-back-link:focus-visible {
+  border-radius: .3rem;
+  outline: 3px solid rgba(23, 79, 134, .24);
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .directory-selection-summary { padding: 1.05rem; border-radius: 1.1rem; }
+  .directory-selection-heading { align-items: center; }
+  .directory-selection-heading h2 { font-size: 1rem; }
+  .directory-selection-summary dl { grid-template-columns: 1fr; gap: .52rem; }
+  .directory-selection-summary dl > div {
+    display: grid;
+    grid-template-columns: 3.4rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: .4rem;
+  }
+  .directory-selection-summary dt { margin: 0; }
+  .directory-duration-picker { align-items: flex-start; flex-wrap: wrap; }
+  .directory-duration-picker legend { width: 100%; }
+  .directory-duration-picker small { flex: 1 1 10rem; align-self: center; }
+}
+/* Keep the four consultation steps in reading order across the screen. */
+.premium-consultation-steps { grid-template-columns:repeat(4,minmax(0,1fr)); gap:.55rem; }
+.premium-consultation-steps li { position:relative; min-width:0; padding:.65rem .2rem; word-break:keep-all; overflow-wrap:break-word; }
+.premium-consultation-steps li:not(:last-child)::after { content:'›'; position:absolute; right:-.48rem; top:50%; color:#a68b44; font-size:.8rem; transform:translateY(-50%); }
+@media(max-width:480px) { .premium-consultation-steps { grid-template-columns:repeat(4,minmax(0,1fr)); gap:.5rem; } .premium-consultation-steps li { font-size:.65rem; } }

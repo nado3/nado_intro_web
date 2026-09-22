@@ -1,8 +1,3 @@
-// Connect shared marketing pages to Google Ads conversion measurement.
-if (typeof window.gtag === 'function') {
-  window.gtag('config', 'AW-18355423972');
-}
-
 (() => {
   const navToggle = document.getElementById('navToggle');
   const navLinks = document.getElementById('navLinks');
@@ -137,7 +132,7 @@ if (typeof window.gtag === 'function') {
   }
 
   if (document.querySelector('link[rel="canonical"]')?.href.endsWith('/how.html')) {
-    const description = '서울 및 인천 지역에서 진행하는 나도 영어회화의 신청, 선생님 선택 또는 맞춤 추천, 첫 수업 과정을 확인하세요.';
+    const description = '서울 및 송도 지역에서 진행하는 나도 영어회화의 신청, 선생님 선택 또는 맞춤 추천, 첫 수업 과정을 확인하세요.';
     const metaDescription = document.querySelector('meta[name="description"]');
     const ogDescription = document.querySelector('meta[property="og:description"]');
     const twitterDescription = document.querySelector('meta[name="twitter:description"]');
@@ -152,7 +147,7 @@ if (typeof window.gtag === 'function') {
       if (heading.startsWith('제2조')) {
         card.querySelectorAll('li').forEach(li => {
           if (li.textContent.includes('"요금제"')) {
-            li.innerHTML = '<strong>"요금제"</strong>란 회사가 제공하는 이코노미, 스탠다드, 프리미엄 수업료 등급을 의미합니다. (제7조 참조)';
+            li.innerHTML = '<strong>"수업 방식"</strong>이란 수업 준비 범위에 따라 구분한 Economy, Standard, Premium 방식과 이에 따른 수업료 유형을 의미합니다. (제7조 참조)';
           }
           if (li.textContent.includes('"매칭비"')) li.remove();
           if (li.textContent.includes('"매칭"')) {
@@ -170,13 +165,13 @@ if (typeof window.gtag === 'function') {
       }
       if (heading.startsWith('제6조')) {
         const items = card.querySelectorAll('li');
-        if (items[0]) items[0].textContent = '학생이 신청 폼에 플랜, 영어 수준, 학습 목표, 희망 시간대와 장소 등을 제출하면 조건에 맞는 선생님을 확인하고 직접 선택할 수 있습니다. 바로 선택 가능한 선생님이 없는 경우 회사가 신청 내용을 확인하여 적합한 선생님을 별도로 추천할 수 있습니다.';
-        if (items[1]) items[1].textContent = '선생님 선택 또는 추천 후 구체적인 수업 일정과 세부 장소는 학생과 선생님 회원이 직접 협의하여 정합니다.';
-        if (items[2]) items[2].textContent = '바로 선택 가능한 선생님이 없더라도 신청은 정상적으로 접수되며, 회사는 신청 내용을 확인한 뒤 가능한 선생님 또는 진행 방법을 별도로 안내할 수 있습니다.';
+        if (items[0]) items[0].textContent = '학생은 공개된 가능 일정에서 선생님과 시간대를 직접 선택하거나, 신청 폼에 학습 목표·희망 일정·장소 등을 입력해 맞춤 연결을 요청할 수 있습니다.';
+        if (items[1]) items[1].textContent = '선택한 시간대는 즉시 예약 확정이 아니며, 회사와 선생님 회원의 최종 확인 후 정확한 시작 시간과 장소를 안내합니다.';
+        if (items[2]) items[2].textContent = 'Premium은 즉시 예약이나 결제가 아닙니다. 회사가 목표와 준비 범위를 확인한 뒤 담당 선생님 회원의 수업 의사와 일정을 확인하고, 진행이 가능한 경우 수업 구성·일정·결제 방법을 별도로 안내합니다.';
       }
       if (heading.startsWith('제7조')) {
         const title = card.querySelector('h2');
-        if (title) title.textContent = '제7조 (요금제 및 결제)';
+        if (title) title.textContent = '제7조 (수업 방식 및 결제)';
         const items = card.querySelectorAll(':scope > ol > li');
         if (items[1]) items[1].textContent = '첫 달 수업료는 회사가 지정한 계좌로 이체합니다. 선생님 연결 후 첫 수업 일정이 확정되면 회사가 카카오톡 등으로 입금 방법을 안내합니다.';
         if (items[2]) items[2].textContent = '회사는 첫 달 결제 및 선생님 정산 절차를 운영하며, 선생님 회원에 대한 정산은 회사와 선생님 회원 간 별도 기준에 따라 이루어집니다.';
@@ -201,18 +196,6 @@ if (typeof window.gtag === 'function') {
     });
   }
 
-  const retiredCopy = '초등학생 이하 수업은 월 2만원 추가';
-  document.querySelectorAll('.info-text, .faq-answer, .step-details-list li, .tier-features li').forEach(el => {
-    if (!el.textContent.includes(retiredCopy)) return;
-    if (el.tagName === 'LI' && el.textContent.trim() === retiredCopy) {
-      el.remove();
-      return;
-    }
-    el.innerHTML = el.innerHTML
-      .replace(new RegExp('<br>\\s*' + retiredCopy, 'g'), '')
-      .replace(new RegExp(retiredCopy + '\\s*<br>', 'g'), '')
-      .replace(retiredCopy, '');
-  });
 })();
 
 (() => {
@@ -234,36 +217,42 @@ if (typeof window.gtag === 'function') {
       style.textContent = `
         .hero .hero-inner { max-width:1180px; grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr); gap:.6rem; }
         .hero .hero-right { min-width:0; overflow:visible; }
-        .home-hero-teacher-marquee-shell { width:100%; overflow:hidden; padding:6px 0 10px; -webkit-mask-image:linear-gradient(to right,transparent 0,#000 8%,#000 92%,transparent 100%); mask-image:linear-gradient(to right,transparent 0,#000 8%,#000 92%,transparent 100%); }
+        .home-hero-teacher-marquee-shell { width:100%; padding:6px 0 10px; }
+        .home-hero-teacher-marquee-controls { display:flex; align-items:center; justify-content:flex-end; gap:.35rem; margin:0 .75rem .45rem; }
+        .home-hero-teacher-marquee-control { display:flex; align-items:center; justify-content:center; gap:.35rem; min-width:44px; min-height:44px; padding:.55rem .78rem; border:1px solid #c9dcf3; border-radius:999px; background:rgba(255,255,255,.96); color:#245f9f; font:800 .84rem/1 'Pretendard',sans-serif; cursor:pointer; box-shadow:0 6px 16px rgba(22,50,79,.12); }
+        .home-hero-teacher-marquee-control:focus-visible { outline:3px solid #1d4ed8; outline-offset:3px; }
+        .home-hero-teacher-marquee-viewport { width:100%; overflow:hidden; -webkit-mask-image:linear-gradient(to right,transparent 0,#000 8%,#000 92%,transparent 100%); mask-image:linear-gradient(to right,transparent 0,#000 8%,#000 92%,transparent 100%); }
         .home-hero-teacher-marquee-track { display:flex; width:max-content; will-change:transform; cursor:grab; user-select:none; -webkit-user-select:none; touch-action:pan-y; }
         .home-hero-teacher-marquee-track.is-dragging { cursor:grabbing; }
         .home-hero-teacher-marquee-group { display:flex; gap:.65rem; padding-right:.65rem; flex-shrink:0; }
-        .home-hero-teacher-marquee-group .flip-teacher-card { position:relative; width:290px; flex:0 0 290px; min-width:0; min-height:430px; padding:1.35rem; display:flex; flex-direction:column; background:var(--white); border:1px solid var(--border); border-radius:1.5rem; box-shadow:0 16px 36px rgba(36,74,120,.18); transform:none !important; opacity:1 !important; pointer-events:auto !important; cursor:inherit; }
-        .home-hero-teacher-marquee-group .teach-avatar { width:128px; height:128px; margin:0 auto .5rem; }
+        .home-hero-teacher-marquee-group .flip-teacher-card { position:relative; width:290px; flex:0 0 290px; min-width:0; min-height:0; padding:1.35rem; display:flex; flex-direction:column; background:var(--white); border:1px solid var(--border); border-radius:1.5rem; box-shadow:0 16px 36px rgba(36,74,120,.18); transform:none !important; opacity:1 !important; pointer-events:auto !important; cursor:inherit; }
+        .home-hero-teacher-marquee-group .teach-avatar { width:108px; height:108px; margin:0 auto .5rem; }
         .home-hero-teacher-marquee-group .teach-avatar img { width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; -webkit-user-drag:none; }
         .home-hero-teacher-marquee-group .teach-name { font-size:1.4rem; font-weight:800; }
         .home-hero-teacher-marquee-group .teach-school { margin-top:.25rem; font-size:.92rem; }
         .home-hero-teacher-marquee-group .teach-major { margin:.1rem 0 0; font-size:.92rem; }
-        .home-hero-teacher-marquee-group .hero-teacher-bio { min-height:92px; margin:.55rem 0 0; color:var(--dark-gray); font-size:.92rem; line-height:1.55; text-align:left; display:block; overflow:visible; }
+        .home-hero-teacher-marquee-group .hero-teacher-bio { display:-webkit-box; min-height:calc(1.55em * 2); max-height:calc(1.55em * 2); margin:.55rem 0 0; overflow:hidden; color:var(--dark-gray); font-size:.92rem; line-height:1.55; text-align:left; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
         .home-hero-teacher-marquee-group .teach-tags { min-height:29px; margin-top:auto; padding-top:.45rem; align-items:center; }
-        .home-hero-teacher-marquee-group .flip-teacher-hint { display:none; }
+        .home-hero-teacher-marquee-group .flip-teacher-hint { display:block; margin-top:.7rem; padding-top:.5rem; border-top:1px solid #edf1f6; color:#778598; font-size:.75rem; font-weight:400; text-align:right; }
         @media (max-width:900px) {
           .hero { padding-left:0 !important; padding-right:0 !important; }
           .hero .hero-inner { display:block; max-width:none; }
           .hero .hero-left { padding-left:var(--page-gutter,1.5rem); padding-right:var(--page-gutter,1.5rem); max-width:760px; margin:0 auto .7rem; }
           .hero .hero-right { min-height:0; }
-          .home-hero-teacher-marquee-shell { width:100vw; padding:4px 0 10px; -webkit-mask-image:none; mask-image:none; }
+          .home-hero-teacher-marquee-shell { width:100vw; padding:4px 0 10px; }
+          .home-hero-teacher-marquee-viewport { -webkit-mask-image:none; mask-image:none; }
         }
         @media (max-width:599px) {
           .hero { padding-bottom:1.3rem !important; }
           .hero .hero-left { margin-bottom:.3rem; }
           .home-hero-teacher-marquee-shell { padding:2px 0 6px; }
-          .home-hero-teacher-marquee-group .flip-teacher-card { width:260px; flex-basis:260px; min-height:382px; padding:.9rem; border-radius:1.25rem; }
-          .home-hero-teacher-marquee-group .teach-avatar { width:148px; height:148px; margin:0 auto .35rem; }
+          .home-hero-teacher-marquee-controls { margin:0 .75rem .35rem; }
+          .home-hero-teacher-marquee-group .flip-teacher-card { width:260px; flex-basis:260px; min-height:0; padding:.9rem; border-radius:1.25rem; }
+          .home-hero-teacher-marquee-group .teach-avatar { width:108px; height:108px; margin:0 auto .35rem; }
           .home-hero-teacher-marquee-group .teach-name { font-size:1.22rem; margin-bottom:.15rem; }
           .home-hero-teacher-marquee-group .teach-school, .home-hero-teacher-marquee-group .teach-major { font-size:.84rem; line-height:1.35; }
           .home-hero-teacher-marquee-group .teach-major { margin-bottom:0; }
-          .home-hero-teacher-marquee-group .hero-teacher-bio { min-height:68px; margin:.45rem 0 0; font-size:.84rem; line-height:1.45; }
+          .home-hero-teacher-marquee-group .hero-teacher-bio { min-height:calc(1.45em * 2); max-height:calc(1.45em * 2); margin:.45rem 0 0; font-size:.84rem; line-height:1.45; }
           .home-hero-teacher-marquee-group .tag { padding:.23rem .55rem; font-size:.76rem; }
           .home-hero-teacher-marquee-group .teach-tags { min-height:27px; padding-top:0; }
         }
@@ -274,28 +263,42 @@ if (typeof window.gtag === 'function') {
     const cardsHtml = sourceCards.map(card => {
       const clone = card.cloneNode(true);
       clone.removeAttribute('data-position');
-      clone.removeAttribute('role');
-      clone.removeAttribute('tabindex');
+      clone.setAttribute('role', 'button');
+      clone.setAttribute('tabindex', '0');
       clone.removeAttribute('aria-hidden');
-      clone.removeAttribute('aria-label');
-      clone.querySelector('.flip-teacher-hint')?.remove();
+      clone.setAttribute('aria-label', clone.querySelector('.teach-name').textContent + ' 선생님 상세 프로필 보기');
+
       return clone.outerHTML;
     }).join('');
 
-    heroRight.innerHTML = `<div class="home-hero-teacher-marquee-shell" aria-label="추천 선생님 카드"><div class="home-hero-teacher-marquee-track"><div class="home-hero-teacher-marquee-group">${cardsHtml}</div><div class="home-hero-teacher-marquee-group" aria-hidden="true">${cardsHtml}</div></div></div>`;
+    heroRight.innerHTML = `<div class="home-hero-teacher-marquee-shell"><div class="home-hero-teacher-marquee-viewport" aria-label="추천 선생님 카드"><div class="home-hero-teacher-marquee-track"><div class="home-hero-teacher-marquee-group">${cardsHtml}</div><div class="home-hero-teacher-marquee-group">${cardsHtml}</div></div></div></div>`;
 
     const track = heroRight.querySelector('.home-hero-teacher-marquee-track');
     const firstGroup = heroRight.querySelector('.home-hero-teacher-marquee-group');
+    const toggle = heroRight.querySelector('[data-home-hero-marquee-toggle]');
+    const previous = heroRight.querySelector('[data-home-hero-marquee-prev]');
+    const next = heroRight.querySelector('[data-home-hero-marquee-next]');
+    const toggleIcon = heroRight.querySelector('[data-home-hero-marquee-icon]');
+    const toggleLabel = heroRight.querySelector('[data-home-hero-marquee-label]');
     if (!track || !firstGroup) return;
 
     let x = 0;
     let groupWidth = 0;
     let dragging = false;
+    let dragDistance = 0;
+    let pointerCard = null;
     let lastPointerX = 0;
     let lastFrame = performance.now();
     let animationFrame = 0;
     const pixelsPerSecond = () => window.matchMedia('(max-width:599px)').matches ? 18 : 20;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let userPaused = reducedMotion.matches;
+
+    const renderToggle = () => {
+      if (!toggle) return;
+      if (toggleIcon) toggleIcon.textContent = userPaused ? '▶' : 'Ⅱ';
+      if (toggleLabel) toggleLabel.textContent = userPaused ? '다시 재생' : '일시정지';
+    };
 
     const normalizeX = () => {
       if (!groupWidth) return;
@@ -310,10 +313,22 @@ if (typeof window.gtag === 'function') {
       normalizeX();
       renderTrack();
     };
+    const moveOneCard = direction => {
+      const firstCard = firstGroup.querySelector('.flip-teacher-card');
+      const groupStyles = window.getComputedStyle(firstGroup);
+      const gap = Number.parseFloat(groupStyles.columnGap || groupStyles.gap) || 0;
+      const step = (firstCard?.getBoundingClientRect().width || 0) + gap;
+      if (!step) return;
+      userPaused = true;
+      x += direction * step;
+      normalizeX();
+      renderTrack();
+      renderToggle();
+    };
     const animate = now => {
       const dt = Math.min((now - lastFrame) / 1000, .05);
       lastFrame = now;
-      if (!dragging && groupWidth && !reducedMotion.matches) {
+      if (!dragging && groupWidth && !userPaused && !document.querySelector("dialog[open]") && !track.contains(document.activeElement) && !track.matches(":hover")) {
         x += pixelsPerSecond() * dt;
         normalizeX();
         renderTrack();
@@ -322,7 +337,10 @@ if (typeof window.gtag === 'function') {
     };
 
     track.addEventListener('pointerdown', event => {
+      if (event.button !== 0) return;
       dragging = true;
+      dragDistance = 0;
+      pointerCard = event.target.closest('[data-home-teacher]');
       lastPointerX = event.clientX;
       track.classList.add('is-dragging');
       track.setPointerCapture?.(event.pointerId);
@@ -331,6 +349,7 @@ if (typeof window.gtag === 'function') {
       if (!dragging) return;
       const dx = event.clientX - lastPointerX;
       lastPointerX = event.clientX;
+      dragDistance += Math.abs(dx);
       x += dx;
       normalizeX();
       renderTrack();
@@ -340,14 +359,40 @@ if (typeof window.gtag === 'function') {
       dragging = false;
       track.classList.remove('is-dragging');
       try { track.releasePointerCapture?.(event.pointerId); } catch (_) {}
+      if (event.type === 'pointercancel') dragDistance = Infinity;
     };
+    track.addEventListener('click', event => {
+      if (event.detail !== 0 && dragDistance >= 8) return;
+      const card = event.target.closest('[data-home-teacher]') || (event.detail !== 0 ? pointerCard : null);
+      if (card) window.NADOOpenHomeTeacher?.(Number(card.dataset.homeTeacher), card);
+    });
+    track.addEventListener('keydown', event => {
+      const card = event.target.closest('[data-home-teacher]');
+      if (card && ['Enter', ' '].includes(event.key)) {
+        event.preventDefault();
+        window.NADOOpenHomeTeacher?.(Number(card.dataset.homeTeacher), card);
+      }
+    });
     track.addEventListener('pointerup', endDrag);
     track.addEventListener('pointercancel', endDrag);
     track.addEventListener('dragstart', event => event.preventDefault());
+    toggle?.addEventListener('click', () => {
+      userPaused = !userPaused;
+      renderToggle();
+    });
+    previous?.addEventListener('click', () => moveOneCard(1));
+    next?.addEventListener('click', () => moveOneCard(-1));
+    const handleReducedMotion = event => {
+      if (!event.matches) return;
+      userPaused = true;
+      renderToggle();
+    };
+    reducedMotion.addEventListener?.('change', handleReducedMotion);
     window.addEventListener('resize', measure, { passive:true });
 
     requestAnimationFrame(() => {
       measure();
+      renderToggle();
       lastFrame = performance.now();
       animationFrame = requestAnimationFrame(animate);
     });

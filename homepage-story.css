@@ -1,0 +1,118 @@
+html { scroll-behavior:smooth; }
+#about,#price,.home-section { scroll-margin-top:100px; }
+.home-section { max-width:1160px; margin:auto; padding:80px 36px; color:#19334e; word-break:keep-all; overflow-wrap:break-word; }
+.home-section h2 { margin:14px 0 22px; font-size:clamp(28px,3.5vw,42px); font-weight:800; letter-spacing:-1.2px; line-height:1.3; }
+.home-section h3 { font-size:21px; line-height:1.45; margin:14px 0 10px; letter-spacing:-.5px; }
+.home-section p { color:#5b6c7e; font-size:16px; line-height:1.85; margin:0; }
+.home-eyebrow { color:#2e6dc2; font-size:13px; font-weight:800; letter-spacing:.6px; }
+.home-heading { max-width:670px; margin-bottom:34px; }
+.home-heading h2 { margin-bottom:14px; }
+.home-link { display:inline-block; margin-top:24px; font-weight:800; color:#2865af; text-decoration:none; padding:10px 0; }
+.home-beginner { display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:64px; }
+.home-beginner-card { background:#eff6ff; padding:32px; border-radius:24px; }
+.home-beginner-card>span { font-weight:800; font-size:14px; color:#2e6dc2; }
+.home-beginner-card ol { margin:24px 0 0; padding-left:20px; }
+.home-beginner-card li { padding-left:8px; margin-bottom:22px; }
+.home-beginner-card li:last-child { margin-bottom:0; }
+.home-beginner-card li::marker { color:#2e6dc2; font-weight:800; }
+.home-beginner-card p { font-size:14px; margin-top:6px; }
+.home-three { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.home-three article { border:1px solid #e1e9f2; border-radius:20px; padding:28px; background:white; }
+.home-three article p { font-size:15px; }
+.home-number { color:#74a1db; font-size:15px; font-weight:800; }
+.home-values { border-top:1px solid #e7edf5; }
+.home-curriculum { background:#f4f8fd; border-radius:28px; }
+.home-lesson-example { display:grid; grid-template-columns:1fr 1.15fr; gap:36px; padding:32px; margin-top:24px; background:#fff; border-radius:20px; }
+.home-lesson-example p { font-size:14px; }
+.home-lesson-example ol { list-style:none; margin:0; padding:0; display:grid; gap:18px; }
+.home-lesson-example li { border-left:3px solid #a6c7f2; padding-left:18px; }
+.home-lesson-example li span { display:block; margin-top:5px; font-size:14px; line-height:1.8; color:#5b6c7e; }
+.home-story { padding-top:88px; padding-bottom:88px; }
+.home-story-lead { max-width:630px; }
+.home-story-line { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:40px; border-top:2px solid #dce9f8; }
+.home-story-line>div { padding-top:24px; }
+.home-story-line p { font-size:14px; margin-top:8px; }
+.home-process { background:#f7f9fc; border-radius:28px; }
+.home-process ol { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:24px; list-style:none; margin:0; padding:0; }
+.home-process li>span { display:block; color:#4a90e2; font-size:14px; margin-bottom:16px; font-weight:800; }
+.home-process strong { font-size:18px; }
+.home-process p { font-size:14px; margin-top:8px; }
+.home-faq { max-width:900px; }
+.home-faq details { border-bottom:1px solid #dce5f0; }
+.home-faq summary { padding:24px 32px 24px 0; cursor:pointer; list-style:none; position:relative; font-size:17px; font-weight:700; line-height:1.6; }
+.home-faq summary::after { content:'+'; position:absolute; right:4px; color:#2e6dc2; }
+.home-faq details[open] summary::after { content:'−'; }
+.home-faq summary::-webkit-details-marker { display:none; }
+.home-faq details p { padding-bottom:24px; font-size:15px; }
+.home-final-buttons { display:flex; justify-content:center; flex-wrap:wrap; gap:14px; align-items:center; }
+.home-trial-button { padding:17px 26px; border:1px solid currentColor; border-radius:12px; font-weight:800; text-decoration:none; color:inherit; }
+@media(min-width:901px) { .site-nav .nav-links { gap:clamp(10px,1.3vw,22px); } .site-nav .nav-links a { font-size:13px; } }
+@media(max-width:900px) { .home-section { padding:56px 24px; } .home-beginner { gap:28px; } .home-three { gap:12px; } .home-three article { padding:20px; } .home-process ol { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:600px) { .home-beginner,.home-lesson-example { grid-template-columns:1fr; } .home-three { grid-template-columns:1fr; } .home-story-line { grid-template-columns:1fr; gap:20px; } .home-story-line>div { padding-top:0; } .home-story-line { padding-top:24px; } .home-beginner-card,.home-lesson-example { padding:24px; } .home-section { padding:44px 22px; } .home-section h2 { letter-spacing:-.6px; } .home-curriculum,.home-process { border-radius:0; } .home-faq summary { font-size:16px; } }
+@media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+
+/* Existing highlights follow the typography and cards of the new sections. */
+.stats-strip { max-width:1160px; margin:0 auto; padding:40px 36px 8px; gap:16px; }
+.stats-strip .stat-card { padding:24px 16px; border:1px solid #e1e9f2; border-radius:20px; background:#f4f8fd; }
+.stats-strip .stat-num { color:#19334e; font-size:clamp(25px,2.8vw,34px); font-weight:800; letter-spacing:-.7px; margin-bottom:8px; }
+.stats-strip .stat-label { color:#5b6c7e; font-size:14px; line-height:1.65; word-break:keep-all; }
+.home-section.features-section { text-align:left; }
+.features-section .features-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); max-width:none; width:100%; gap:18px; justify-items:stretch; }
+.features-section .feature-card { display:grid; grid-template-columns:36px minmax(0,1fr); column-gap:16px; align-items:start; width:100%; min-width:0; padding:28px; border:1px solid #e1e9f2; border-radius:20px; background:#fff; text-align:left; }
+.features-section .feature-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(25,51,78,.06); }
+.features-section .feature-icon { grid-row:1 / span 2; width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:10px; background:#eff6ff; font-size:22px; margin:0; }
+.features-section .feature-title { color:#19334e; font-size:21px; font-weight:800; line-height:1.45; letter-spacing:-.5px; margin:0 0 10px; }
+.features-section .feature-desc { color:#5b6c7e; font-size:15px; line-height:1.85; max-width:none; }
+@media(max-width:900px) { .stats-strip { padding:32px 24px 0; gap:12px; } .features-section .feature-card { padding:22px; } }
+@media(max-width:600px) { .stats-strip { padding:28px 22px 0; gap:12px; } .stats-strip .stat-card { padding:20px 10px; border-radius:18px; } .stats-strip .stat-num { font-size:26px; } .stats-strip .stat-label { font-size:13px; } .features-section .features-grid { grid-template-columns:minmax(0,1fr); gap:14px; } .features-section .feature-card { padding:22px; column-gap:14px; } .features-section .feature-title { font-size:20px; } }
+
+.home-plan-recommendation { padding:14px 16px; margin:0 0 18px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); border-radius:12px; color:#fff; font-size:14px; line-height:1.75; word-break:keep-all; }
+.home-plan-types { margin:0 0 22px; color:#e4eefb; font-size:14px; line-height:1.75; }
+.home-plan-types p { margin-top:6px; }
+#cta.cta-section { max-width:1088px; margin:16px auto 64px; padding:56px 32px; border:1px solid #dce7f3; border-radius:24px; background:#eff6ff; color:#19334e; text-align:center; }
+#cta .cta-title { margin:14px 0 18px; color:#19334e; font-size:clamp(28px,3.5vw,42px); font-weight:800; line-height:1.3; letter-spacing:-1px; }
+#cta .cta-title em { color:#2e6dc2; }
+#cta .cta-title .title-line { display:inline; }
+#cta .cta-sub { max-width:620px; margin:0 auto 28px; font-size:16px; color:#5b6c7e; font-weight:400; line-height:1.85; word-break:keep-all; }
+#cta .btn-primary,#cta .home-trial-button { display:inline-flex; align-items:center; justify-content:center; min-height:50px; padding:14px 24px; border:1px solid #2e6dc2; border-radius:12px; font-size:16px; font-weight:700; line-height:1.4; text-decoration:none; }
+#cta .btn-primary { background:#2e6dc2; color:white; }
+#cta .home-trial-button { background:white; color:#2e6dc2; }
+@media(max-width:600px) { #cta.cta-section { margin:12px 22px 44px; padding:36px 22px; } #cta .home-final-buttons { display:grid; grid-template-columns:1fr; gap:10px; } #cta .cta-sub { font-size:15px; } }
+
+.curriculum-access-card { position:relative; }
+.curriculum-access-link { display:block; color:inherit; text-decoration:none; }
+.curriculum-access-link::after { content:""; position:absolute; inset:0; border-radius:20px; }
+.curriculum-access-link:focus-visible { outline:none; }
+.curriculum-access-link:focus-visible::after { outline:3px solid #4d90df; outline-offset:3px; }
+.curriculum-access-card:hover { border-color:#4d90df; }
+.curriculum-access-label { display:block; margin-top:18px; color:#2e70b9; font-size:14px; font-weight:700; }
+
+/* Give the trust indicators breathing room before the tuition section. */
+.stats-strip { padding-bottom:clamp(32px,5vw,56px); }
+
+.premium-assignment-note { display:block; margin:8px 0 12px; font-size:13px; font-weight:400; line-height:1.6; color:inherit; opacity:.8; word-break:keep-all; }
+
+.home-student-review { padding:48px 24px; text-align:center; }
+.home-review-icon { display:grid; place-items:center; width:72px; height:72px; margin:0 auto 24px; border-radius:50%; background:#e3f2ff; font-size:38px; }
+.home-student-review blockquote { max-width:820px; margin:0 auto; }
+.home-student-review blockquote p { margin:0; font-size:clamp(22px,3vw,32px); line-height:1.65; font-weight:800; color:#19334e; word-break:keep-all; text-wrap:balance; }
+.home-student-review strong { color:#4a90e2; }
+.home-student-review blockquote footer { margin:20px 0 0; padding:0; background:none; color:#7c8793; font-size:16px; font-weight:600; }
+@media(max-width:600px) { .home-student-review { padding:36px 24px; } .home-review-break { display:none; } }
+
+/* Compact tuition copy after removal of the recommendation boxes. */
+#price .tier-card { padding:28px 24px; }
+#price .tier-period { margin-bottom:14px; }
+#price .tier-desc { min-height:0; margin:0 0 18px; }
+#price .tier-features { margin:0 0 18px; gap:8px; }
+#price .home-plan-types { margin:0 0 18px; }
+#price .home-plan-types p { margin:6px 0 0; }
+/* A clearly bounded review section between the beginner guide and next steps. */
+#student-review { max-width:none; margin:16px 0; padding:40px 24px; background:#edf5ff; border-block:1px solid #d6e5f6; }
+#student-review .home-review-label { display:block; margin:0 auto 18px; color:#2e6dc2; font-size:14px; font-weight:800; letter-spacing:.06em; }
+#student-review .home-review-icon { width:60px; height:60px; font-size:32px; margin-bottom:18px; background:#fff; }
+#student-review blockquote footer { margin-top:16px; }
+@media(max-width:600px) { #student-review { padding:32px 22px; } #price .tier-card { padding:26px 22px; } }
+
+.info-page main {padding-top:110px;min-height:65vh;}
+.info-page h1 {font-size:clamp(30px,5vw,48px);line-height:1.3;margin:16px 0 24px;color:#16324f;word-break:keep-all;}

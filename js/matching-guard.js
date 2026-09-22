@@ -5,9 +5,9 @@
   window.NADO_INCHEON_SELECTED_AREA = window.NADO_INCHEON_SELECTED_AREA || '';
 
   document.addEventListener('click', (event) => {
-    const option = event.target.closest?.('.duration-opt[data-index]');
-    if (!option) return;
-    const index = Number(option.dataset.index);
+    const option = event.target.closest?.('.duration-opt[data-index], [data-inline-duration]');
+    if (!option || option.disabled) return;
+    const index = Number(option.dataset.inlineDuration ?? option.dataset.index);
     window.NADO_MATCH_DURATION_MINUTES = index === 1 ? 120 : 60;
   }, true);
 
@@ -19,24 +19,12 @@
     return parts[0] * 60 + parts[1];
   }
 
-  function currentIncheonArea() {
-    try {
-      if (
-        typeof answers !== 'undefined' &&
-        answers.placeType === '인천 원하는 장소' &&
-        answers.areaCode
-      ) {
-        return answers.areaCode;
-      }
-    } catch (_) {}
-    return '';
-  }
-
   function filterRows(rows, args) {
     if (!Array.isArray(rows)) return rows;
     const start = minutes(args?.p_time);
     if (!Number.isFinite(start)) return rows;
-    const required = Number(window.NADO_MATCH_DURATION_MINUTES) === 120 ? 120 : 60;
+    let required = Number(window.NADO_MATCH_DURATION_MINUTES) === 120 ? 120 : 60;
+    try { if (typeof answers !== 'undefined') required = answers.duration?.index === 1 ? 120 : 60; } catch (_) {}
     return rows.filter((row) => {
       let end = minutes(row?.end_time);
       if (!Number.isFinite(end)) return false;
@@ -54,15 +42,6 @@
     const originalRpc = client.rpc.bind(client);
     client.rpc = async function(name, args, options) {
       let effectiveArgs = args;
-      const selectedIncheonArea = currentIncheonArea();
-      if (
-        name === 'get_available_teachers' &&
-        args?.p_region === 'Incheon' &&
-        !args?.p_area &&
-        selectedIncheonArea
-      ) {
-        effectiveArgs = { ...args, p_area: selectedIncheonArea };
-      }
 
       const result = await originalRpc(name, effectiveArgs, options);
       if (name === 'get_available_teachers' && result && !result.error) {

@@ -194,3 +194,7 @@ body.legal-page .wrap { padding-top: calc(var(--site-nav-height) + 3rem); }
     max-width: 100%;
   }
 }
+
+@media(min-width:901px) { .site-nav .nav-links { gap:clamp(10px,1.3vw,22px); } .site-nav .nav-links a { font-size:13px; } }
+
+.site-nav #navToggle {font-size:32px;width:44px;height:32px;min-width:0;min-height:0;line-height:32px;padding:0;}

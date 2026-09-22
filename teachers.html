@@ -1,30 +1,34 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-D6YB8JLKS7"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-D6YB8JLKS7');
-</script>
+  <!-- Keep local previews out of production analytics. -->
+  <script>
+    if (['hellonado.com', 'www.hellonado.com'].includes(window.location.hostname)) {
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer.push(arguments); };
+      const analyticsScript = document.createElement('script');
+      analyticsScript.async = true;
+      analyticsScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-D6YB8JLKS7';
+      document.head.appendChild(analyticsScript);
+      window.gtag('js', new Date());
+      window.gtag('config', 'G-D6YB8JLKS7');
+    }
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>나도 선생님 소개 | 서울 및 인천 지역 영어회화</title>
-<meta name="description" content="서울 및 인천 지역에서 만날 수 있는 나도의 미국 대학생 영어회화 선생님을 소개합니다.">
+  <title>나도 선생님 소개 | 서울 및 송도 지역 영어회화</title>
+<meta name="description" content="서울 및 송도 지역에서 만날 수 있는 나도의 미국 대학생 영어회화 선생님을 소개합니다.">
 <link rel="canonical" href="https://hellonado.com/teachers.html">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="나도">
-<meta property="og:title" content="나도 선생님 소개 | 서울 및 인천 지역 영어회화">
-<meta property="og:description" content="서울 및 인천 지역에서 만날 수 있는 나도의 미국 대학생 영어회화 선생님을 소개합니다.">
+<meta property="og:title" content="나도 선생님 소개 | 서울 및 송도 지역 영어회화">
+<meta property="og:description" content="서울 및 송도 지역에서 만날 수 있는 나도의 미국 대학생 영어회화 선생님을 소개합니다.">
 <meta property="og:url" content="https://hellonado.com/teachers.html">
 <meta property="og:image" content="https://hellonado.com/img/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="나도 선생님 소개 | 서울 및 인천 지역 영어회화">
-<meta name="twitter:description" content="서울 및 인천 지역에서 만날 수 있는 나도의 미국 대학생 영어회화 선생님을 소개합니다.">
+<meta name="twitter:title" content="나도 선생님 소개 | 서울 및 송도 지역 영어회화">
+<meta name="twitter:description" content="서울 및 송도 지역에서 만날 수 있는 나도의 미국 대학생 영어회화 선생님을 소개합니다.">
 <meta name="twitter:image" content="https://hellonado.com/img/og-image.png">
   <link rel="icon" type="image/png" href="img/clogo.png">
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet"/>
@@ -119,152 +123,10 @@
 
     /* TEACHERS SECTION */
     body.subpage section.teachers-section {
-      padding: 5rem;
-      padding-bottom: 2rem;
+      padding: 3rem 5rem 2rem;
       max-width: 1400px;
       margin: 0 auto;
     }
-    .section-intro {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .section-label {
-      font-size: 1.5rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--accent);
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
-    .section-desc {
-      font-size: 1.05rem;
-      color: var(--dark-gray);
-      line-height: 1.8;
-      font-weight: 300;
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
-    /* TEACHER GRID */
-    .teachers-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 2rem;
-      margin-bottom: 4rem;
-    }
-    .teacher-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 1.5rem;
-      padding: 2.5rem;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.3s, box-shadow 0.3s;
-      cursor: pointer;
-    }
-    .teacher-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 50px rgba(74, 144, 226, 0.15);
-    }
-    .teacher-avatar,
-    .teach-avatar {
-      width: 170px;
-      height: 170px;
-      border-radius: 50%;
-      background: var(--accent-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      margin: 0 auto 1.5rem;
-      border: 2px solid var(--accent);
-      overflow: hidden;
-      color: var(--accent-deep);
-      font-size: 1.35rem;
-      font-weight: 900;
-    }
-    .teacher-name {
-      font-family: 'Pretendard', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: var(--black);
-      text-align: center;
-    }
-    .teacher-major {
-      min-height: 3.4rem;
-      font-size: 0.9rem;
-      line-height: 1.55;
-      text-align: center;
-      margin-bottom: 1.5rem;
-      word-break: keep-all;
-    }
-    .teacher-field {
-      display: block;
-      color: var(--black);
-      font-weight: 650;
-      margin-bottom: 0.2rem;
-    }
-    .teacher-school {
-      display: block;
-      font-weight: 650;
-    }
-    .teacher-school--mason { color: #006633; }
-    .teacher-school--utah { color: #cc0000; }
-    .teacher-bio {
-      font-size: 0.9rem;
-      color: var(--dark-gray);
-      line-height: 1.7;
-      font-weight: 300;
-      margin-bottom: 1.5rem;
-    }
-    .teacher-tags {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-top: auto;
-    }
-    @media (max-width: 1000px) {
-      .teachers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-    .tag {
-      background: var(--accent-light);
-      color: var(--accent);
-      font-size: 0.75rem;
-      padding: 0.3rem 0.8rem;
-      border-radius: 1rem;
-      font-weight: 700;
-    }
-    .more-placeholder {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      min-height: 60px;
-      margin-bottom: 0.5rem;
-    }
-    .more-placeholder:hover {
-      transform: none;
-      box-shadow: none;
-    }
-    .more-dots {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.1rem;
-    }
-    .more-dots span {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--accent);
-    }
-    .more-dots span:nth-child(1) { opacity: 1; }
-    .more-dots span:nth-child(2) { opacity: 0.5; }
-    .more-dots span:nth-child(3) { opacity: 0.15; }
-    .teacher-list-more-dots { margin: 0 auto; }
-    .teacher-list-more-dots span { width: 10px; height: 10px; }
 
     /* INFO BOX */
     .info-box {
@@ -382,32 +244,23 @@
       .nav-links.mobile-open .nav-cta { display: block; text-align: center; padding: 1.2rem; font-size: 1.05rem; }
       .page-header { padding: 8rem 1.5rem 4rem; }
       body.subpage section.teachers-section { padding: 3rem 1.5rem 1.5rem; }
-      .teachers-grid.mobile-teacher-marquee { display: block; overflow: hidden; margin-left: -1.5rem; margin-right: -1.5rem; }
-      body.subpage .teachers-grid.mobile-teacher-carousel { margin-bottom: 20px; }
-      .mobile-teacher-track { display: flex; width: max-content; animation: teacherMarquee 42s linear infinite; }
-      .mobile-teacher-group { display: flex; gap: 1rem; padding-right: 1rem; }
-      .mobile-teacher-group .teacher-card { width: 280px; flex: 0 0 280px; }
-      .mobile-teacher-group .teach-avatar { width: 130px; height: 130px; }
-      .mobile-teacher-group .fade-in { opacity: 1; transform: none; }
       body.subpage section.cta-section { margin: 1rem auto 3rem; padding: 4rem 2rem; }
       footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem 1.5rem; }
     }
-    @keyframes teacherMarquee { to { transform: translateX(-50%); } }
-    @media (prefers-reduced-motion: reduce) {
-      .mobile-teacher-track { animation-play-state: paused; }
-    }
     @media (max-width: 480px) {
       .page-header { padding: 7rem 1.2rem 3rem; }
-      .teachers-grid { grid-template-columns: 1fr; }
-      .teacher-card { padding: 1.8rem; }
-      .teacher-avatar, .teach-avatar { width: 112px; height: 112px; font-size: 2rem; }
       .info-box { padding: 1.8rem; }
       body.subpage section.cta-section { margin: 1rem auto 2rem; padding: 3rem 1.5rem; }
       .cta-title { font-size: 1.7rem; }
     }
   </style>
+  <link rel="stylesheet" href="homepage-layout.css?v=12">
   <link rel="stylesheet" href="responsive-overrides.css">
-  <link rel="stylesheet" href="site-nav.css">
+  <link rel="stylesheet" href="site-nav.css?v=49">
+  <link rel="stylesheet" href="teacher-directory.css?v=51">
+  <link rel="stylesheet" href="homepage-teacher-finder.css?v=11">
+<link rel="stylesheet" href="homepage-interactions.css?v=51">
+<link rel="stylesheet" href="application-path-chooser.css?v=32">
 </head>
 <body class="subpage">
 
@@ -418,115 +271,91 @@
       <img src="img/mlogo.png" alt="나도">
     </div>
   </a>
-  <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기">☰</button>
+  <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기" aria-controls="navLinks">☰</button>
   <ul class="nav-links" id="navLinks">
-  <li><a class="nav-for-teachers" href="https://nadomeokgo.github.io/nado_teachers_web/index.html#dashboard" target="_blank" rel="noopener">for teachers</a></li>
-  <li><a href="#why">왜 나도인가</a></li>
-  <li><a href="teachers.html">선생님 소개</a></li>
-  <li><a href="how.html">이용 방법</a></li>
-  <li><a class="nav-trial" href="trial.html">무료 체험</a></li>
-  <li><a href="apply.html" class="nav-cta">시작하기</a></li>
+    <li><a class="nav-for-teachers" href="https://nadomeokgo.github.io/nado_teachers_web/index.html#dashboard" target="_blank" rel="noopener">for teachers</a></li>
+    <li><a href="story.html">나도 소개</a></li>
+    <li><a href="teachers.html">선생님 소개</a></li>
+    <li><a href="index.html#curriculum">커리큘럼</a></li><li><a href="index.html#price">수업 플랜</a></li><li><a href="faq.html">FAQ</a></li>
+    <li><a class="nav-trial" href="trial.html?lesson_kind=trial">체험수업</a></li>
+    <li><a href="apply.html" class="nav-cta" data-application-chooser>신청하기</a></li>
   </ul>
 </nav>
 
-<!-- PAGE HEADER -->
-<section class="page-header">
-  <h1 class="page-title">우리 <em>선생님</em>을 소개합니다</h1>
-  <p class="page-subtitle">서울 및 인천 지역에서 미국 대학생들이 여러분의 영어 회화 파트너가 됩니다.</p>
-</section>
+<main>
+<section class="teachers-special"><h1>우리 선생님들이 특별한 이유</h1><div class="teachers-special-box"><p>미국 대학에서 공부하는 선생님들과 일상 속 영어를 나눠보세요. 다양한 전공과 경험을 가진 선생님 중 나의 관심사와 목표에 맞는 분을 만날 수 있어요.</p></div></section>
+  <section class="homepage-finder-hero" id="teacher-finder" aria-labelledby="teacherFinderPageTitle">
+    <div class="homepage-finder-shell">
+      <h1 class="sr-only" id="teacherFinderPageTitle">선생님 둘러보고 신청하기</h1>
+      <div class="teacher-region-step teacher-region-step--simple" id="teacherRegionPicker">
+        <h3 id="teacherRegionPickerTitle" tabindex="-1">선생님 필터</h3>
+        <div class="teacher-region-segment teacher-region-segment--large" role="group" aria-label="수업 지역 선택">
+          <button type="button" class="teacher-region-option" data-directory-region="Songdo" aria-pressed="false">송도</button>
+          <button type="button" class="teacher-region-option" data-directory-region="Seoul" aria-pressed="false">서울</button>
+        </div>
+        <div class="teacher-type-segment" role="group" aria-label="선생님 유형">
+          <button type="button" data-teacher-type="" aria-pressed="true">전체</button>
+          <button type="button" data-teacher-type="korean" aria-pressed="false">한국인</button>
+          <button type="button" data-teacher-type="native" aria-pressed="false">원어민</button>
+        </div>
+        <div id="seoulAreaFilter" hidden></div>
+        <div id="paidTrialPlanFilter" hidden><h4>1회 유료 체험 플랜</h4><div class="seoul-area-options" role="group" aria-label="유료 체험 플랜"><button type="button" data-paid-plan="economy">Economy</button><button type="button" data-paid-plan="standard">Standard</button><button type="button" data-paid-plan="premium">Premium 상담</button></div></div>
+        <p class="finder-discount-note">*송도 지정 장소 수업 시 월 1만원 할인</p>
+      </div>
+      <div class="finder-selection" id="finderSelection" hidden><span role="status"></span><button type="button" id="finderChange">변경</button></div>
+          <div class="homepage-finder-manual" data-finder-manual aria-labelledby="finderManualCopy" aria-describedby="finderManualDetail">
+            <span class="homepage-finder-manual__copy">
+              <strong id="finderManualCopy">딱 맞는 선생님이나 시간이 없나요?</strong>
+              <span id="finderManualDetail">희망 조건을 남기면 나도가 가능한 선생님을 직접 찾아드려요.</span>
+            </span>
+            <a href="apply.html" data-manual-apply aria-describedby="finderManualDetail">맞춤 매칭 요청하기 <span aria-hidden="true">→</span></a>
+          </div>
+      <div class="homepage-finder-workspace">
+        <div class="teacher-directory" id="teacherDirectory" hidden>
+          <div class="teacher-directory__toolbar">
+            <div>
+              <p class="teacher-directory__eyebrow">AVAILABLE TEACHERS</p>
+              <h2 id="teacherDirectoryTitle" tabindex="-1">선생님을 찾고 있어요</h2>
+              <p id="teacherDirectorySummary">선택한 지역의 가능한 시간과 장소를 확인해보세요.</p>
+            </div>
+            <div class="teacher-region-segment teacher-region-segment--compact" role="group" aria-label="수업 지역 변경">
+              <button type="button" data-directory-region="Songdo" aria-pressed="false">송도</button>
+              <button type="button" data-directory-region="Seoul" aria-pressed="false">서울</button>
+            </div>
+          </div>
 
-<!-- TEACHERS SECTION -->
-<section class="teachers-section">
-  <div class="section-intro">
-    <div class="section-label">미국 대학생 선생님</div>
-    <p class="section-desc">
-      미국 대학생들이 서울 및 인천 지역에서 직접 여러분과 만나 영어로 대화합니다.<br>
-      각자의 목적과 관심사에 맞게 자연스럽고 실용적인 영어를 배울 수 있습니다.
-    </p>
-  </div>
+          <div class="teacher-directory__status" id="teacherDirectoryStatus" role="status" aria-live="polite" aria-atomic="true"></div>
+          <ul class="teacher-directory-grid" id="teacherDirectoryGrid" aria-labelledby="teacherDirectoryTitle" aria-busy="false"></ul>
 
-  <div class="teachers-grid">
-    <div class="teacher-card fade-in">
-      <div class="teach-avatar"><img src="img/vitalina.jpg" alt="Vitalina Skardova" style="width:100%;height:100%;object-fit:cover;"></div>
-      <div class="teacher-name">Vitalina Skardova</div>
-      <div class="teacher-major"><span class="teacher-field">Game Design</span><span class="teacher-school teacher-school--utah">University of Utah</span></div>
-      <div class="teacher-bio">Having learned multiple foreign languages myself, I understand the challenges language learners face. I strive to develop a unique teaching approach based on each student’s interests, goals, and needs.</div>
-      <div class="teacher-tags"><span class="tag">맞춤형 수업</span><span class="tag">실생활 영어</span></div>
+        </div>
+      </div>
     </div>
-    
-    <div class="teacher-card fade-in">
-      <div class="teach-avatar"><img src="img/amelia.jpg" alt="Amelia Lee" style="width:100%;height:100%;object-fit:cover;"></div>
-      <div class="teacher-name">Amelia Lee</div>
-      <div class="teacher-major"><span class="teacher-field">Conflict Analysis and Resolution</span><span class="teacher-school teacher-school--mason">George Mason University</span></div>
-      <div class="teacher-bio">Hi, My name is Amelia! I’m a native speaker from the US, and I'm interested in a wide variety of music, movies, and books. Let’s have fun learning and getting to know each other!</div>
-      <div class="teacher-tags"><span class="tag">경험 공유</span><span class="tag">성실함</span></div>
-    </div>
-
-    <div class="teacher-card fade-in">
-      <div class="teach-avatar"><img src="img/ej.jpg" alt="Ej" style="width:100%;height:100%;object-fit:cover;"></div>
-      <div class="teacher-name">Ej</div>
-      <div class="teacher-major"><span class="teacher-field">Global Affairs</span><span class="teacher-school teacher-school--mason">George Mason University</span></div>
-      <div class="teacher-bio">Hello, I'm Ej here to help you on your English journey. Looking forward to working with you.</div>
-      <div class="teacher-tags"><span class="tag">동기부여</span><span class="tag">따뜻한</span></div>
-    </div>
-
-    <div class="teacher-card fade-in">
-      <div class="teach-avatar"><img src="img/oscar.jpg" alt="Oscar" style="width:100%;height:100%;object-fit:cover;"></div>
-      <div class="teacher-name">Oscar</div>
-      <div class="teacher-major"><span class="teacher-field">Computational Data Science</span><span class="teacher-school teacher-school--mason">George Mason University</span></div>
-      <div class="teacher-bio">Hi! I'm Oscar, a friendly native English speaker who enjoys helping students improve their confidence and communication skills. I look forward to learning with you!</div>
-      <div class="teacher-tags"><span class="tag">비즈니스</span><span class="tag">친근한</span></div>
-    </div>
-
-    <div class="teacher-card fade-in">
-      <div class="teach-avatar"><img src="img/victoria.jpg" alt="Victoria Yuguy" style="width:100%;height:100%;object-fit:cover;"></div>
-      <div class="teacher-name">Victoria Yuguy</div>
-      <div class="teacher-major"><span class="teacher-field">Global Affairs</span><span class="teacher-school teacher-school--mason">George Mason University</span></div>
-      <div class="teacher-bio">Hi! I'm Victoria Yuguy. I've been a tutor for over 5 years and love to meet new people. I have a lot of different interests, so hopefully we can connect. :)</div>
-      <div class="teacher-tags"><span class="tag">5년 이상 경력</span><span class="tag">친근한 소통</span></div>
-    </div>
-
-    <div class="teacher-card fade-in">
-      <div class="teach-avatar"><img src="img/tae.jpg" alt="Tae Minsuk" style="width:100%;height:100%;object-fit:cover;"></div>
-      <div class="teacher-name">Tae</div>
-      <div class="teacher-major"><span class="teacher-field">Film and Media Arts</span><span class="teacher-school teacher-school--utah">University of Utah</span></div>
-      <div class="teacher-bio">Let’s learn English comfortably and easily through the movies and media we enjoy!</div>
-      <div class="teacher-tags"><span class="tag">일상회화</span><span class="tag">초급 특화</span></div>
-    </div>
-
-    <div class="teacher-card fade-in">
-      <div class="teach-avatar"><img src="img/martin.png" alt="Matin" style="width:100%;height:100%;object-fit:cover;"></div>
-      <div class="teacher-name">Matin</div>
-      <div class="teacher-major"><span class="teacher-field">Global Affairs</span><span class="teacher-school teacher-school--mason">George Mason University</span></div>
-      <div class="teacher-bio">Hi, I'm Matin! I like keeping conversations relaxed and discussion-based, so let's chat freely about current events or whatever you're into.</div>
-      <div class="teacher-tags"><span class="tag">편안한 대화</span><span class="tag">토론 위주</span></div>
-    </div>
-
-    <div class="teacher-card fade-in">
-      <div class="teach-avatar"><img src="img/amy.jpg" alt="Amy Trejo" style="width:100%;height:100%;object-fit:cover;"></div>
-      <div class="teacher-name">Amy Trejo</div>
-      <div class="teacher-major"><span class="teacher-field">Marketing</span><span class="teacher-school teacher-school--mason">George Mason University</span></div>
-      <div class="teacher-bio">Hello! My name is Amy Trejo, and I hope to help you improve your English speaking skills. I also aim to make this experience fun and relaxed while getting to know everyone.</div>
-      <div class="teacher-tags"><span class="tag">실력 상승</span><span class="tag">편안한 수업</span></div>
-    </div>
-
-    <div class="teacher-card fade-in">
-      <div class="teach-avatar"><img src="img/hara.jpg" alt="Hara" style="width:100%;height:100%;object-fit:cover;"></div>
-      <div class="teacher-name">Hara</div>
-      <div class="teacher-major"><span class="teacher-field">Business</span><span class="teacher-school teacher-school--mason">George Mason University</span></div>
-      <div class="teacher-bio">Hi! I’m passionate about helping students discover how to enjoy learning and using English. :)</div>
-      <div class="teacher-tags"><span class="tag">실력 상승</span><span class="tag">성장</span></div>
+  </section>
+</main>
+<dialog class="application-path-dialog" id="applicationPathDialog" aria-labelledby="applicationPathTitle" aria-describedby="applicationPathIntro">
+  <div class="application-path-dialog__surface">
+    <button type="button" class="application-path-dialog__close" data-application-chooser-close aria-label="신청 방법 선택 닫기">×</button>
+    <h2 id="applicationPathTitle">어떻게 신청하시겠어요?</h2>
+    <p class="application-path-dialog__intro" id="applicationPathIntro">원하는 방법을 선택해주세요.</p>
+    <div class="application-path-dialog__options">
+      <a class="application-path-dialog__option" href="apply.html">
+        <strong>1. 바로 신청하기</strong>
+      </a>
+      <a class="application-path-dialog__option" href="teachers.html">
+        <strong>2. 선생님 둘러보고 신청하기</strong>
+      </a>
     </div>
   </div>
-  <div class="more-dots teacher-list-more-dots fade-in" aria-hidden="true"><span></span><span></span><span></span></div>
-</section>
+</dialog>
 
-<!-- CTA -->
-<section class="cta-section fade-in" id="more-teachers">
-  <h2 class="cta-title">더 많은 선생님을 지금 바로 만나보세요</h2>
-  <p class="cta-text">서울 및 인천 지역에서, 간단한 신청 후 나에게 꼭 맞는 선생님을 연결해드려요.</p>
-  <a href="apply.html" class="btn-primary">선생님 매칭 신청하기</a>
-</section>
+<dialog class="teacher-profile-dialog" id="teacherProfileDialog" role="dialog" aria-modal="true" aria-labelledby="teacherDialogTitle" aria-describedby="teacherDialogDescription">
+  <div class="teacher-profile-dialog__surface">
+    <button type="button" class="teacher-profile-dialog__close" id="teacherDialogClose" aria-label="선생님 상세 정보 닫기">
+      <span aria-hidden="true">×</span>
+    </button>
+    <div id="teacherDialogContent"></div>
+  </div>
+</dialog>
 
 <!-- FOOTER -->
 <footer>
@@ -536,30 +365,35 @@
     </div>
   </div>
   <div class="footer-info">
-    <div class="footer-text">수업 가능 지역: 서울 및 인천 지역</div>
+    <div class="footer-text">수업 가능 지역: 서울 및 송도 지역</div>
     <div class="footer-text">진짜 영어는 만나서 합니다. © 2026 나도</div>
     <div class="footer-text">사업자: 장준섭 · 상호: NADO</div>
     <div class="footer-text">전화번호 : 010-9050-6528</div>
     <div class="footer-text">
-      <a href="how.html#faq">자주 묻는 질문(FAQ)</a> · 
+      <a href="faq.html">자주 묻는 질문(FAQ)</a> · 
       <a href="terms.html">이용약관</a> · 
       <a href="privacy.html">개인정보처리방침</a>
     </div>
   </div>
 </footer>
 
-<script src="site-nav.js"></script>
-<script src="teacher-carousel.js"></script>
+<script src="site-nav.js?v=34"></script>
 <script>
   // Fade-in on scroll
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-  const teachersGrid = document.querySelector('.teachers-grid');
-  setupTeacherCarousel(teachersGrid);
 </script>
+<script src="js/member-config.js?v=28"></script>
+<script id="teacherDirectorySupabaseSdk" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js" async></script>
+<script src="teacher-directory-data.js?v=44"></script>
+<script src="teacher-profile-config.js?v=45"></script>
+<script src="homepage-teacher-carousel.js?v=49"></script>
+<script src="application-path-chooser.js?v=39"></script>
+<script src="teacher-bio-translations.js?v=51"></script>
+<script src="teacher-directory.js?v=49"></script>
+<script src="homepage-teacher-finder.js?v=39"></script>
 
 <a class="kakao-chat-button" href="https://pf.kakao.com/_pbPJX/chat" target="_blank" rel="noopener noreferrer" aria-label="카카오톡 채널에서 문의하기">카카오톡 문의</a>
 

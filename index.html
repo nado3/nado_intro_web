@@ -1,30 +1,34 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-D6YB8JLKS7"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-D6YB8JLKS7');
-</script>
+  <!-- Keep local previews out of production analytics. -->
+  <script>
+    if (['hellonado.com', 'www.hellonado.com'].includes(window.location.hostname)) {
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer.push(arguments); };
+      const analyticsScript = document.createElement('script');
+      analyticsScript.async = true;
+      analyticsScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-D6YB8JLKS7';
+      document.head.appendChild(analyticsScript);
+      window.gtag('js', new Date());
+      window.gtag('config', 'G-D6YB8JLKS7');
+    }
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>나도 | 서울 및 인천 지역 1:1 영어회화</title>
-<meta name="description" content="서울 및 인천 지역에서 미국 대학생 선생님과 직접 만나는 1:1 맞춤 영어회화. 목표와 일정, 희망 장소에 맞는 선생님을 연결해드려요.">
+  <title>나도 | 서울 및 송도 지역 1:1 영어회화</title>
+<meta name="description" content="서울 및 송도 지역에서 미국 대학생 선생님과 직접 만나는 1:1 맞춤 영어회화. 목표와 일정, 희망 장소에 맞는 선생님을 연결해드려요.">
 <link rel="canonical" href="https://hellonado.com/">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="나도">
-<meta property="og:title" content="나도 | 서울 및 인천 지역 1:1 영어회화">
-<meta property="og:description" content="서울 및 인천 지역에서 미국 대학생 선생님과 직접 만나는 1:1 맞춤 영어회화. 목표와 일정, 희망 장소에 맞는 선생님을 연결해드려요.">
+<meta property="og:title" content="나도 | 서울 및 송도 지역 1:1 영어회화">
+<meta property="og:description" content="서울 및 송도 지역에서 미국 대학생 선생님과 직접 만나는 1:1 맞춤 영어회화. 목표와 일정, 희망 장소에 맞는 선생님을 연결해드려요.">
 <meta property="og:url" content="https://hellonado.com/">
 <meta property="og:image" content="https://hellonado.com/img/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="나도 | 서울 및 인천 지역 1:1 영어회화">
-<meta name="twitter:description" content="서울 및 인천 지역에서 미국 대학생 선생님과 직접 만나는 1:1 맞춤 영어회화. 목표와 일정, 희망 장소에 맞는 선생님을 연결해드려요.">
+<meta name="twitter:title" content="나도 | 서울 및 송도 지역 1:1 영어회화">
+<meta name="twitter:description" content="서울 및 송도 지역에서 미국 대학생 선생님과 직접 만나는 1:1 맞춤 영어회화. 목표와 일정, 희망 장소에 맞는 선생님을 연결해드려요.">
 <meta name="twitter:image" content="https://hellonado.com/img/og-image.png">
 <script id="seo-structured-data" type="application/ld+json">
 {
@@ -45,7 +49,7 @@
       "alternateName": "NADO",
       "url": "https://hellonado.com/",
       "logo": "https://hellonado.com/img/mlogo.png",
-      "description": "서울 및 인천 지역에서 미국 대학생 선생님과 직접 만나는 1:1 맞춤 영어회화 서비스입니다.",
+      "description": "서울 및 송도 지역에서 미국 대학생 선생님과 직접 만나는 1:1 맞춤 영어회화 서비스입니다.",
       "areaServed": [
         {
           "@type": "AdministrativeArea",
@@ -53,7 +57,7 @@
         },
         {
           "@type": "Place",
-          "name": "인천"
+          "name": "송도"
         }
       ]
     }
@@ -63,566 +67,12 @@
   <link rel="icon" type="image/png" href="img/clogo.png">
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet"/>
   <link rel="stylesheet" href="kakao-chat.css?v=1">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --black: #111;
-      --white: #fafbfc;
-      --cream: #f0f4f8;
-      --accent: #4A90E2;
-      --accent-deep: #2E6DC2;
-      --accent-light: #E3F2FD;
-      --navy: #16324F;
-      --gray: #888;
-      --dark-gray: #444;
-      --border: rgba(74, 144, 226, 0.15);
-    }
-
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Pretendard', sans-serif; background: var(--white); color: var(--black); overflow-x: hidden; }
-
-    /* NAV */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1.2rem 2rem;
-      background: rgba(250, 251, 252, 0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo { font-family: 'Pretendard', sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--black); text-decoration: none; position: relative; z-index: 101; }    
-    .nav-logo span { color: var(--accent); }
-    .nav-links { display: flex; gap: 2rem; list-style: none; }
-    .nav-links a { font-size: 0.95rem; color: var(--dark-gray); text-decoration: none; letter-spacing: 0.02em; transition: color 0.2s; }
-    .nav-links a:hover { color: var(--accent); }
-    .nav-cta { background: var(--accent); color: var(--white) !important; padding: 0.65rem 1.4rem; border-radius: 2rem; font-size: 0.95rem !important; transition: background 0.2s !important; }
-    .nav-cta:hover { background: var(--accent-deep) !important; }
-    .nav-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--black); padding: 0; position: relative; z-index: 101; }    
-
-    /* HERO */
-    .hero { background: linear-gradient(135deg, #F5F8FE 0%, #E3F2FD 55%, #D3E7FB 100%); padding: 8.5rem 2.5rem 4.5rem; }
-    .hero-inner { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, .78fr); gap: 1rem; align-items: center; }
-    .hero-left { display: flex; flex-direction: column; justify-content: center; }
-    .hero-tag { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 2rem; }
-    .hero-tag::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--accent); }
-    .hero-title { font-family: 'Pretendard', sans-serif; font-size: clamp(3rem, 5vw, 5rem); font-weight: 900; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
-    .hero-title em { font-style: normal; color: var(--accent); }
-    .hero-sub { font-size: 1.15rem; color: var(--dark-gray); line-height: 1.7; font-weight: 400; max-width: 540px; margin-bottom: 2rem; }
-    .hero-sub strong { color: var(--black); font-weight: 700; }
-    .hero-buttons { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
-    .btn-primary {
-      background: var(--accent); color: var(--white); padding: 1.05rem 2.4rem; border-radius: 3rem;
-      font-size: 1rem; font-weight: 700; text-decoration: none; border: none; cursor: pointer;
-      font-family: 'Pretendard', sans-serif; display: inline-block; transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(74, 144, 226, 0.3); }
-    .btn-text {
-      display: inline-flex; align-items: center; justify-content: center;
-      height: 53px; padding: 0 1.8rem; border: 1.5px solid rgba(74, 144, 226, .28); border-radius: 3rem;
-      background: rgba(255,255,255,.82); color: var(--accent-deep); font-size: 1rem; font-weight: 700;
-      text-decoration: none; transition: border-color .2s, background .2s, transform .2s;
-    }
-    .btn-text:hover { background: var(--white); border-color: var(--accent); transform: translateY(-2px); }
-    .trial-cta-wrap { position: relative; display: inline-flex; }
-    .trial-event-bubble {
-      position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
-      padding: .38rem .72rem; border-radius: .75rem; background: #FF6B5F; color: #fff;
-      font-size: .76rem; font-weight: 800; line-height: 1; white-space: nowrap;
-      box-shadow: 0 5px 14px rgba(255, 107, 95, .28); pointer-events: none;
-    }
-    .trial-event-bubble::after {
-      content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-      border: 5px solid transparent; border-top-color: #FF6B5F;
-    }
-    .hero-micro { font-size: 0.88rem; color: var(--gray); margin-top: 1rem; max-width: 460px; line-height: 1.6; }
-
-    .hero-right { position: relative; display: flex; align-items: center; justify-content: center; }
-    .hero-visual { position: relative; width: 380px; height: 480px; max-width: 100%; }
-    .hero-card { position: absolute; background: var(--white); border-radius: 1.5rem; padding: 1.5rem; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(74, 144, 226, 0.15); }
-    .hero-card.card-main { width: 260px; top: 46%; left: 48%; transform: translate(-50%, -50%); z-index: 2; animation: float 4s ease-in-out infinite; }
-    .hero-card.card-small-1 { width: 140px; top: -4%; right: -4%; transform: rotate(6deg); font-size: 0.8rem; z-index: 1; animation: floatSmall1 4s ease-in-out infinite 1s; }
-    .hero-card.card-small-2 { width: 160px; bottom: 2%; left: 0%; transform: rotate(-4deg); font-size: 0.8rem; z-index: 1; animation: floatSmall2 4s ease-in-out infinite 2s; }
-    @keyframes float { 0%, 100% { transform: translate(-50%, -50%) translateY(0); } 50% { transform: translate(-50%, -50%) translateY(-12px); } }
-    @keyframes floatSmall1 { 0%, 100% { transform: rotate(6deg) translateY(0); } 50% { transform: rotate(6deg) translateY(-8px); } }
-    @keyframes floatSmall2 { 0%, 100% { transform: rotate(-4deg) translateY(0); } 50% { transform: rotate(-4deg) translateY(-8px); } }
-    .avatar-row { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-    .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid var(--white); background: var(--accent-light); }
-    .card-label { font-size: 0.8rem; letter-spacing: 0.08em; color: var(--gray); text-transform: uppercase; margin-bottom: 0.3rem; }
-    .card-match-name { font-family: 'Pretendard', sans-serif; font-weight: 700; font-size: 1.1rem; }
-    .card-match-sub { font-size: 0.8rem; color: var(--dark-gray); margin-top: 0.2rem; }
-    .card-tag-row { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.8rem; }
-    .tag { background: var(--accent-light); color: var(--accent); font-size: 0.8rem; padding: 0.3rem 0.65rem; border-radius: 1rem; font-weight: 700; }
-    .tag.gray { background: var(--cream); color: var(--dark-gray); }
-    .card-stat { display: flex; align-items: baseline; gap: 0.3rem; margin-top: 1rem; }
-    .card-stat-num { font-size: 0.9rem; font-weight: 900; color: var(--black); }
-    .card-stat-label { font-size: 0.75rem; color: var(--gray); }
-    .small-card-icon { font-size: 1.5rem; margin-bottom: 0.4rem; }
-    .small-card-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem; }
-    .small-card-sub { font-size: 0.75rem; color: var(--gray); }
-    .hero-teacher-carousel-shell { width: min(410px, 100%); overflow: visible; }
-    /* Reserve space for the two rear cards; grid sizes the deck to its longest bio. */
-    .teacher-flip-deck {
-      --stack-x: 24px; --stack-y: 18px; --stack-angle: 3deg;
-      --stack-space: 80px;
-      position: relative; display: grid; isolation: isolate; width: 100%;
-      padding-right: var(--stack-space); margin: 0 auto 64px;
-    }
-    .teacher-flip-deck .flip-teacher-card {
-      position: relative; grid-area: 1 / 1; width: 100%; min-width: 0; min-height: 466px; padding: 1.75rem;
-      display: flex; flex-direction: column; cursor: pointer; user-select: none;
-      transform-origin: 50% 50%; transition: transform .52s cubic-bezier(.22,.72,.2,1), opacity .36s ease, box-shadow .36s ease;
-    }
-    .teacher-flip-deck .flip-teacher-card[data-position="0"] { z-index: 3; transform: translate(0,0) rotate(0deg); opacity: 1; box-shadow: 0 16px 36px rgba(36,74,120,.18); }
-    .teacher-flip-deck .flip-teacher-card[data-position="1"] {
-      z-index: 2; transform: translate(var(--stack-x), var(--stack-y)) rotate(var(--stack-angle)) scale(.99); opacity: 1;
-      background: #f4f9ff; border-color: #b8d4ef; box-shadow: 0 8px 20px rgba(36,74,120,.14);
-    }
-    .teacher-flip-deck .flip-teacher-card[data-position="2"] {
-      z-index: 1; transform: translate(calc(var(--stack-x) * 2), calc(var(--stack-y) * 2)) rotate(calc(var(--stack-angle) * 2)) scale(.98); opacity: 1;
-      background: #e9f3ff; border-color: #a6c8e9; box-shadow: 0 8px 20px rgba(36,74,120,.12);
-    }
-    .teacher-flip-deck .flip-teacher-card[data-position]:not([data-position="0"]):not([data-position="1"]):not([data-position="2"]) { z-index: 0; transform: translate(calc(var(--stack-x) * 2), calc(var(--stack-y) * 2)) scale(.98); opacity: 0; pointer-events: none; }
-    .teacher-flip-deck .flip-teacher-card:focus-visible { outline: 3px solid rgba(74,144,226,.45); outline-offset: 4px; }
-    .teacher-flip-deck .teach-avatar { width: 138px; height: 138px; margin-top: .05rem; }
-    .teacher-flip-deck .teach-name { font-size: 1.4rem; font-weight: 800; }
-    .teacher-flip-deck .teach-school { margin-top: .25rem; font-size: .92rem; }
-    .teacher-flip-deck .teach-school--mason { color: #006633; }
-    .teacher-flip-deck .teach-school--utah { color: #cc0000; }
-    .teacher-flip-deck .teach-major { margin: .1rem 0 0; font-size: .92rem; }
-    .hero-teacher-bio { min-height: 110px; margin: .7rem 0 0; color: var(--dark-gray); font-size: .92rem; line-height: 1.55; text-align: left; display: block; overflow: visible; -webkit-line-clamp: unset; }
-    .teacher-flip-deck .teach-tags { min-height: 29px; margin-top: 0; padding-top: .45rem; align-items: center; }
-    .teacher-flip-deck .flip-teacher-hint { margin-top: .55rem; padding-top: .45rem; border-top: 1px solid var(--border); color: var(--gray); font-size: .72rem; line-height: 1.3; text-align: right; }
-
-    .scroll-hint { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); animation: bounce 2s infinite; }
-    .scroll-hint::after { content: '↓'; font-size: 1.2rem; color: var(--accent); }
-    @keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(6px); } }
-
-    /* STATS STRIP (kimstudy-style trust row) */
-    .stats-strip { padding: 3.25rem 3rem 0.5rem; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
-    .stat-card { text-align: center; padding: 1.2rem; }
-    .stat-num { font-family: 'Pretendard', sans-serif; font-size: 2.6rem; font-weight: 900; color: var(--navy); margin-bottom: 0.4rem; letter-spacing: -0.02em; }
-    .stat-num em { font-style: normal; color: var(--accent); }
-    .stat-label { font-size: 0.95rem; color: var(--dark-gray); font-weight: 400; }
-
-    /* SECTION COMMON */
-    section { padding: 4.75rem 3rem; }
-    .section-label { font-size: 0.82rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--accent); font-weight: 700; display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.2rem; justify-content: center; }
-    .section-label::after { content: ''; flex: 0 0 40px; height: 1px; background: var(--accent); }
-    .section-title { font-family: 'Pretendard', sans-serif; font-size: clamp(2.1rem, 4vw, 3.1rem); font-weight: 800; line-height: 1.35; letter-spacing: -0.02em; margin-bottom: 1rem; text-align: center; }
-    .section-title em { font-style: normal; color: var(--accent); }
-    .section-sub { text-align: center; color: var(--dark-gray); font-size: 1.05rem; font-weight: 400; max-width: 620px; margin: 0 auto 2.75rem; line-height: 1.7; }
-
-    /* VERIFICATION */
-    .verify-card { background: var(--cream); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2.4rem; }
-    .verify-num { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-light); color: var(--accent-deep); font-weight: 900; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; }
-    .verify-title { font-family: 'Pretendard', sans-serif; font-weight: 800; font-size: 1.15rem; margin-bottom: 0.7rem; }
-    .verify-desc { font-size: 0.98rem; color: var(--dark-gray); line-height: 1.7; font-weight: 400; }
-
-    /* WHY */
-    .why-section { background: var(--navy); text-align: center; }
-    .why-section .section-label { color: rgba(255,255,255,0.6); }
-    .why-section .section-label::after { background: rgba(255,255,255,0.6); }
-    .why-section .section-title { color: var(--white); }
-    .why-section .section-title em { color: #8FC1FF; }
-    .why-section .section-sub { color: rgba(255,255,255,0.75); }
-    .why-points { display: flex; justify-content: center; gap: 2.5rem; flex-wrap: wrap; margin-top: 2.5rem; }
-    .why-point { max-width: 220px; }
-    .why-point-icon { font-size: 2rem; margin-bottom: 0.8rem; }
-    .why-point-title { color: var(--white); font-weight: 800; font-size: 0.98rem; margin-bottom: 0.4rem; }
-    .why-point-desc { color: rgba(255,255,255,0.72); font-size: 0.95rem; line-height: 1.65; }
-    
-    /* FEATURES */
-    .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; max-width: 1200px; margin: 0 auto; }
-    .feature-card { background: var(--cream); border: 1px solid var(--border); border-radius: 1.4rem; padding: 1.7rem 1.4rem; transition: transform 0.3s, box-shadow 0.3s; text-align: center; }
-    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(74, 144, 226, 0.15); }
-    .feature-icon { font-size: 2.4rem; margin-bottom: 0.9rem; }
-    .feature-title { font-family: 'Pretendard', sans-serif; font-weight: 800; font-size: 1.25rem; margin-bottom: 0.6rem; }
-    .feature-desc { font-size: 1rem; color: var(--dark-gray); line-height: 1.6; font-weight: 400; }
-
-    /* TEACHERS TOP3 */
-    .teachers-section { background: var(--cream); }
-    .teach-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-    .teach-card { background: var(--white); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2.2rem; text-align: center; position: relative; }
-    .rank-badge { position: absolute; top: 1.3rem; left: 1.3rem; background: var(--navy); color: var(--white); font-size: 0.72rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 1rem; }
-    .teach-avatar { width: 170px; height: 170px; border-radius: 50%; background: var(--accent-light); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; font-size: 2.1rem; font-weight: 900; margin: 1.2rem auto 1rem; border: 2px solid var(--accent); overflow: hidden; }
-    .teach-school { font-size: 0.82rem; color: var(--accent-deep); font-weight: 700; margin-bottom: 0.2rem; }
-    .teach-major { font-size: 0.82rem; color: var(--gray); margin-bottom: 1rem; }
-    .teach-tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
-
-    /* HOW */
-    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1100px; margin: 0 auto; }
-    .step { padding: 2.5rem; border: 1px solid var(--border); border-radius: 1.5rem; transition: box-shadow 0.3s, transform 0.3s; background: var(--white); }
-    .step:hover { box-shadow: 0 16px 40px rgba(74, 144, 226, 0.12); transform: translateY(-4px); }
-    .step-num { font-family: 'Pretendard', sans-serif; font-size: 3.5rem; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 1.2rem; }
-    .step-title { font-family: 'Pretendard', sans-serif; font-weight: 800; font-size: 1.15rem; margin-bottom: 0.6rem; }
-    .step-desc {
-      font-size: 0.98rem;
-      color: var(--dark-gray);
-      line-height: 1.7;
-      font-weight: 400;
-      word-break: keep-all;
-      overflow-wrap: break-word;
-      text-wrap: pretty;
-    }
-
-    /* PRICE */
-    .price-section { background: var(--navy); }
-    .price-section .section-label, .price-section .section-title { color: var(--white); }
-    .price-section .section-label { color: rgba(255,255,255,0.7); }
-    .price-section .section-label::after { background: rgba(255,255,255,0.7); }
-    .price-layout { max-width: 760px; margin: 0 auto; background: rgba(255,255,255,0.05); border-radius: 2rem; padding: 3rem; border: 1px solid rgba(255,255,255,0.1); }
-    .price-header { text-align: center; margin-bottom: 2.5rem; }
-    .price-amount { font-family: 'Pretendard', sans-serif; font-size: 3.4rem; letter-spacing: -0.02em; font-weight: 900; color: var(--white); margin-bottom: 0.5rem; }
-    .price-period { font-size: 1rem; color: rgba(255,255,255,0.7); }
-    .price-features { display: flex; flex-direction: column; gap: 1.3rem; margin-bottom: 2rem; }
-    .price-feature { display: flex; align-items: flex-start; gap: 1rem; color: rgba(255,255,255,0.9); font-size: 0.95rem; }
-    .price-feature strong { color: var(--white); }
-    .tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 1000px; margin: 0 auto; }
-    .tier-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 1.6rem; padding: 2.2rem 1.8rem; position: relative; }
-    .tier-card.popular { background: var(--accent); border-color: var(--accent); transform: scale(1.04); }
-    .tier-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--white); color: var(--accent); font-size: 0.72rem; font-weight: 800; padding: 0.3rem 0.9rem; border-radius: 1rem; white-space: nowrap; }
-    .tier-name { color: rgba(255,255,255,0.7); font-size: 0.85rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.8rem; }
-    .tier-card.popular .tier-name { color: rgba(255,255,255,0.9); }
-    .tier-price { font-size: 2.2rem; font-weight: 900; color: var(--white); letter-spacing: -0.02em; white-space: nowrap; }
-    .tier-period { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-bottom: 1.2rem; }
-    .tier-card.popular .tier-period { color: rgba(255,255,255,0.85); }
-    .tier-period,
-    .tier-desc,
-    .tier-features li {
-      word-break: keep-all;
-      overflow-wrap: break-word;
-      text-wrap: pretty;
-    }
-    .tier-desc { font-size: 0.85rem; color: rgba(255,255,255,0.75); line-height: 1.6; margin-bottom: 1.4rem; min-height: 3.4rem; }
-    .tier-card.popular .tier-desc { color: rgba(255,255,255,0.92); }
-    .tier-features { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.6rem; }
-    .tier-features li { font-size: 0.82rem; color: rgba(255,255,255,0.8); padding-left: 1.2rem; position: relative; }
-    .tier-card.popular .tier-features li { color: rgba(255,255,255,0.95); }
-    .tier-features li::before { content: '✓'; position: absolute; left: 0; color: #8FC1FF; font-weight: 800; }
-    .tier-card.popular .tier-features li::before { color: var(--white); }
-    .tier-cta { display: block; text-align: center; background: rgba(255,255,255,0.1); color: var(--white); padding: 0.85rem; border-radius: 3rem; font-weight: 700; font-size: 0.9rem; text-decoration: none; }
-    .tier-card.popular .tier-cta { background: var(--white); color: var(--accent-deep); }
-    /* REVIEW */
-    .review-section { text-align: center; background: var(--white); }
-    .review-avatar { width: 90px; height: 90px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 2.6rem; margin: 0 auto 1.6rem; }
-    .review-quote { font-family: 'Pretendard', sans-serif; font-size: clamp(1.3rem, 2.6vw, 1.9rem); font-weight: 800; line-height: 1.5; color: var(--black); max-width: 640px; margin: 0 auto 1.2rem; }
-    .review-quote span { color: var(--accent); }
-    .review-by { font-size: 0.9rem; color: var(--gray); font-weight: 600; margin-bottom: 1rem; }
-    .review-note { font-size: 0.85rem; color: var(--gray); opacity: 0.8; }
-
-    /* FINAL CTA */
-    .cta-section { background: var(--accent); color: var(--white); text-align: center; padding: 5.5rem 3rem; }
-    .cta-section .section-label { color: rgba(255,255,255,0.8); justify-content: center; }
-    .cta-section .section-label::after { background: rgba(255,255,255,0.8); }
-    .cta-title { font-family: 'Pretendard', sans-serif; font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 900; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 1.2rem; color: var(--white); }
-    .cta-title em { font-style: normal; color: rgba(255,255,255,0.9); }
-    .cta-sub { font-size: 1.05rem; color: rgba(255,255,255,0.85); font-weight: 300; margin-bottom: 2.4rem; }
-    .cta-section .btn-primary { background: var(--white); color: var(--accent); }
-
-    /* FOOTER */
-    footer { background: var(--black); padding: 3rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-    .footer-logo { font-family: 'Pretendard', sans-serif; font-weight: 900; font-size: 1.3rem; color: var(--white); }
-    .footer-logo span { color: var(--accent); }
-    .footer-info { display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-end; }
-    .footer-text { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
-    .footer-text a { color: inherit; }
-
-    /* ANIMATIONS */
-    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
-
-    /* MOBILE */
-    @media (max-width: 900px) {
-      nav { padding: 1rem 1.5rem; }
-      .nav-links { display: none; }
-      .nav-toggle { display: block; }
-      .nav-links.mobile-open {
-        display: flex !important;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        height: 100vh;
-        z-index: 90;
-        background: var(--white);
-        flex-direction: column;
-        padding: 6rem 2rem 2rem;
-        gap: 0;
-        overflow-y: auto;
-      }
-      .nav-links.mobile-open li { border-bottom: 1px solid var(--border); }
-      .nav-links.mobile-open li a:not(.nav-cta) { display: block; padding: 1.4rem 0.2rem; font-size: 1.15rem; font-weight: 700; color: var(--black); }
-      .nav-links.mobile-open li:last-child { border-bottom: none; margin-top: 1.5rem; }
-      .nav-links.mobile-open .nav-cta { display: block; text-align: center; padding: 1.2rem; font-size: 1.15rem !important; }
-      .nav-links.mobile-open li:has(.nav-cta) {
-        order: 1;
-        margin-top: 1rem;
-      }
-      
-      .nav-links.mobile-open li:has(.nav-trial) {
-        order: 2;
-        margin-top: 0.75rem;
-      }
-      .hero { padding: 7rem 1.25rem 3.25rem; }
-      .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
-      .hero-left { padding: 0; }
-      .hero-right { min-height: 320px; }
-      .hero-visual { width: 100%; max-width: 320px; height: 400px; }
-      section { padding: 3.5rem 1.25rem; }
-      .teach-grid.mobile-teacher-marquee { display: block; max-width: none; overflow: hidden; margin-left: -1.5rem; margin-right: -1.5rem; }
-      .mobile-teacher-track { display: flex; width: max-content; animation: teacherMarquee 24s linear infinite; }
-      .mobile-teacher-group { display: flex; gap: 1rem; padding-right: 1rem; }
-      .mobile-teacher-group .teach-card { width: 270px; flex: 0 0 270px; }
-      .mobile-teacher-group .teach-avatar { width: 130px; height: 130px; }
-      .mobile-teacher-group .fade-in { opacity: 1; transform: none; }
-      .stats-strip { grid-template-columns: repeat(2, 1fr); padding: 2.75rem 1.25rem 0; }
-      .verify-grid, .teach-grid, .steps-grid, .tier-grid { grid-template-columns: 1fr; }
-      .tier-card.popular { transform: none; }
-      .features-grid { grid-template-columns: 1fr 1fr; }
-      .cta-section { padding: 4.25rem 1.25rem; }
-      .footer-info { align-items: center; }
-      footer { flex-direction: column; text-align: center; }
-    }
-    @keyframes teacherMarquee { to { transform: translateX(-50%); } }
-    @media (prefers-reduced-motion: reduce) {
-      .mobile-teacher-track { animation-play-state: paused; }
-    }
-    @media (max-width: 480px) {
-      .stats-strip { grid-template-columns: 1fr 1fr; }
-      .features-grid { grid-template-columns: 1fr; }
-      .price-layout { padding: 2rem 1.4rem; }
-    }
-
-    /* RESPONSIVE SYSTEM — fluid scale + layout-specific breakpoints */
-    :root {
-      --content-wide: 1240px;
-      --content-standard: 1120px;
-      --page-gutter: clamp(1.5rem, 4vw, 3.5rem);
-      --section-space: clamp(4.25rem, 6.3vw, 5.75rem);
-      --body-size: clamp(1rem, 0.35vw + 0.92rem, 1.12rem);
-      --small-size: clamp(0.88rem, 0.2vw + 0.83rem, 0.98rem);
-    }
-    body { font-size: 16px; }
-    nav { padding: 1.05rem var(--page-gutter); }
-    .nav-links { gap: clamp(1.15rem, 2vw, 2rem); }
-    .nav-links a { font-size: clamp(.9rem, .25vw + .82rem, 1rem); }
-    .nav-links a[style] { font-size: .9rem !important; }
-
-    .hero {
-      padding: clamp(8rem, 10vw, 9.5rem) var(--page-gutter) clamp(4.5rem, 6vw, 5.5rem);
-    }
-    .hero-inner {
-      max-width: 1040px;
-      grid-template-columns: minmax(0, 1fr) minmax(340px, .78fr);
-      gap: clamp(1rem, 2vw, 1.75rem);
-    }
-    .hero-title {
-      max-width: 760px;
-      font-size: clamp(3.25rem, 5.3vw, 4.9rem);
-      line-height: 1.08;
-      text-wrap: balance;
-    }
-    .hero-title .title-line { display: block; }
-    .hero-tag { font-size: clamp(1rem, 1.2vw, 1.3rem); margin-bottom: clamp(1.25rem, 2vw, 1.8rem); }
-    .hero-sub {
-      max-width: 590px;
-      font-size: var(--body-size);
-      line-height: 1.72;
-      word-break: keep-all;
-    }
-    .hero-sub .copy-line { display: block; }
-    .hero-sub .copy-line + .copy-line { margin-top: .9rem; }
-    .hero-micro { font-size: var(--small-size); }
-    .hero-visual { width: min(400px, 100%); height: 460px; }
-
-    section { padding: var(--section-space) var(--page-gutter); }
-    .features-grid, .why-points, .steps-grid, .teach-grid, .tier-grid { width: 100%; }
-    .features-grid {
-      max-width: var(--content-standard);
-      grid-template-columns: repeat(4, 260px);
-      justify-content: center;
-      gap: 1.25rem;
-    }
-    .why-points { max-width: 980px; margin-left: auto; margin-right: auto; }
-    .section-title {
-      font-size: clamp(2.2rem, 3.6vw, 3.25rem);
-      line-height: 1.24;
-      text-wrap: balance;
-      word-break: keep-all;
-    }
-    .section-sub {
-      max-width: 680px;
-      font-size: var(--body-size);
-      line-height: 1.72;
-      text-wrap: pretty;
-      word-break: keep-all;
-    }
-    .section-sub .copy-sentence + .copy-sentence::before { content: ' '; }
-    .feature-card { padding: clamp(1.7rem, 2.2vw, 2.1rem) clamp(1.35rem, 1.8vw, 1.7rem); }
-    .feature-title { font-size: clamp(1.2rem, .7vw + 1rem, 1.4rem); }
-    .feature-desc, .verify-desc, .step-desc, .why-point-desc { font-size: clamp(.96rem, .25vw + .9rem, 1.05rem); }
-    .step { padding: clamp(1.8rem, 2.8vw, 2.5rem); }
-    .teach-card { padding: clamp(1.8rem, 2.5vw, 2.2rem); }
-    .tier-card { padding: clamp(1.8rem, 2.2vw, 2.3rem) clamp(1.4rem, 2vw, 1.9rem); }
-    .tier-desc, .tier-name { font-size: .95rem; }
-    .tier-features li { font-size: .92rem; line-height: 1.55; }
-    .review-quote { max-width: 760px; font-size: clamp(1.45rem, 2.3vw, 2rem); text-wrap: balance; word-break: keep-all; }
-    .cta-title { font-size: clamp(2.6rem, 4.5vw, 3.8rem); text-wrap: balance; }
-    .cta-title .title-line { display: block; }
-    .cta-sub { font-size: var(--body-size); }
-
-    @media (min-width: 820px) and (max-width: 1199px) {
-      .features-grid { grid-template-columns: repeat(2, 360px); max-width: 760px; }
-    }
-
-    /* Compact desktop / laptop */
-    @media (max-width: 1099px) {
-      :root { --page-gutter: clamp(1.75rem, 4vw, 2.75rem); --section-space: clamp(4rem, 6.5vw, 5rem); }
-      .hero-inner { grid-template-columns: minmax(0, 1.12fr) minmax(290px, .75fr); gap: 2rem; }
-      .hero-title { font-size: clamp(3.15rem, 5.6vw, 4rem); }
-      .hero-visual { width: 330px; height: 420px; }
-      .hero-card.card-main { width: 238px; }
-      .features-grid { grid-template-columns: repeat(2, 360px); max-width: 760px; }
-      .feature-card { text-align: left; }
-      .feature-icon { font-size: 2.15rem; }
-      .tier-grid { gap: 1rem; }
-      .tier-price { font-size: 1.9rem; }
-    }
-
-    /* Tablet: switch composition before cards become cramped */
-    @media (max-width: 900px) {
-      :root { --page-gutter: clamp(1.5rem, 5vw, 2.5rem); }
-      nav { padding: .9rem var(--page-gutter); }
-      .hero { padding-top: 7.25rem; }
-      .hero-inner { grid-template-columns: minmax(0, 1fr); gap: 2.25rem; }
-      .hero-left { align-items: center; text-align: center; }
-      .hero-title { max-width: 720px; }
-      .hero-sub { max-width: 660px; }
-      .hero-buttons { justify-content: center; }
-      .hero-right { min-height: 350px; }
-      .hero-visual { width: 350px; height: 390px; }
-      .hero-card.card-main { top: 47%; }
-      .hero-card.card-small-1 { top: 1%; right: -2%; }
-      .hero-card.card-small-2 { bottom: 0; left: -3%; }
-      .stats-strip { max-width: 760px; gap: .75rem; }
-      .stat-card { padding: 1rem .75rem; }
-      .steps-grid { gap: 1rem; }
-      .step { padding: 1.7rem; }
-      .step-num { font-size: 2.8rem; }
-      .tier-grid { grid-template-columns: 1fr; max-width: 640px; gap: 1.2rem; }
-      .tier-card { min-height: auto; }
-      .tier-card.popular { transform: none; }
-    }
-
-    /* Portrait tablet: reading-first single-column sections */
-    @media (max-width: 819px) {
-      .features-grid { grid-template-columns: minmax(0, 660px); max-width: 660px; }
-      .steps-grid { grid-template-columns: 1fr; max-width: 680px; }
-      .step { display: grid; grid-template-columns: 72px 1fr; column-gap: 1.2rem; align-items: start; }
-      .step-num { grid-row: 1 / span 2; margin-bottom: 0; }
-      .step-title { margin-top: .15rem; }
-      .why-points { display: grid; grid-template-columns: 1fr; max-width: 660px; gap: .8rem; }
-      .why-point { max-width: none; display: grid; grid-template-columns: 48px 1fr; column-gap: 1rem; text-align: left; padding: 1rem 1.1rem; border-radius: 1rem; background: rgba(255,255,255,.05); }
-      .why-point-icon { grid-row: 1 / span 2; margin: 0; }
-      .why-point-title { margin-top: .1rem; }
-      .teach-grid.mobile-teacher-marquee { margin-left: calc(var(--page-gutter) * -1); margin-right: calc(var(--page-gutter) * -1); }
-    }
-
-    /* Mobile */
-    @media (max-width: 599px) {
-      :root { --page-gutter: 1.25rem; --section-space: clamp(3.5rem, 15vw, 4.25rem); }
-      .hero { padding: 5.75rem var(--page-gutter) 1.5rem; }
-      .hero-inner { gap: 0; }
-      .hero-left { align-items: flex-start; text-align: left; }
-      .hero-tag { font-size: .95rem; letter-spacing: .08em; margin-bottom: .75rem; }
-      .hero-tag::before { width: 18px; }
-      .hero-title { font-size: clamp(2.75rem, 12vw, 3.35rem); line-height: 1.08; margin-bottom: .9rem; }
-      .hero-title .title-line { display: block; }
-      .hero-title .title-line:first-child::after { content: none; }
-      .hero-sub { font-size: 1.05rem; line-height: 1.68; margin-bottom: 1.1rem; }
-      .hero-sub .copy-line + .copy-line { margin-top: .55rem; }
-      .hero-buttons { width: auto; display: flex; flex-flow: row nowrap; gap: .8rem; }
-      .hero-buttons .btn-primary { width: auto; min-height: auto; display: inline-block; padding: .9rem 1.65rem; text-align: center; }
-      .hero-buttons .btn-text { width: auto; min-height: auto; height: 48px; display: inline-flex; align-items: center; padding: 0 1.35rem; border: 1.5px solid rgba(74, 144, 226, .28); border-radius: 3rem; background: rgba(255,255,255,.82); text-decoration: none; }
-      .hero-buttons { flex-direction: column; align-items: flex-start; }
-      .trial-cta-wrap { align-items: center; gap: .55rem; }
-      .trial-event-bubble {
-        position: relative; left: auto; bottom: auto; transform: none; order: 2;
-        padding: .42rem .62rem; font-size: .7rem;
-      }
-      .trial-event-bubble::after {
-        top: 50%; left: auto; right: 100%; transform: translateY(-50%);
-        border-top-color: transparent; border-right-color: #FF6B5F;
-      }
-      .hero-micro { width: auto; margin-top: .65rem; margin-bottom: .75rem; text-align: left; font-size: .86rem; }
-      .hero-right { min-height: 0; }
-      .hero-teacher-carousel-shell { width: min(360px, 100%); }
-      .teacher-flip-deck {
-        --stack-x: 18px; --stack-y: 14px; --stack-angle: 2.5deg;
-        --stack-space: 60px; margin-bottom: 52px;
-      }
-      .teacher-flip-deck .flip-teacher-card { min-height: 426px; padding: 1.05rem; border-radius: 1.25rem; }
-      .teacher-flip-deck .teach-avatar { width: 170px; height: 170px; margin: 0 auto .45rem; }
-      .teacher-flip-deck .teach-name { font-size: 1.22rem; margin-bottom: .15rem; }
-      .teacher-flip-deck .teach-school, .teacher-flip-deck .teach-major { font-size: .84rem; line-height: 1.35; }
-      .teacher-flip-deck .teach-major { margin-bottom: 0; }
-      .hero-teacher-bio { min-height: 82px; display: block; margin: .55rem 0 0; font-size: .84rem; line-height: 1.45; overflow: visible; -webkit-line-clamp: unset; }
-      .teacher-flip-deck .tag { padding: .23rem .55rem; font-size: .76rem; }
-      .teacher-flip-deck .teach-tags { min-height: 27px; padding-top: 0; }
-      .teacher-flip-deck .flip-teacher-hint { font-size: .68rem; }
-      .hero-visual { width: 290px; height: 320px; }
-      .hero-card { padding: 1.2rem; }
-      .hero-card.card-main { width: 232px; top: 50%; }
-      .hero-card.card-small-1 { width: 125px; right: -2%; }
-      .hero-card.card-small-2 { width: 145px; left: -2%; }
-      .stats-strip { padding: 2.5rem var(--page-gutter) .25rem; gap: .35rem; }
-      .stat-card { padding: .9rem .35rem; }
-      .stat-num { font-size: clamp(1.65rem, 8vw, 2.1rem); }
-      .stat-label { font-size: .86rem; line-height: 1.45; word-break: keep-all; }
-      .section-label { margin-bottom: 1rem; }
-      .section-title { font-size: clamp(2rem, 9.5vw, 2.55rem); line-height: 1.2; }
-      .section-sub { margin-bottom: 2.25rem; font-size: 1rem; }
-      .features-grid { grid-template-columns: minmax(0, 1fr); max-width: 390px; gap: .9rem; justify-items: center; }
-      .feature-card { display: grid; width: min(100%, 344px); grid-template-columns: 40px minmax(0, 1fr); column-gap: .9rem; align-items: start; text-align: left; padding: 1.15rem 1.25rem; min-width: 0; }
-      .feature-icon { grid-row: 1 / span 2; width: 40px; margin: 0; font-size: 1.85rem; line-height: 1.2; text-align: center; justify-self: center; }
-      .feature-title { margin: 0 0 .35rem; min-width: 0; line-height: 1.3; }
-      .feature-desc { width: 100%; max-width: none; min-width: 0; line-height: 1.58; }
-      .economy-desc-line { display: block; }
-      .step { grid-template-columns: 58px 1fr; padding: 1.35rem; }
-      .step-num { font-size: 2.25rem; }
-      .mobile-teacher-group .teach-card { width: min(78vw, 300px); flex-basis: min(78vw, 300px); }
-      .tier-price { font-size: clamp(1.8rem, 8vw, 2.2rem); }
-      .review-quote { font-size: clamp(1.35rem, 6.4vw, 1.65rem); }
-      .cta-section { padding: 4rem var(--page-gutter); }
-      footer { padding: 2.5rem var(--page-gutter); }
-      .footer-text { font-size: .86rem; line-height: 1.55; }
-    }
-
-    /* Small phones: prevent awkward orphan words and card collisions */
-    @media (max-width: 390px) {
-      :root { --page-gutter: 1.1rem; }
-      .hero-title { font-size: clamp(2.55rem, 12vw, 2.9rem); }
-      .hero-title .title-line { display: block; }
-      .hero-title .title-line:first-child::after { content: none; }
-      .hero-visual { transform: scale(.94); transform-origin: top center; margin-bottom: -1rem; }
-      .stats-strip { grid-template-columns: 1fr 1fr; }
-      .stat-label { font-size: .82rem; }
-      .section-title { font-size: 2rem; }
-    }
-
-    @media (max-width: 350px) {
-      .feature-card { grid-template-columns: minmax(0, 1fr); row-gap: .35rem; }
-      .feature-icon { grid-row: auto; margin-bottom: .2rem; }
-      .feature-title { margin: 0; }
-      .feature-desc { max-width: none; }
-    }
-
-  </style>
+  <link rel="stylesheet" href="homepage-layout.css?v=12">
   <link rel="stylesheet" href="responsive-overrides.css">
-  <link rel="stylesheet" href="site-nav.css">
+  <link rel="stylesheet" href="site-nav.css?v=49">
+<link rel="stylesheet" href="homepage-interactions.css?v=51">
+<link rel="stylesheet" href="application-path-chooser.css?v=32">
+<link rel="stylesheet" href="homepage-story.css?v=48">
 </head>
 <body>
 
@@ -633,41 +83,57 @@
       <img src="img/mlogo.png" alt="나도">
     </div>
   </a>
-  <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기">☰</button>
+  <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기" aria-controls="navLinks">☰</button>
   <ul class="nav-links" id="navLinks">
     <li><a class="nav-for-teachers" href="https://nadomeokgo.github.io/nado_teachers_web/index.html#dashboard" target="_blank" rel="noopener">for teachers</a></li>
-    <li><a href="#why">왜 나도인가</a></li>
+    <li><a href="story.html">나도 소개</a></li>
     <li><a href="teachers.html">선생님 소개</a></li>
-    <li><a href="how.html">이용 방법</a></li>
-    <li><a class="nav-trial" href="trial.html">체험수업</a></li>
-    <li><a href="apply.html" class="nav-cta">시작하기</a></li>
+    <li><a href="index.html#curriculum">커리큘럼</a></li><li><a href="index.html#price">수업 플랜</a></li><li><a href="faq.html">FAQ</a></li>
+    <li><a class="nav-trial" href="trial.html?lesson_kind=trial">체험수업</a></li>
+    <li><a href="apply.html" class="nav-cta" data-application-chooser>신청하기</a></li>
+  </ul>
 </nav>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero" id="about">
   <div class="hero-inner">
-  <div class="hero-left">
-    <div class="hero-tag">미국 대학생과 1:1 영어회화</div>
-    <h1 class="hero-title"><span class="title-line">진짜 영어는</span><em class="title-line">만나서 합니다.</em></h1>
-    <p class="hero-sub">
-      <span class="copy-line">나도에서 미국 대학생과 만나 영어로 대화해보세요.</span>
-    </p>
-    <div class="hero-buttons">
-      <a class="btn-primary" href="apply.html">1분 만에 신청하기</a>
-      <span class="trial-cta-wrap">
-        <span class="trial-event-bubble">9월 30일까지 무료</span>
-        <a class="btn-text" href="trial.html">1회 체험수업 신청하기</a>
-      </span>
+    <div class="hero-left">
+      <div class="hero-tag">미국 대학생과 1:1 영어회화</div>
+      <h1 class="hero-title"><span class="title-line">진짜 영어는</span><em class="title-line">만나서 합니다.</em></h1>
+      <p class="hero-sub"><span class="copy-line">나도에서 미국 대학생과 만나 영어로 대화해보세요.</span></p>
+      <div class="hero-buttons">
+        <a class="btn-primary" href="apply.html" data-application-chooser>1분 만에 신청하기</a>
+        <span class="trial-cta-wrap">
+          <span class="trial-event-bubble">9월 30일까지 무료</span>
+          <a class="btn-text" href="trial.html?lesson_kind=trial">1회 체험수업 신청하기</a>
+        </span>
+      </div>
+      <div class="hero-micro">주 3회 이상 수업을 원하시면 별도로 문의해주세요.</div>
     </div>
-    <div class='hero-micro'>주 3회 이상 수업을 원하시면 별도로 문의해주세요.</div>
-  </div>
-  <div class="hero-right">
-    <div class="hero-teacher-carousel-shell">
-      <div class="teacher-flip-deck" id="randomTeachers" aria-live="polite" aria-label="추천 선생님 카드"></div>
+    <div class="hero-right">
+      <div class="hero-teacher-carousel-shell">
+        <div class="teacher-flip-deck" id="randomTeachers" aria-live="polite" aria-label="추천 선생님 카드"></div>
+      </div>
     </div>
-  </div>
   </div>
 </section>
+
+<dialog class="application-path-dialog" id="applicationPathDialog" aria-labelledby="applicationPathTitle" aria-describedby="applicationPathIntro">
+  <div class="application-path-dialog__surface">
+    <button type="button" class="application-path-dialog__close" data-application-chooser-close aria-label="신청 방법 선택 닫기">×</button>
+    <h2 id="applicationPathTitle">어떻게 신청하시겠어요?</h2>
+    <p class="application-path-dialog__intro" id="applicationPathIntro">원하는 방법을 선택해주세요.</p>
+    <div class="application-path-dialog__options">
+      <a class="application-path-dialog__option" href="apply.html">
+        <strong>1. 바로 신청하기</strong>
+      </a>
+      <a class="application-path-dialog__option" href="teachers.html">
+        <strong>2. 선생님 둘러보고 신청하기</strong>
+      </a>
+    </div>
+  </div>
+</dialog>
+
 
 <!-- STATS STRIP (kimstudy 신뢰지표 느낌) -->
 <div class="stats-strip fade-in">
@@ -685,157 +151,80 @@
   </div>
   <div class="stat-card">
     <div class="stat-num">오프라인</div>
-    <div class="stat-label">서울 및 인천 지역</div>
+    <div class="stat-label">서울 및 송도 지역</div>
   </div>
 </div>
-
-<!-- FEATURES -->
-<section class="features-section">
-  <div class="section-label">나도의 특징</div>
-  <h2 class="section-title">나도만의 <em>차별점</em></h2>
-  <div class="features-grid">
-    <div class="feature-card fade-in">
-      <div class="feature-icon">💰</div>
-      <div class="feature-title">합리적인 비용</div>
-      <div class="feature-desc">송도 지정 장소를 선택하면 모든 요금제에서 월 1만원 할인받을 수 있어요.</div>
-    </div>
-    <div class="feature-card fade-in">
-      <div class="feature-icon">📍</div>
-      <div class="feature-title">편한 장소로 맞춤</div>
-      <div class="feature-desc">서울 및 인천 지역의 희망 장소에 맞춰 대학생 선생님과 만날 수 있습니다.</div>
-    </div>
-    <div class="feature-card fade-in">
-      <div class="feature-icon">😊</div>
-      <div class="feature-title">편안한 분위기</div>
-      <div class="feature-desc">대학생과 부담 없이 자연스러운 대화를 나눌 수 있습니다.</div>
-    </div>
-    <div class="feature-card fade-in">
-      <div class="feature-icon">🎯</div>
-      <div class="feature-title">맞춤형 매칭</div>
-      <div class="feature-desc">당신의 수준과 목표에 맞는 선생님을 매칭해드립니다.</div>
-    </div>
-  </div>
-</section>
-
-<!-- WHY -->
-<section id="why" class="why-section fade-in">
-  <div class="section-label">왜 나도인가</div>
-  <h2 class="section-title"><span>온라인으로는</span> <em>안 늘더라고요.</em></h2>
-  <p class="section-sub"><span class="copy-sentence">영어회화 앱을 수십 개 깔아봤지만, 정작 사람 앞에서는 입이 굳어버립니다.</span><span class="copy-sentence">나도는 진짜 사람과, 진짜 대화를 나눕니다.</span></p>
-  <div class="why-points">
-    <div class="why-point">
-      <div class="why-point-icon">🗣️</div>
-      <div class="why-point-title">진짜 사람과의 대화</div>
-      <div class="why-point-desc">AI도 앱도 아닌, 실제 미국 대학생과 마주 앉아 나누는 대화입니다.</div>
-    </div>
-    <div class="why-point">
-      <div class="why-point-icon">📍</div>
-      <div class="why-point-title">오프라인</div>
-      <div class="why-point-desc">서울 및 인천 지역의 편한 장소에서 영어 대화를 연습하세요.</div>
-    </div>
-    <div class="why-point">
-      <div class="why-point-icon">🎯</div>
-      <div class="why-point-title">나에게 맞는 선생님</div>
-      <div class="why-point-desc">수준과 목표에 맞춰 가장 잘 맞는 선생님을 매칭해드립니다.</div>
-    </div>
-  </div>
-</section>
-  
-<!-- HOW -->
-<section id="how" class="how-section">
-  <div class="section-label">이용 방법</div>
-  <h2 class="section-title">세 단계면 충분합니다.</h2>
-  <div class="steps-grid">
-    <div class="step fade-in">
-      <div class="step-num">01</div>
-      <div class="step-title">정보 입력</div>
-      <div class="step-desc">간단한 정보를 입력하면 자동으로 최적의 선생님을 매칭해드립니다.</div>
-    </div>
-    <div class="step fade-in">
-      <div class="step-num">02</div>
-      <div class="step-title">선생님 매칭</div>
-      <div class="step-desc">인증된 대학생 선생님과 매칭되어 서울 및 인천 지역에서 일정과 장소를 조율합니다.</div>
-    </div>
-    <div class="step fade-in">
-      <div class="step-num">03</div>
-      <div class="step-title">수업 시작</div>
-      <div class="step-desc">선택하신 시간(1시간 또는 2시간) 동안 1:1 영어 회화 수업을 진행합니다.</div>
-    </div>
-  </div>
-  <div style="text-align: center; margin-top: 3rem;">
-    <a class="btn-primary" href="how.html">자세한 이용 방법 보기</a>
-  </div>
-</section>
 
 <!-- PRICE -->
 <section id="price" class="price-section">
   <div class="section-label" style="justify-content: center;"><span>수업료</span></div>
   <h2 class="section-title">원하는 가격에 <em>맞춤 수업!</em></h2>
-<p class="section-sub" style="color:rgba(255,255,255,0.7);">월 4회 기준, 원하시는 수업 시간과 빈도에 따라 금액이 달라져요.</p>
+<p class="section-sub" style="color:rgba(255,255,255,0.7);">1회 1시간 수업, 월 4회 기준</p>
+  <p style="max-width:760px;margin:-1.3rem auto 2rem;color:rgba(255,255,255,.82);font-size:.92rem;line-height:1.6;text-align:center;word-break:keep-all;">*초등학생 이하는 Standard 요금제만 신청 가능합니다.</p>
   <div class="tier-grid fade-in">
-    <div class="tier-card">
-      <div class="tier-name">이코노미</div>
-      <div class="tier-price">₩140,000<span style="font-size:.9rem;font-weight:600;opacity:.7;">부터</span></div>
-      <div class="tier-period">한 달 · 4회</div>
-      <div class="tier-desc"><span class="economy-desc-line">영어 회화 실력이 검증된 선생님과</span> 부담 없이 시작하세요.</div>
-      <ul class="tier-features">
-        <li>학적 인증 완료 대학생 선생님</li>
-        <li>서울 및 인천 지역에서 수업</li>
-        <li>송도 지정 장소 선택 시 월 1만원 할인</li>
-        <li>가능 영어: 일상회화 · 여행영어 · 시험/면접 · 발음교정</li>
-        <li>학생 추천</li>
-      </ul>
-      <a class="tier-cta" href="apply.html">신청하기</a>
+<div class="tier-card"><div class="tier-name">이코노미</div><div class="tier-price">₩140,000<span style="font-size:.9rem;font-weight:600;opacity:.7;">부터</span></div><div class="tier-period">한 달 · 4회</div><div class="tier-desc">영어 회화 실력이 검증된 선생님과 부담 없이 시작하세요.</div><ul class="tier-features"><li>나도가 제공하는 기본 커리큘럼 중 나의 목적과 맞는 자료로 진행</li><li>일상 회화와 말하기 자신감에 집중</li><li>서울 및 송도 지역에서 수업 가능</li><li>세부 장소는 선생님과 조율</li><li>송도 지정 장소 선택 시 월 1만원 할인</li></ul><div class="home-plan-types"><strong>수업 타입</strong><p>일상회화 · 여행영어 · 시험/면접 · 발음교정</p></div><a class="tier-cta" href="apply.html" data-application-chooser>신청하기</a></div>
+<div class="tier-card popular"><div class="tier-badge">Most Popular</div><div class="tier-name">스탠다드</div><div class="tier-price">₩180,000<span style="font-size:.9rem;font-weight:600;opacity:.7;">부터</span></div><div class="tier-period">한 달 · 4회</div><div class="tier-desc">내 목표와 수준에 맞춘 체계적인 수업을 경험하세요.</div><ul class="tier-features"><li>영어 수준·목표·관심사에 맞춘 커리큘럼</li><li>선생님이 자료와 수업 흐름을 개별적으로 준비</li><li>서울 및 송도 지역에서 수업 가능</li><li>세부 장소는 선생님과 조율</li><li>송도 지정 장소 선택 시 월 1만원 할인</li></ul><div class="home-plan-types"><strong>수업 타입</strong><p>일상회화 · 여행영어 · 시험/면접 · 발음교정</p></div><a class="tier-cta" href="apply.html" data-application-chooser>신청하기</a></div>
+<div class="tier-card"><div class="tier-name">프리미엄</div><div class="tier-price">₩220,000<span style="font-size:.9rem;font-weight:600;opacity:.7;">부터</span></div><div class="tier-period">한 달 · 4회</div><div class="tier-desc">나도 최우수 선생님과 함께 비즈니스·전문 목표에 집중하세요.</div><ul class="tier-features"><li>나도 <strong>최우수 선생님 배정</strong><small class="premium-assignment-note">최우수 선생님은 학생 만족도, 수업 지속률, 피드백 평가 등을 종합하여 선정된 상위 선생님입니다.</small></li><li>비즈니스 영어 및 전문적인 학습 목표 중심</li><li>신청 후 목표를 확인하고 적합한 선생님 안내</li><li>선생님의 진행 의사와 일정을 확인한 후 확정</li><li>서울 및 송도 지역에서 수업 가능</li><li>세부 장소는 선생님과 조율</li><li>송도 지정 장소 선택 시 월 1만원 할인</li></ul><div class="home-plan-types"><strong>수업 타입</strong><p>일상회화 · 비즈니스 · 여행영어 · 시험/면접 · 발음교정</p></div><a class="tier-cta" href="apply.html" data-application-chooser>신청하기</a></div>
+  </div>
+</section>
+<section id="student-review" class="home-section home-student-review" aria-label="수강 후기">
+  <span class="home-review-label">수강생의 한마디</span>
+  <div class="home-review-icon" aria-hidden="true">🙂</div>
+  <blockquote><p>“영어를 말하는 것 자체가 어려웠는데,<br class="home-review-break"> 1대1 수업을 통해 <strong>자신감을 길렀어요.</strong>”</p><footer>이**님</footer></blockquote>
+</section>
+
+<!-- FEATURES -->
+<section class="home-section features-section">
+  <div class="home-heading"><span class="home-eyebrow">나도의 특징</span>
+  <h2>나도만의 차별점</h2></div>
+  <div class="features-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">💰</div>
+      <div class="feature-title">합리적인 비용</div>
+      <div class="feature-desc">월 14만원부터 저렴하게 1:1 오프라인, 원하는 장소에서 영어 회화를 시작할 수 있어요.</div>
     </div>
-    <div class="tier-card popular">
-      <div class="tier-badge">Most Popular</div>
-      <div class="tier-name">스탠다드</div>
-      <div class="tier-price">₩180,000<span style="font-size:.9rem;font-weight:600;opacity:.7;">부터</span></div>
-      <div class="tier-period">한 달 · 4회</div>
-      <div class="tier-desc">충분한 경험과 노하우가 있는 선생님과 수업합니다.</div>
-      <ul class="tier-features">
-        <li>원하는 시간 우선 배치</li>
-        <li>서울 및 인천 지역에서 수업</li>
-        <li>송도 지정 장소 선택 시 월 1만원 할인</li>
-        <li>가능 영어: 일상회화 · 비즈니스 · 여행영어 · 시험/면접 · 발음교정</li>
-        <li>충분한 경험과 노하우가 있는 선생님</li>
-        <li>전문적인 피드백 세션 10분 진행</li>
-        <li>직장인 추천</li>
-      </ul>
-      <a class="tier-cta" href="apply.html">신청하기</a>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">📍</div>
+      <div class="feature-title">편한 장소로 맞춤</div>
+      <div class="feature-desc">서울 및 송도 지역의 희망 장소에 맞춰 대학생 선생님과 만날 수 있습니다.</div>
     </div>
-    <div class="tier-card">
-      <div class="tier-name">프리미엄</div>
-      <div class="tier-price">₩220,000<span style="font-size:.9rem;font-weight:600;opacity:.7;">부터</span></div>
-      <div class="tier-period">한 달 · 4회</div>
-      <div class="tier-desc">나도 최우수 선생님을 배정해드려요.</div>
-      <ul class="tier-features">
-        <li>원하는 시간 우선 배치</li>
-        <li>서울 및 인천 지역에서 수업</li>
-        <li>송도 지정 장소 선택 시 월 1만원 할인</li>
-        <li>가능 영어: 일상회화 · 비즈니스 · 여행영어 · 시험/면접 · 발음교정</li>
-        <li>나도 최우수 선생님 배정</li>
-        <li>전문적인 피드백 세션 10분 진행</li>
-        <li>뚜렷한 목적이 있고 영어 회화 실력 상승이 급한 분께 추천</li>
-      </ul>
-      <a class="tier-cta" href="apply.html">신청하기</a>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">😊</div>
+      <div class="feature-title">편안한 분위기</div>
+      <div class="feature-desc">대학생과 부담 없이 맞춤형 수업으로 자연스러운 대화를 나눌 수 있습니다.</div>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">🎯</div>
+      <div class="feature-title">선생님 직접 선택</div>
+      <div class="feature-desc">가능한 장소와 시간을 비교하고 원하는 선생님을 직접 선택할 수 있습니다.</div>
     </div>
   </div>
 </section>
 
-<!-- REVIEW -->
-<section class="review-section fade-in">
-  <div class="review-avatar">🙂</div>
-  <p class="review-quote">"영어를 말하는 것 자체가 어려웠는데, 1대1 수업을 통해 <span>자신감을 길렀어요.</span>"</p>
-  <div class="review-by">이**님</div>
+<section id="why" class="home-section home-values">
+<div class="home-heading"><span class="home-eyebrow">우리가 특별한 이유</span><h2>영어를 내 일상 가까이.</h2><p>만날 장소부터 함께할 선생님, 수업 방식까지 나에게 맞게 선택하세요.</p></div>
+<div class="home-three"><article><span class="home-number">01</span><h3>편한 곳에서 만나요</h3><p>수업 가능한 지역 안에서 원하는 장소를 선생님과 조율합니다.</p></article><article><span class="home-number">02</span><h3>직접 보고 선택해요</h3><p>자기소개와 키워드, 가능한 시간을 살펴보고 선생님을 고릅니다.</p></article><article><span class="home-number">03</span><h3>목적에 맞게 배워요</h3><p>편안한 일상회화부터 맞춤형 커리큘럼, 비즈니스 영어까지 선택할 수 있어요.</p></article></div>
+</section>
+<section id="curriculum" class="home-section home-curriculum">
+<div class="home-heading"><span class="home-eyebrow">NADO 커리큘럼</span><h2>무슨 이야기를 할지,<br>막막하지 않도록.</h2><p>주제와 표현, 대화 질문을 바탕으로 영어로 말하는 시간을 만듭니다.</p></div>
+<div class="home-three"><article class="curriculum-access-card"><a class="curriculum-access-link" href="login.html" aria-label="Economy 회원 전용 커리큘럼 · 학생 로그인"><span class="home-eyebrow">Economy</span><h3>주제로 시작하는 회화</h3><p>나도가 제공하는 커리큘럼 중 목적에 맞는 자료로 진행합니다. 일상과 관심사에 대해 편하게 대화해요.</p><span class="curriculum-access-label">회원 전용 · 로그인 후 이용 →</span></a></article><article class="curriculum-access-card"><a class="curriculum-access-link" href="login.html" aria-label="Standard 회원 전용 커리큘럼 · 학생 로그인"><span class="home-eyebrow">Standard</span><h3>나에게 맞춘 커리큘럼</h3><p>수준·목표·관심사에 맞춰 선생님이 자료와 수업 흐름을 개별적으로 준비합니다.</p><span class="curriculum-access-label">회원 전용 · 로그인 후 이용 →</span></a></article><article class="curriculum-access-card"><a class="curriculum-access-link" href="login.html" aria-label="Premium 회원 전용 커리큘럼 · 학생 로그인"><span class="home-eyebrow">Premium</span><h3>전문 목표에 집중</h3><p>비즈니스 영어와 전문적인 목표를 확인한 뒤, 적합한 수업 구성과 선생님을 안내합니다.</p><span class="curriculum-access-label">회원 전용 · 로그인 후 이용 →</span></a></article></div>
+<div class="home-lesson-example"><div><span class="home-eyebrow">수업 흐름 예시 · 여행</span><h3>카페에서 원하는 음료 주문하기</h3><p>주제와 난이도, 진행 방식은 학생과 수업 플랜에 따라 달라집니다.</p></div><ol><li><strong>상황 살펴보기</strong><span>여행 중 카페에 갔을 때 어떤 말을 하고 싶나요?</span></li><li><strong>표현 익히기</strong><span lang="en">“Could I have an iced latte, please?”</span></li><li><strong>직접 대화하기</strong><span>선생님과 손님·직원 역할을 바꾸며 주문해보세요.</span></li></ol></div>
+</section>
+<section class="home-section home-beginner" id="beginner">
+  <div class="home-section-copy"><span class="home-eyebrow">처음이어도 괜찮아요</span><h2>영어 한마디도<br>어려우신가요?</h2><p>한국인 선생님과 한국어 설명을 곁들여 기초부터 시작해보세요. 틀릴까 걱정하기보다, 짧은 한 문장부터 편하게 말해보는 시간입니다.</p><a class="home-link" href="teachers.html?teacher_type=korean">한국인 선생님 보기 →</a></div>
+  <div class="home-beginner-card"><span>처음 수업에서는 이렇게</span><ol><li><strong>나의 출발점 확인</strong><p>영어를 얼마나 알고 있는지, 어떤 말을 하고 싶은지 이야기해요.</p></li><li><strong>쉬운 표현부터 연습</strong><p>인사와 자기소개처럼 익숙한 상황부터 시작해요.</p></li><li><strong>내 속도에 맞춰 대화</strong><p>막히는 부분은 질문하고, 배운 표현을 다시 말해봐요.</p></li></ol></div>
 </section>
 
+
+<section id="how" class="home-section home-process"><div class="home-heading"><span class="home-eyebrow">이용 방법</span><h2>신청부터 첫 수업까지.</h2></div><ol><li><span>01</span><strong>신청</strong><p>목표와 가능한 시간·장소를 알려주세요.</p></li><li><span>02</span><strong>선생님 연결</strong><p>선생님 확인 후 카카오톡 또는 문자로 안내해요.</p></li><li><span>03</span><strong>일정·장소 조율</strong><p>선생님과 첫 수업을 확정해요.</p></li><li><span>04</span><strong>수업 시작</strong><p>안내에 따라 결제 후 선생님을 만나요.</p></li></ol><a class="home-link" href="how.html">자세한 이용 방법 →</a></section>
+
+<section id="faq" class="home-section home-faq"><div class="home-heading"><span class="home-eyebrow">FAQ</span><h2>시작 전, 궁금한 것들.</h2></div><details><summary>영어를 전혀 못해도 가능한가요?</summary><p>네. 한국인 선생님과 한국어 설명을 곁들여 기초부터 시작할 수 있습니다. 신청 시 현재 수준과 원하는 목표를 알려주세요.</p></details><details><summary>원하는 시간에 수업할 수 있나요?</summary><p>선생님의 가능한 시간 안에서 일정을 함께 정합니다. 신청할 때 가능한 날짜와 시간을 모두 선택해주세요.</p></details><details><summary>수업은 어디에서 진행하나요?</summary><p>서울·송도 내 선생님의 수업 가능 지역에서 카페나 스터디룸 등 세부 장소를 함께 정합니다. 송도 지정장소 무료체험은 IGC 또는 트리플스트리트에서 진행합니다.</p></details><a class="home-link" href="faq.html">전체 FAQ 보기 →</a></section>
 <!-- FINAL CTA -->
-<section id="cta" class="cta-section">
-  <div class="section-label">지금 시작하세요</div>
+<section id="cta" class="cta-section home-section">
+  <span class="home-eyebrow">지금 시작하세요</span>
   <h2 class="cta-title"><span class="title-line">나도,</span> <em class="title-line">할 수 있다.</em></h2>
-  <p class="cta-sub">서울 및 인천 지역에서, 진짜 영어의 첫걸음을 나도와 함께하세요.</p>
-  <a class="btn-primary" href="apply.html">1분 만에 신청하기</a>
+  <p class="cta-sub">서울 및 송도 지역에서, 진짜 영어의 첫걸음을 나도와 함께하세요.</p>
+  <div class="home-final-buttons"><a class="btn-primary" href="apply.html" data-application-chooser>1분 만에 신청하기</a><a class="home-trial-button" href="trial.html?lesson_kind=trial">1회 체험하기</a></div>
 </section>
 
 <!-- FOOTER -->
@@ -846,73 +235,21 @@
     </div>
   </div>
   <div class="footer-info">
-    <div class="footer-text">수업 가능 지역: 서울 및 인천 지역</div>
+    <div class="footer-text">수업 가능 지역: 서울 및 송도 지역</div>
     <div class="footer-text">진짜 영어는 만나서 합니다. © 2026 나도</div>
     <div class="footer-text">사업자: 장준섭 · 상호: NADO</div>
     <div class="footer-text">전화번호 : 010-9050-6528</div>
 <div class="footer-text">
-  <a href="how.html#faq">자주 묻는 질문(FAQ)</a> · 
+  <a href="faq.html">자주 묻는 질문(FAQ)</a> · 
   <a href="terms.html">이용약관</a> · 
   <a href="privacy.html">개인정보처리방침</a>
 </div>
   </div>
 </footer>
 
-<script src="site-nav.js"></script>
+<script src="site-nav.js?v=34"></script>
 <script>
-  const teachers = [
-      { name: 'Amelia Lee', school: 'George Mason University', major: 'Conflict Analysis and Resolution', tags: ['경험 공유', '성실함'], image: 'img/amelia.jpg', bio: 'I’m a native speaker from the US, and I enjoy music, movies, and books. Let’s have fun learning and getting to know each other.' },
-      { name: 'Ej', school: 'George Mason University', major: 'Global Affairs', tags: ['동기부여', '따뜻한'], image: 'img/ej.jpg', bio: 'I’m here to help you on your English journey and look forward to building your confidence through comfortable conversation.' },
-      { name: 'Oscar', school: 'George Mason University', major: 'Computational Data Science', tags: ['비즈니스', '친근한'], image: 'img/oscar.jpg', bio: 'I’m a friendly native English speaker who enjoys helping students improve their confidence and communication skills.' },
-      { name: 'Victoria Yuguy', school: 'George Mason University', major: 'Global Affairs', tags: ['5년 이상 경력', '친근한 소통'], image: 'img/victoria.jpg', bio: 'I have been a tutor for over five years and love meeting new people. We can connect through a wide range of interests.' },
-      { name: 'Vitalina Skardova', school: 'University of Utah', major: 'Game Design', tags: ['맞춤형 수업', '실생활 영어'], image: 'img/vitalina.jpg', bio: 'As a language learner myself, I understand common challenges and create lessons around each student’s interests, goals, and needs.' },
-      { name: 'Matin', school: 'George Mason University', major: 'Global Affairs', tags: ['편안한 대화', '토론 위주'], image: 'img/martin.png', bio: 'I like keeping conversations relaxed and discussion-based — let’s talk about current events or whatever interests you.' },
-      { name: 'Amy Trejo', school: 'George Mason University', major: 'Marketing', tags: ['실력 상승', '편안한 수업'], image: 'img/amy.jpg', bio: 'My name is Amy Trejo, and I hope to help you improve your English speaking skills while making the experience fun and relaxed.' },
-      { name: 'Hara', school: 'George Mason University', major: 'Business', tags: ['실력 상승', '성장'], image: 'img/hara.jpg', bio: 'I’m passionate about helping students discover how to enjoy learning and using English. :)' },
-      { name: 'Tae', school: 'University of Utah', major: 'Film and Media Arts', tags: ['일상회화', '초급 특화'], image: 'img/tae.jpg', bio: 'Let’s learn English comfortably and easily through the movies and media we enjoy.' }
-  ];
-  const randomTeachers = document.getElementById('randomTeachers');
-  if (randomTeachers) {
-    const selectedTeachers = [...teachers].sort(() => Math.random() - 0.5);
-    randomTeachers.innerHTML = selectedTeachers.map((teacher, index) => `
-      <article class="teach-card flip-teacher-card" data-position="${index}" role="button" tabindex="${index === 0 ? '0' : '-1'}" aria-label="${teacher.name} 선생님. 클릭하면 다음 선생님을 봅니다." aria-hidden="${index === 0 ? 'false' : 'true'}">
-        <div class="teach-avatar"><img src="${teacher.image}" alt="${teacher.name}" style="width:100%;height:100%;object-fit:cover;"></div>
-        <div class="teach-name">${teacher.name}</div>
-        <div class="teach-school ${teacher.school.includes('Utah') ? 'teach-school--utah' : 'teach-school--mason'}">${teacher.school}</div>
-        <div class="teach-major">${teacher.major}</div>
-        <div class="hero-teacher-bio">${teacher.bio}</div>
-        <div class="teach-tags">${teacher.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
-        <div class="flip-teacher-hint">카드를 눌러 다른 선생님 보기 →</div>
-      </article>`).join('');
-
-    const teacherCards = Array.from(randomTeachers.children);
-    let activeTeacherIndex = 0;
-    const updateTeacherDeck = () => {
-      teacherCards.forEach((card, index) => {
-        const position = (index - activeTeacherIndex + teacherCards.length) % teacherCards.length;
-        card.dataset.position = String(position);
-        card.tabIndex = position === 0 ? 0 : -1;
-        card.setAttribute('aria-hidden', position === 0 ? 'false' : 'true');
-      });
-    };
-    const showNextTeacher = () => {
-      activeTeacherIndex = (activeTeacherIndex + 1) % teacherCards.length;
-      updateTeacherDeck();
-      teacherCards[activeTeacherIndex].focus({ preventScroll: true });
-    };
-    randomTeachers.addEventListener('click', event => {
-      if (event.target.closest('.flip-teacher-card')) showNextTeacher();
-    });
-    randomTeachers.addEventListener('keydown', event => {
-      if ((event.key === 'Enter' || event.key === ' ') && event.target.matches('.flip-teacher-card[data-position="0"]')) {
-        event.preventDefault();
-        showNextTeacher();
-      }
-    });
-    updateTeacherDeck();
-  }
-
-  const whyTitle = document.querySelector('#why .section-title');
+  const whyTitle = document.querySelector('#why');
   const centerWhyTitle = (behavior = 'smooth') => {
     if (!whyTitle) return;
     if (!window.matchMedia('(max-width: 900px)').matches) {
@@ -947,6 +284,11 @@
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 </script>
+<script src="js/member-config.js?v=28"></script>
+<script src="teacher-directory-data.js?v=44"></script>
+<script src="teacher-profile-config.js?v=45"></script>
+<script src="homepage-teacher-carousel.js?v=49"></script>
+<script src="application-path-chooser.js?v=39"></script>
   
 <a class="kakao-chat-button" href="https://pf.kakao.com/_pbPJX/chat" target="_blank" rel="noopener noreferrer" aria-label="카카오톡 채널에서 문의하기">카카오톡 문의</a>
   

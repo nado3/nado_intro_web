@@ -46,7 +46,8 @@
   .back-link{display:inline-block;margin-bottom:1.5rem;font-size:.85rem;color:var(--accent);text-decoration:none;font-weight:700;}
 </style>
 <link rel="stylesheet" href="responsive-overrides.css">
-<link rel="stylesheet" href="site-nav.css">
+<link rel="stylesheet" href="site-nav.css?v=49">
+<link rel="stylesheet" href="application-path-chooser.css?v=32">
 </head>
 <body class="legal-page">
 <nav class="site-nav">
@@ -56,11 +57,11 @@
   <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기">☰</button>
   <ul class="nav-links" id="navLinks">
     <li><a class="nav-for-teachers" href="https://nadomeokgo.github.io/nado_teachers_web/index.html#dashboard" target="_blank" rel="noopener">for teachers</a></li>
-    <li><a href="#why">왜 나도인가</a></li>
+    <li><a href="story.html">나도 소개</a></li>
     <li><a href="teachers.html">선생님 소개</a></li>
-    <li><a href="how.html">이용 방법</a></li>
-    <li><a class="nav-trial" href="trial.html">무료 체험</a></li>
-    <li><a class="nav-cta" href="apply.html">시작하기</a></li>
+    <li><a href="index.html#curriculum">커리큘럼</a></li><li><a href="index.html#price">수업 플랜</a></li><li><a href="faq.html">FAQ</a></li>
+    <li><a class="nav-trial" href="trial.html?lesson_kind=trial">체험수업</a></li>
+    <li><a href="apply.html" class="nav-cta" data-application-chooser>신청하기</a></li>
   </ul>
 </nav>
 <div class="wrap">
@@ -78,8 +79,8 @@
       <li><strong>"서비스"</strong>란 회사가 운영하는 웹사이트를 통해 제공하는 선생님-학생 매칭 및 관련 부가 서비스 일체를 의미합니다.</li>
       <li><strong>"학생 회원"</strong>이란 영어 회화 교습을 받고자 신청 폼을 통해 정보를 등록한 자를 의미합니다.</li>
       <li><strong>"선생님 회원"</strong>이란 학적 인증 절차를 거쳐 학생에게 영어 회화 교습을 제공하는 자를 의미합니다.</li>
-      <li><strong>"매칭"</strong>이란 회사가 학생의 요청 정보를 바탕으로 적합한 선생님 회원을 연결해주는 것을 의미합니다.</li>
-      <li><strong>"요금제"</strong>란 선생님 회원의 검증 수준 등에 따라 회사가 구분한 Standard, Plus, Premium 수업료 등급을 의미합니다. (제7조 참조)</li>
+      <li><strong>"선생님 선택 및 연결"</strong>이란 학생이 공개된 가능 일정에서 선생님을 직접 선택하거나, 맞춤 요청을 통해 회사가 가능한 선생님을 확인하여 연결하는 절차를 의미합니다.</li>
+      <li><strong>"수업 방식"</strong>이란 선생님의 등급이 아니라 수업 준비 범위에 따라 회사가 구분한 Economy, Standard, Premium 방식을 의미합니다. (제7조 참조)</li>
       <li><strong>"매칭비"</strong>란 학생이 선생님 회원과 매칭될 때, 학생이 선택한 요금제 금액의 일정 비율로 산정되어 학생이 회사에 지급하는 수수료를 의미합니다.</li>
     </ul>
   </div>
@@ -98,6 +99,7 @@
     <ol>
       <li>서비스는 만 14세 이상인 자만 이용(신청)할 수 있습니다.</li>
       <li>영어 회화 교습을 받는 학습자가 만 14세 미만인 경우, 해당 학습자의 법정대리인이 직접 학생 본인으로서 서비스에 가입하고 신청 절차를 진행해야 합니다. 만 14세 미만 학습자 명의로 직접 신청할 수 없습니다.</li>
+      <li>초등학생 이하 학습자는 Standard 방식의 정규 수업 또는 Standard 1회 유료 체험만 신청할 수 있으며, 무료 체험은 이용할 수 없습니다.</li>
       <li>학생은 신청 폼에 진실된 정보를 입력해야 하며, 허위 정보로 인해 발생한 불이익에 대해 회사는 책임을 지지 않습니다.</li>
     </ol>
   </div>
@@ -112,16 +114,16 @@
   </div>
 
   <div class="doc-card">
-    <h2>제6조 (매칭 절차)</h2>
+    <h2>제6조 (선생님 선택 및 연결 절차)</h2>
     <ol>
-      <li>학생이 신청 폼을 통해 나이대, 영어 수준, 학습 목표, 희망 시간대, 진행 방식, 희망 요금제 등을 제출하면, 회사는 이를 바탕으로 적합한 선생님 회원을 매칭합니다.</li>
-      <li>매칭 완료 후 회사는 학생에게 매칭 결과를 안내합니다. <strong>첫 달 수업에 한하여</strong> 회사는 카페 등 수업 장소의 이용료(음료 등)를 사전 결제하여 제공하며, 구체적인 장소와 일정은 학생과 선생님 회원이 직접 협의하여 정합니다. 2개월 차부터의 장소 이용료는 학생과 선생님 회원이 직접 부담합니다.</li>
-      <li>회사가 정한 기간 내에 적합한 선생님 회원을 찾지 못한 경우, 회사는 학생에게 이를 고지하고 매칭비를 청구하지 않거나 이미 지급된 매칭비를 환불합니다.</li>
+      <li>학생은 공개된 가능 일정에서 선생님과 시간대를 직접 선택하거나, 신청 폼에 학습 목표·희망 일정·장소 등을 입력해 맞춤 연결을 요청할 수 있습니다.</li>
+      <li>선택한 시간대는 즉시 예약 확정이 아니며, 회사와 선생님 회원의 최종 확인 후 정확한 시작 시간과 장소를 안내합니다.</li>
+      <li>Premium은 즉시 예약이나 결제가 아닙니다. 회사가 학생의 목표와 준비 범위를 확인한 뒤 담당 선생님 회원의 수업 의사와 일정을 확인하고, 진행이 가능한 경우 수업 구성·일정·결제 방법을 별도로 안내합니다.</li>
     </ol>
   </div>
 
   <div class="doc-card">
-   <h2>제7조 (요금제, 매칭비 및 결제)</h2>
+   <h2>제7조 (수업 방식, 매칭비 및 결제)</h2>
    <ol>
      <li>학생은 신청 시 아래 요금제 중 하나를 선택합니다. (월 4회, 1회 1시간 기준)
        <ul>
@@ -129,6 +131,8 @@
          <li>스탠다드 : 월 180,000원</li>
          <li>프리미엄 : 월 220,000원</li>
        </ul>
+       Economy는 회사가 제공하거나 승인한 기존 자료를 활용하는 편안한 회화 수업이며, Standard는 기존 자료를 학생의 목표와 수준에 맞춰 구성하고 준비와 피드백을 더하는 수업입니다. Premium은 상담과 담당 가능 여부 확인 후 진행합니다.<br>
+       초등학생 이하 학습자는 제4조에 따라 Standard 정규 수업 또는 Standard 1회 유료 체험만 신청할 수 있습니다.<br>
        학생이 1회 2시간 수업을 선택하는 경우, 위 금액은 2배로 적용됩니다.
      </li>
      <li>매칭이 성사된 경우, 학생은 매칭 완료일로부터 24시간 이내에 선택한 요금제의 첫 달 수업료 전액을 회사가 지정한 계좌로 이체하여야 합니다.</li>
@@ -202,9 +206,10 @@
 
   <div class="doc-card">
     <h2>부칙</h2>
-    <p>본 약관은 2026년 7월 30일부터 시행합니다.</p>
+    <p>본 약관은 2026년 7월 30일부터 시행합니다. 제4조의 초등학생 이하 수업 방식 및 무료 체험 기준은 2026년 9월 15일 이후의 신규 신청과 갱신부터 적용하며, 이미 결제된 수업은 다음 갱신 전까지 기존 조건을 적용합니다.</p>
   </div>
 </div>
-<script src="site-nav.js"></script>
+<script src="site-nav.js?v=34"></script>
+<script src="application-path-chooser.js?v=39"></script>
 </body>
 </html>

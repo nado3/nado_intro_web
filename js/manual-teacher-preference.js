@@ -26,12 +26,6 @@
         if (!option || typeof option.more !== 'string') return;
         option.more = option.more.replace(/가능 영어:/g, '수업 타입:');
 
-        if (option.name === '프리미엄' && !option.more.includes('premium-best-teacher-help')) {
-          option.more = option.more.replace(
-            '· 나도 <strong>최우수 선생님 배정</strong>',
-            '· 나도 <span class="premium-best-teacher-help"><strong>최우수 선생님 배정</strong><button type="button" class="premium-help-btn" aria-label="최우수 선생님 설명" aria-expanded="false">?</button><span class="premium-help-tooltip" role="tooltip">최우수 선생님은 학생 만족도, 수업 지속률, 피드백 평가 등을 종합하여 선정된 상위 선생님입니다.</span></span>'
-          );
-        }
       });
 
       if (typeof renderStep === 'function') renderStep();
@@ -46,60 +40,6 @@
     const style = document.createElement('style');
     style.id = 'manualTeacherPreferenceStyles';
     style.textContent = `
-      .premium-best-teacher-help{
-        position:relative;
-        display:inline-flex;
-        align-items:center;
-        gap:5px;
-        vertical-align:middle;
-      }
-      .premium-help-btn{
-        width:18px;
-        height:18px;
-        min-width:18px;
-        padding:0;
-        border:1.5px solid #9aa8b8;
-        border-radius:50%;
-        background:#fff;
-        color:#708196;
-        font:800 11px/1 Pretendard, sans-serif;
-        cursor:pointer;
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-      }
-      .premium-help-btn:hover,
-      .premium-help-btn:focus-visible{
-        border-color:var(--accent);
-        color:var(--accent-deep);
-        outline:none;
-      }
-      .premium-help-tooltip{
-        display:none;
-        position:absolute;
-        left:auto;
-        right:-18px;
-        bottom:calc(100% + 9px);
-        z-index:50;
-        transform:none;
-        width:210px;
-        max-width:60vw;
-        box-sizing:border-box;
-        padding:8px 7px;
-        border:1px solid #dce5ef;
-        border-radius:12px;
-        background:#fff;
-        box-shadow:0 10px 28px rgba(22,50,79,.14);
-        color:#526173;
-        font-size:.78rem;
-        line-height:1.5;
-        font-weight:650;
-        text-align:left;
-        word-break:keep-all;
-      }
-      .premium-best-teacher-help.open .premium-help-tooltip{
-        display:block;
-      }
       .teacher-preference-card{
         padding:28px 22px 22px;
         border-radius:28px;
@@ -123,14 +63,14 @@
       .teacher-preference-list{
         display:flex;
         flex-direction:column;
-        gap:14px;
+        gap:10px;
       }
       .teacher-preference-opt{
         width:100%;
         display:flex;
-        align-items:flex-start;
-        gap:14px;
-        padding:18px 16px;
+        align-items:center;
+        gap:10px;
+        padding:14px 16px;
         border:2px solid #e5ebf2;
         border-radius:22px;
         background:#fff;
@@ -176,7 +116,7 @@
         line-height:1.35;
         font-weight:900;
         color:var(--ink);
-        margin-bottom:6px;
+        margin-bottom:3px;
         word-break:keep-all;
       }
       .teacher-preference-desc{
@@ -184,7 +124,7 @@
         font-size:.98rem;
         line-height:1.6;
         color:#7f8a98;
-        font-weight:700;
+        font-weight:400;
         word-break:keep-all;
       }
       .teacher-preference-submit{
@@ -213,7 +153,7 @@
           padding:24px 18px 18px;
           border-radius:24px;
         }
-        .teacher-preference-card .qtitle{font-size:1.8rem;}
+        .teacher-preference-card .qtitle{font-size:1.45rem;}
         .teacher-preference-card .qsub{font-size:1rem;}
         .teacher-preference-opt{
           padding:16px 14px;
@@ -247,12 +187,12 @@
     const selected = answers.teacher_preference || '';
     qcardWrap.innerHTML = ''
       + '<div class="qcard teacher-preference-card">'
-      + '<div class="qtitle">선호하는 선생님 유형이 있으신가요?</div>'
-      + '<div class="qsub">원하시는 스타일을 알려주시면 매칭에 참고할게요.</div>'
+      + '<div class="qtitle">어떤 선생님을 원하세요?</div>'
+      + '<div class="qsub">매칭에 참고할 선호 유형을 선택해주세요.</div>'
       + '<div class="opt-list teacher-preference-list">'
-      + preferenceOption('foreign', '외국인 선생님', '자연스러운 영어 회화를 많이 연습하고 싶은 분께 추천해요.', selected)
-      + preferenceOption('korean', '한국인 선생님', '기초 영어 레벨이거나, 설명을 한국어로도 함께 듣고 싶은 분께 추천해요.', selected)
-      + preferenceOption('no_preference', '상관없어요', '일정과 조건이 가장 잘 맞는 선생님으로 추천해드려요.', selected)
+      + preferenceOption('foreign', '외국인 선생님', '영어로 회화 연습', selected)
+      + preferenceOption('korean', '한국인 선생님', '한국어 설명도 함께', selected)
+      + preferenceOption('no_preference', '상관없어요', '일정과 조건 우선', selected)
       + '</div>'
       + '<button type="button" class="btn-next teacher-preference-submit" id="teacherPreferenceSubmit" disabled>신청 완료하기</button>'
       + '</div>';
@@ -328,24 +268,6 @@
   };
 
   document.addEventListener('click', (event) => {
-    const helpButton = event.target.closest?.('.premium-help-btn');
-    if (helpButton) {
-      event.preventDefault();
-      event.stopPropagation();
-      const wrap = helpButton.closest('.premium-best-teacher-help');
-      const willOpen = !wrap.classList.contains('open');
-      document.querySelectorAll('.premium-best-teacher-help.open').forEach(item => item.classList.remove('open'));
-      wrap.classList.toggle('open', willOpen);
-      helpButton.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-      return;
-    }
-
-    document.querySelectorAll('.premium-best-teacher-help.open').forEach(item => {
-      item.classList.remove('open');
-      const button = item.querySelector('.premium-help-btn');
-      if (button) button.setAttribute('aria-expanded', 'false');
-    });
-
     if (!preferenceViewActive) return;
     const back = event.target.closest?.('#backBtn');
     if (!back) return;

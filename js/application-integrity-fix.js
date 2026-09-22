@@ -13,9 +13,7 @@
       tierStep.options.forEach(option => {
         if (!option || typeof option.more !== 'string') return;
         option.more = option.more.replace(/가능 영어:/g, '수업 타입:');
-        if (option.name !== '프리미엄') {
-          option.more = option.more.replace(/ · 비즈니스/g, '');
-        }
+        if (option.name !== '프리미엄') option.more = option.more.replace(/ · 비즈니스/g, '');
       });
 
       if (typeof renderStep === 'function') renderStep();

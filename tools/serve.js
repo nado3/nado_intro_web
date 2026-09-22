@@ -3,7 +3,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
-const port = Number(process.env.PORT || 4173);
+const args = process.argv.slice(2);
+const argumentValue = flag => {
+  const index = args.indexOf(flag);
+  return index >= 0 ? args[index + 1] : '';
+};
+const port = Number(argumentValue('--port') || process.env.PORT || 4173);
+const host = argumentValue('--host') || process.env.HOST || '127.0.0.1';
 const mimeTypes = {
   '.css': 'text/css; charset=utf-8',
   '.html': 'text/html; charset=utf-8',
@@ -32,6 +38,7 @@ http.createServer((request, response) => {
     response.writeHead(200, { 'Content-Type': mimeTypes[path.extname(filePath)] || 'application/octet-stream' });
     response.end(content);
   });
-}).listen(port, '127.0.0.1', () => {
-  console.log(`hellonado local preview: http://127.0.0.1:${port}`);
+}).listen(port, host, () => {
+  const displayHost = host === '0.0.0.0' ? '127.0.0.1' : host;
+  console.log(`hellonado local preview: http://${displayHost}:${port}`);
 });

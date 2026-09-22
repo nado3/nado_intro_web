@@ -78,7 +78,7 @@
         <div class="field-label">수업 가능한 지역을 선택해주세요</div>
         <div class="service-area-options">
           ${areas.length
-            ? areas.map(area => `<button type="button" class="service-area-opt ${currentCode === area.code ? 'selected' : ''}" data-incheon-area-code="${escapeHtml(area.code)}">${escapeHtml(area.label)}</button>`).join('')
+            ? areas.filter(area => !currentCode || area.code === currentCode).map(area => `<button type="button" class="service-area-opt ${currentCode === area.code ? 'selected' : ''}" data-incheon-area-code="${escapeHtml(area.code)}">${escapeHtml(area.label)}</button>`).join('')
             : '<div class="preferred-place-help">인천 가능 지역을 불러오는 중이에요.</div>'}
         </div>
         <label class="field-label" for="preferredPlaceInput">구체적인 희망 장소 <span class="optional-label">선택</span></label>
@@ -106,6 +106,7 @@
           if (typeof setNextState === 'function' && typeof activeSteps !== 'undefined' && typeof current !== 'undefined') {
             setNextState(activeSteps[current]);
           }
+          renderStep();
           enableNextForSelectedArea();
         });
       });
