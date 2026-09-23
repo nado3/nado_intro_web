@@ -153,6 +153,12 @@ begin
     -- internal filter columns are intentionally omitted from the projection.
     where teacher.teacher_id is not null
       and teacher.display_name is not null
+      and exists (
+        select 1 from public.profiles as profile
+        where profile.id::text = teacher.teacher_id
+          and profile.role = 'teacher'
+          and profile.is_active is true
+      )
   ),
   seoul_catalog as (
     -- The existing catalog RPC is the canonical active code -> label source.
