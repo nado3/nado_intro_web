@@ -1395,9 +1395,6 @@
   }
 
   async function fetchLiveTeachers(region, force) {
-    if (!force && Object.prototype.hasOwnProperty.call(state.liveCache, region)) {
-      return state.liveCache[region];
-    }
     if (state.inFlight[region]) return state.inFlight[region];
     state.inFlight[region] = Promise.resolve(getClient().rpc('get_public_teacher_directory_v3', { p_region: region }))
       .then(async response => {
@@ -1447,9 +1444,8 @@
     if (sameRegion) return;
 
     const requestId = ++state.requestId;
-    const fallbackTeachers = teachersForRegion(global.NADO_TEACHER_DIRECTORY_FALLBACK, region);
-    if (fallbackTeachers.length) renderTeachers(fallbackTeachers, region, 'snapshot');
-    else renderLoading(region);
+    // A local snapshot cannot reflect an administrator's activation changes.
+    renderLoading(region);
     if (moveFocusToResults) window.requestAnimationFrame(() => title.focus());
 
     fetchLiveTeachers(region, settings.force === true).then(liveTeachers => {
@@ -1459,9 +1455,9 @@
       else renderEmpty(region);
     }).catch(error => {
       if (requestId !== state.requestId || state.region !== region) return;
-      if (!fallbackTeachers.length) renderError(region);
+      renderError(region);
       if (global.console && typeof global.console.warn === 'function') {
-        global.console.warn('NADO teacher directory is using its local snapshot.', error && error.message ? error.message : error);
+        global.console.warn('NADO teacher directory request failed.', error && error.message ? error.message : error);
       }
     });
   }
@@ -1564,9 +1560,7 @@
         render(teachers.find(matches), region, 'live');
       } catch (_) {
         if (token !== request || !panel.isConnected) return;
-        const teacher = teachersForRegion(global.NADO_TEACHER_DIRECTORY_FALLBACK, region).find(matches);
-        if (teacher) render(teacher, region, 'snapshot');
-        else panel.innerHTML = '<p>해당 지역의 최신 정보를 불러오지 못했어요. 잠시 후 다시 선택해주세요.</p>';
+        panel.innerHTML = '<p>해당 지역의 최신 정보를 불러오지 못했어요. 잠시 후 다시 선택해주세요.</p>';
       }
     };
     buttons.forEach(button => button.addEventListener('click', () => select(button.dataset.profileRegion)));
@@ -1921,6 +1915,9 @@
       else showRegionPicker(true);
     });
     window.addEventListener('pagehide', teardownRealtimeRefresh, { once: true });
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && state.region) loadRegion(state.region, { historyMode: 'none', force: true });
+    });
     const sdk = document.getElementById('teacherDirectorySupabaseSdk');
     if (sdk && !global.supabase) {
       sdk.addEventListener('load', () => {
