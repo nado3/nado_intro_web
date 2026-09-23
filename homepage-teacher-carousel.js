@@ -4,9 +4,28 @@
   const deck = document.getElementById('randomTeachers');
   if (!deck) return;
 
-  const source = Array.isArray(window.NADO_TEACHER_DIRECTORY_FALLBACK)
-    ? window.NADO_TEACHER_DIRECTORY_FALLBACK
-    : [];
+  async function initialize() {
+  const config = window.NADO_MEMBER_CONFIG || {};
+  const key = config.SUPABASE_ANON_KEY || config.SUPABASE_PUBLISHABLE_KEY;
+  if (!window.supabase || !config.SUPABASE_URL || !key) {
+    deck.closest('.hero-right')?.setAttribute('hidden', '');
+    return;
+  }
+  const client = window.supabase.createClient(config.SUPABASE_URL, key, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+  });
+  const results = await Promise.all(['Songdo', 'Seoul'].map(async region => {
+    let result = await client.rpc('get_public_teacher_directory_v3', { p_region: region });
+    if (result.error && ['PGRST202', '42883'].includes(result.error.code)) {
+      result = await client.rpc('get_public_teacher_directory_v2', { p_region: region });
+    }
+    if (result.error) throw result.error;
+    return result.data || [];
+  }));
+  const liveNames = new Set(results.flat().map(row => String(row.display_name || '').trim().toLocaleLowerCase()));
+  const source = (Array.isArray(window.NADO_TEACHER_DIRECTORY_FALLBACK)
+    ? window.NADO_TEACHER_DIRECTORY_FALLBACK : [])
+    .filter(teacher => liveNames.has(String(teacher.displayName || '').trim().toLocaleLowerCase()));
   const teachers = source.filter(teacher => (
     teacher
     && teacher.displayName
@@ -115,4 +134,12 @@
   });
 
   render();
+  }
+  // Never reveal snapshot cards before the live active directory is verified.
+  const start = () => initialize().catch(error => {
+    deck.closest('.hero-right')?.setAttribute('hidden', '');
+    console.warn('NADO home teachers could not be loaded.', error);
+  });
+  if (window.supabase) start();
+  else document.getElementById('homeTeacherSupabaseSdk')?.addEventListener('load', start, { once: true });
 }());
