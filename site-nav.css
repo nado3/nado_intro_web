@@ -110,6 +110,20 @@ body.legal-page .wrap { padding-top: calc(var(--site-nav-height) + 3rem); }
 
 @media (max-width: 900px) {
   .site-nav { padding: 1rem 1.5rem; }
+  .site-nav .nav-logo-frame {
+    width: 110px;
+    height: 32px;
+    overflow: visible;
+    flex-shrink: 0;
+  }
+
+  .site-nav .nav-logo-frame img {
+    width: 104px;
+    height: auto;
+    display: block;
+    transform: translate(-6px, 3px);
+  }
+
   .site-nav .nav-links { display: none; }
   .site-nav .nav-toggle { display: block; }
   .site-nav .nav-links.mobile-open {
