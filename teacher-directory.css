@@ -1335,7 +1335,8 @@ body.subpage #teacher-finder {padding-top:16px;margin-top:0;}
   }
 
   .related-teachers {
-    margin-top: 0.18rem;
+    margin: 0.35rem 0 0;
+    padding: 0;
     gap: 0;
   }
 
