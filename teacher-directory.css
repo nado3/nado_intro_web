@@ -1335,7 +1335,7 @@ body.subpage #teacher-finder {padding-top:16px;margin-top:0;}
   }
 
   .related-teachers {
-    margin: 0.35rem 0 0;
+    margin: 1.1rem 0 0;
     padding: 0;
     gap: 0;
   }
@@ -1358,6 +1358,6 @@ body.subpage #teacher-finder {padding-top:16px;margin-top:0;}
 
   /* Remove the large empty area under the final CTA on mobile. */
   .teacher-dialog-body {
-    padding-bottom: calc(0.1rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(0.9rem + env(safe-area-inset-bottom));
   }
 }
