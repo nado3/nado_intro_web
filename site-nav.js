@@ -15,12 +15,14 @@
 
   const closeMenu = () => {
     navLinks.classList.remove('mobile-open');
+    navLinks.closest('.site-nav')?.classList.remove('menu-open');
     navToggle.textContent = '☰';
     navToggle.setAttribute('aria-expanded', 'false');
   };
 
   navToggle.addEventListener('click', () => {
     const isOpen = navLinks.classList.toggle('mobile-open');
+    navLinks.closest('.site-nav')?.classList.toggle('menu-open', isOpen);
     navToggle.textContent = isOpen ? '✕' : '☰';
     navToggle.setAttribute('aria-expanded', String(isOpen));
   });

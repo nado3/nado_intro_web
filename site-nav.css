@@ -124,6 +124,12 @@ body.legal-page .wrap { padding-top: calc(var(--site-nav-height) + 3rem); }
     transform: translate(-6px, 3px);
   }
 
+  /* Hide the NADO logo while the mobile menu is open. */
+  .site-nav:has(.nav-links.mobile-open) .nav-logo,
+  .site-nav.menu-open .nav-logo {
+    display: none !important;
+  }
+
   .site-nav .nav-links { display: none; }
   .site-nav .nav-toggle { display: block; }
   .site-nav .nav-links.mobile-open {
