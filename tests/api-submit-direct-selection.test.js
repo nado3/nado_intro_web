@@ -780,10 +780,26 @@ test('submission failures return structured diagnostics and write a PII-free Sup
     assert.equal(res.statusCode, 503);
     assert.equal(res.payload.error_type, 'teacher_directory_config');
     assert.match(res.payload.request_id, /^sub_/);
-    assert.equal(calls.length, 1, 'only the server-side error log should be written');
-    assert.match(calls[0].url, /\/rest\/v1\/submission_error_logs$/);
+    assert.equal(calls.length, 3, 'application backup, failed-status update, and PII-free error log should be written');
+    assert.match(calls[0].url, /\/rest\/v1\/application_submissions$/);
+    assert.match(calls[1].url, /\/rest\/v1\/application_submissions\?/);
+    assert.match(calls[2].url, /\/rest\/v1\/submission_error_logs$/);
 
-    const payload = JSON.parse(calls[0].init.body);
+    const backup = JSON.parse(calls[0].init.body);
+    assert.equal(backup.status, 'received');
+    assert.equal(backup.full_name, 'TEST STUDENT');
+    assert.equal(backup.phone, '01012341234');
+    assert.equal(backup.teacher_id, TEACHER_ID);
+    assert.equal(backup.teacher_name, 'Amy');
+    assert.deepEqual(backup.raw_payload['submission[3]'], ['TEST STUDENT']);
+    assert.deepEqual(backup.raw_payload['submission[4][full]'], ['01012341234']);
+
+    const failedPatch = JSON.parse(calls[1].init.body);
+    assert.equal(failedPatch.status, 'failed');
+    assert.equal(failedPatch.status_code, 503);
+    assert.equal(failedPatch.error_type, 'teacher_directory_config');
+
+    const payload = JSON.parse(calls[2].init.body);
     assert.equal(payload.status_code, 503);
     assert.equal(payload.error_type, 'teacher_directory_config');
     assert.equal(payload.region, 'Songdo');
@@ -791,8 +807,8 @@ test('submission failures return structured diagnostics and write a PII-free Sup
     assert.equal(payload.teacher_id, TEACHER_ID);
     assert.equal(payload.teacher_name, 'Amy');
     assert.equal(payload.environment, 'production');
-    assert.ok(!calls[0].init.body.includes('TEST STUDENT'));
-    assert.ok(!calls[0].init.body.includes('01012341234'));
+    assert.ok(!calls[2].init.body.includes('TEST STUDENT'));
+    assert.ok(!calls[2].init.body.includes('01012341234'));
   } finally {
     global.fetch = originalFetch;
     restoreEnvironment(saved);

@@ -618,6 +618,129 @@ export function submissionLogContext(params, classification) {
   };
 }
 
+
+function paramsToStoredPayload(params) {
+  const payload = {};
+  if (!(params instanceof URLSearchParams)) return payload;
+  params.forEach((value, key) => {
+    if (!Object.hasOwn(payload, key)) payload[key] = [];
+    payload[key].push(String(value));
+  });
+  return payload;
+}
+
+function allParamValues(params, key, maxItems = 50, maxLength = 2000) {
+  if (!(params instanceof URLSearchParams)) return [];
+  return params.getAll(key)
+    .slice(0, maxItems)
+    .map(value => String(value || '').normalize('NFKC').slice(0, maxLength));
+}
+
+function firstParamValue(params, key, maxLength = 4000) {
+  const values = allParamValues(params, key, 1, maxLength);
+  return values.length ? values[0] : '';
+}
+
+function applicationSnapshot(params, requestId, origin, env) {
+  return {
+    request_id: boundedLogText(requestId, 100),
+    status: 'received',
+    full_name: firstParamValue(params, 'submission[3]', 200) || null,
+    phone: firstParamValue(params, 'submission[4][full]', 100) || null,
+    age_group: firstParamValue(params, 'submission[5]', 100) || null,
+    english_level: firstParamValue(params, 'submission[7]', 300) || null,
+    goals: allParamValues(params, 'submission[8][]', 50, 500),
+    place_choices: allParamValues(params, 'submission[29][]', 50, 500),
+    plan_raw: firstParamValue(params, 'submission[30]', 300) || null,
+    payment_confirmation: firstParamValue(params, 'submission[31]', 500) || null,
+    schedule_raw: firstParamValue(params, 'submission[32]', 4000) || null,
+    place_label: firstParamValue(params, 'submission[33]', 1000) || null,
+    preferred_start_date: firstParamValue(params, 'submission[34]', 100) || null,
+    referrals: allParamValues(params, 'submission[35][]', 50, 500),
+    gender: firstParamValue(params, 'submission[36]', 100) || null,
+    referral_other: firstParamValue(params, 'submission[38]', 2000) || null,
+    goals_other: firstParamValue(params, 'submission[39]', 2000) || null,
+    frequency: firstParamValue(params, 'submission[40]', 300) || null,
+    duration: firstParamValue(params, 'submission[41]', 300) || null,
+    application_type: firstParamValue(params, 'submission[43]', 300) || null,
+    notes_raw: firstParamValue(params, 'submission[28]', 10000) || null,
+    matching_type: firstParamValue(params, 'submission[62]', 200) || null,
+    teacher_name: firstParamValue(params, 'submission[63]', 300) || null,
+    teacher_id: firstParamValue(params, 'submission[64]', 200) || null,
+    place_detail: firstParamValue(params, 'submission[44]', 4000) || null,
+    raw_payload: paramsToStoredPayload(params),
+    source_origin: boundedLogText(origin || '', 500) || null,
+    environment: boundedLogText((env && env.VERCEL_ENV) || 'unknown', 40)
+  };
+}
+
+async function supabaseServerRequest(env, path, options = {}) {
+  const supabaseUrl = boundedLogText(env && env.SUPABASE_URL, 500);
+  const secretKey = boundedLogText(env && env.SUPABASE_SECRET_KEY, 1200);
+  if (!supabaseUrl || !secretKey) return { ok: false, reason: 'config' };
+
+  let endpoint;
+  try {
+    endpoint = new URL(path, supabaseUrl);
+  } catch (error) {
+    return { ok: false, reason: 'url' };
+  }
+  if (endpoint.protocol !== 'https:') return { ok: false, reason: 'url' };
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 2200);
+  try {
+    const response = await fetch(endpoint, {
+      method: options.method || 'POST',
+      headers: {
+        apikey: secretKey,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        ...(options.prefer ? { Prefer: options.prefer } : {})
+      },
+      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      signal: controller.signal
+    });
+    const data = options.parseJson ? await response.json().catch(() => null) : null;
+    return { ok: response.ok, status: response.status, data };
+  } catch (error) {
+    return { ok: false, reason: error && error.name ? error.name : 'network' };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function saveApplicationSubmission(params, requestId, origin, env) {
+  const payload = applicationSnapshot(params, requestId, origin, env);
+  const result = await supabaseServerRequest(env, '/rest/v1/application_submissions', {
+    method: 'POST',
+    prefer: 'return=minimal',
+    body: payload,
+    timeoutMs: 2500
+  });
+  if (!result.ok) console.warn('application_submissions insert failed:', result.status || result.reason || 'unknown');
+  return result.ok;
+}
+
+async function updateApplicationSubmission(env, requestId, patch) {
+  if (!requestId) return false;
+  const qs = new URLSearchParams({ request_id: 'eq.' + requestId });
+  const result = await supabaseServerRequest(env, '/rest/v1/application_submissions?' + qs.toString(), {
+    method: 'PATCH',
+    prefer: 'return=minimal',
+    body: { updated_at: new Date().toISOString(), ...patch },
+    timeoutMs: 1800
+  });
+  if (!result.ok) console.warn('application_submissions update failed:', result.status || result.reason || 'unknown');
+  return result.ok;
+}
+
+function jotformSubmissionId(data) {
+  const content = data && data.content;
+  const value = content && (content.submissionID || content.submissionId || content.id);
+  return value === undefined || value === null ? null : boundedLogText(value, 120);
+}
+
 function directoryErrorType(error) {
   if (error && error.message === 'directory_config') return 'teacher_directory_config';
   if (error && error.name === 'AbortError') return 'teacher_directory_timeout';
@@ -685,6 +808,13 @@ async function writeSubmissionErrorLog(options) {
 }
 
 async function respondWithSubmissionError(res, options) {
+  await updateApplicationSubmission(options.env || {}, options.requestId, {
+    status: 'failed',
+    status_code: Number(options.statusCode) || 500,
+    error_type: boundedLogText(options.errorType, 80) || 'unknown_error',
+    error_message: boundedLogText(options.errorMessage, 500) || null,
+    failed_at: new Date().toISOString()
+  });
   await writeSubmissionErrorLog(options);
   return res.status(options.statusCode).json({
     success: false,
@@ -789,6 +919,11 @@ export default async function handler(req, res) {
     });
   }
 
+  // Durable first-write: preserve the student's complete submitted form payload before
+  // teacher/policy validation or Jotform. This prevents downstream failures from
+  // erasing the application details needed for manual recovery.
+  await saveApplicationSubmission(params, requestId, origin, process.env);
+
   const parsedSelection = classifyMatchingSubmission(params, {
     // Cached v1 pages removed their three-key matching block in the browser.
     // Keep this temporary compatibility path until the v2 cache window closes,
@@ -796,11 +931,14 @@ export default async function handler(req, res) {
     allowLegacySelectedPayloads: process.env.ALLOW_LEGACY_SELECTED_PAYLOADS !== 'false'
   });
   if (parsedSelection.selected && !origin) {
-    return res.status(403).json({
-      success: false,
-      error: '선생님 선택 신청은 웹사이트에서만 가능합니다',
-      error_type: 'selected_origin_required',
-      request_id: requestId
+    return respondWithSubmissionError(res, {
+      env: process.env,
+      requestId,
+      statusCode: 403,
+      errorType: 'selected_origin_required',
+      errorMessage: '선생님 선택 신청은 웹사이트에서만 가능합니다',
+      params,
+      classification: parsedSelection
     });
   }
   if (!parsedSelection.ok) {
@@ -890,6 +1028,16 @@ export default async function handler(req, res) {
         upstreamCode: data && data.responseCode
       });
     }
+    await updateApplicationSubmission(process.env, requestId, {
+      status: 'completed',
+      status_code: 200,
+      error_type: null,
+      error_message: null,
+      failed_at: null,
+      completed_at: new Date().toISOString(),
+      jotform_submission_id: jotformSubmissionId(data),
+      jotform_response_code: responseCode
+    });
     return res.status(200).json({ success: true, request_id: requestId });
   } catch (error) {
     return respondWithSubmissionError(res, {
