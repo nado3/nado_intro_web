@@ -567,6 +567,133 @@ export function jotformParams(params) {
   return sanitized;
 }
 
+function createRequestId() {
+  return 'sub_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+}
+
+function boundedLogText(value, maxLength) {
+  return String(value || '')
+    .normalize('NFKC')
+    .replace(/[\u0000-\u001f\u007f]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLength);
+}
+
+export function submissionLogContext(params, classification) {
+  if (!(params instanceof URLSearchParams)) {
+    return { region: '', plan: '', matching_type: '', teacher_id: '', teacher_name: '' };
+  }
+
+  const matchingType = singleParam(params, 'submission[62]', 40) || MANUAL_MATCHING_TYPE;
+  const teacherId = singleParam(params, 'submission[64]', 80);
+  const teacherName = singleParam(params, 'submission[63]', 100);
+  const tierValue = singleParam(params, 'submission[30]', 60);
+  const plan = canonicalPlan(tierValue.replace(/\([^)]*\)\s*$/, ''));
+
+  let region = classification && classification.selection
+    ? boundedLogText(classification.selection.region, 20)
+    : '';
+
+  if (!region) {
+    const notes = params.getAll('submission[28]');
+    if (notes.length === 1) {
+      const metadata = parseMetadataBlock(notes[0]);
+      if (metadata && metadata.selected_region) region = boundedLogText(metadata.selected_region, 20);
+    }
+  }
+
+  if (!region) {
+    const placeText = params.getAll('submission[29][]').join(' ');
+    if (/서울/.test(placeText)) region = 'Seoul';
+    else if (/송도|IGC|트리플/.test(placeText)) region = 'Songdo';
+  }
+
+  return {
+    region,
+    plan,
+    matching_type: boundedLogText(matchingType, 40),
+    teacher_id: boundedLogText(teacherId, 80),
+    teacher_name: boundedLogText(teacherName, 100)
+  };
+}
+
+function directoryErrorType(error) {
+  if (error && error.message === 'directory_config') return 'teacher_directory_config';
+  if (error && error.name === 'AbortError') return 'teacher_directory_timeout';
+  return 'teacher_directory_upstream';
+}
+
+async function writeSubmissionErrorLog(options) {
+  const env = options.env || {};
+  const supabaseUrl = boundedLogText(env.SUPABASE_URL, 500);
+  const secretKey = boundedLogText(env.SUPABASE_SECRET_KEY, 1200);
+  if (!supabaseUrl || !secretKey) return false;
+
+  let endpoint;
+  try {
+    endpoint = new URL('/rest/v1/submission_error_logs', supabaseUrl);
+  } catch (error) {
+    console.warn('submission_error_logs: invalid SUPABASE_URL');
+    return false;
+  }
+  if (endpoint.protocol !== 'https:') return false;
+
+  const context = submissionLogContext(options.params, options.classification);
+  const payload = {
+    request_id: boundedLogText(options.requestId, 100),
+    status_code: Number(options.statusCode) || 500,
+    error_type: boundedLogText(options.errorType, 80) || 'unknown_error',
+    error_message: boundedLogText(options.errorMessage, 300),
+    region: context.region || null,
+    plan: context.plan || null,
+    matching_type: context.matching_type || null,
+    teacher_id: context.teacher_id || null,
+    teacher_name: context.teacher_name || null,
+    upstream_status: Number.isFinite(Number(options.upstreamStatus)) ? Number(options.upstreamStatus) : null,
+    upstream_code: options.upstreamCode === undefined || options.upstreamCode === null
+      ? null
+      : boundedLogText(options.upstreamCode, 80),
+    environment: boundedLogText(env.VERCEL_ENV || 'unknown', 40)
+  };
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 1500);
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        apikey: secretKey,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal'
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+    if (!response.ok) {
+      console.warn('submission_error_logs insert failed:', response.status);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.warn('submission_error_logs write failed:', error && error.name ? error.name : 'unknown');
+    return false;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function respondWithSubmissionError(res, options) {
+  await writeSubmissionErrorLog(options);
+  return res.status(options.statusCode).json({
+    success: false,
+    error: options.errorMessage,
+    error_type: options.errorType,
+    request_id: options.requestId
+  });
+}
+
 async function loadPublicDirectory(region, env) {
   const supabaseUrl = cleanText(String(env.SUPABASE_URL || ''), 500);
   const supabaseKey = cleanText(String(env.SUPABASE_ANON_KEY || env.SUPABASE_PUBLISHABLE_KEY || ''), 1000);
@@ -608,6 +735,7 @@ async function loadPublicDirectory(region, env) {
 export const __testing = Object.freeze({ canonicalArea, canonicalPlan, parseSelectedAreas, normalizeTime, timeMinutes });
 
 export default async function handler(req, res) {
+  const requestId = createRequestId();
   const allowedOrigins = new Set([
     'https://hellonado.com',
     'https://www.hellonado.com',
@@ -629,18 +757,36 @@ export default async function handler(req, res) {
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'POST만 허용됩니다' });
+    return res.status(405).json({
+      success: false,
+      error: 'POST만 허용됩니다',
+      error_type: 'method_not_allowed',
+      request_id: requestId
+    });
   }
 
   if (origin && !allowedOrigins.has(origin)) {
-    return res.status(403).json({ success: false, error: '허용되지 않은 출처입니다' });
+    return res.status(403).json({
+      success: false,
+      error: '허용되지 않은 출처입니다',
+      error_type: 'origin_not_allowed',
+      request_id: requestId
+    });
   }
 
   let params;
   try {
     params = paramsFromBody(req.body);
   } catch (error) {
-    return res.status(500).json({ success: false, error: '신청 처리 중 오류가 발생했습니다' });
+    return respondWithSubmissionError(res, {
+      env: process.env,
+      requestId,
+      statusCode: 500,
+      errorType: 'request_parse_error',
+      errorMessage: '신청 처리 중 오류가 발생했습니다',
+      params: null,
+      classification: null
+    });
   }
 
   const parsedSelection = classifyMatchingSubmission(params, {
@@ -650,15 +796,36 @@ export default async function handler(req, res) {
     allowLegacySelectedPayloads: process.env.ALLOW_LEGACY_SELECTED_PAYLOADS !== 'false'
   });
   if (parsedSelection.selected && !origin) {
-    return res.status(403).json({ success: false, error: '선생님 선택 신청은 웹사이트에서만 가능합니다' });
+    return res.status(403).json({
+      success: false,
+      error: '선생님 선택 신청은 웹사이트에서만 가능합니다',
+      error_type: 'selected_origin_required',
+      request_id: requestId
+    });
   }
   if (!parsedSelection.ok) {
-    return res.status(parsedSelection.status).json({ success: false, error: parsedSelection.error });
+    return respondWithSubmissionError(res, {
+      env: process.env,
+      requestId,
+      statusCode: parsedSelection.status,
+      errorType: parsedSelection.status === 503 ? 'teacher_directory_payload_invalid' : 'teacher_selection_payload_invalid',
+      errorMessage: parsedSelection.error,
+      params,
+      classification: parsedSelection
+    });
   }
 
   const studentPolicy = validateStudentPolicy(params);
   if (!studentPolicy.ok) {
-    return res.status(studentPolicy.status).json({ success: false, error: studentPolicy.error });
+    return respondWithSubmissionError(res, {
+      env: process.env,
+      requestId,
+      statusCode: studentPolicy.status,
+      errorType: 'student_policy_invalid',
+      errorMessage: studentPolicy.error,
+      params,
+      classification: parsedSelection
+    });
   }
 
   if (parsedSelection.direct) {
@@ -666,17 +833,41 @@ export default async function handler(req, res) {
     try {
       directoryRows = await loadPublicDirectory(parsedSelection.selection.region, process.env);
     } catch (error) {
-      return res.status(503).json({ success: false, error: '현재 선생님 가능 시간을 확인할 수 없습니다. 잠시 후 다시 시도해주세요.' });
+      return respondWithSubmissionError(res, {
+        env: process.env,
+        requestId,
+        statusCode: 503,
+        errorType: directoryErrorType(error),
+        errorMessage: '현재 선생님 가능 시간을 확인할 수 없습니다. 잠시 후 다시 시도해주세요.',
+        params,
+        classification: parsedSelection
+      });
     }
     const currentSelection = validateSelectionAgainstDirectory(parsedSelection.selection, directoryRows);
     if (!currentSelection.ok) {
-      return res.status(currentSelection.status).json({ success: false, error: currentSelection.error });
+      return respondWithSubmissionError(res, {
+        env: process.env,
+        requestId,
+        statusCode: currentSelection.status,
+        errorType: currentSelection.status === 503 ? 'teacher_directory_data_invalid' : 'teacher_selection_changed',
+        errorMessage: currentSelection.error,
+        params,
+        classification: parsedSelection
+      });
     }
   }
 
   const API_KEY = process.env.JOTFORM_API_KEY;
   if (!API_KEY) {
-    return res.status(500).json({ success: false, error: '서버 설정이 완료되지 않았습니다' });
+    return respondWithSubmissionError(res, {
+      env: process.env,
+      requestId,
+      statusCode: 500,
+      errorType: 'jotform_config_missing',
+      errorMessage: '서버 설정이 완료되지 않았습니다',
+      params,
+      classification: parsedSelection
+    });
   }
 
   try {
@@ -687,10 +878,28 @@ export default async function handler(req, res) {
     const data = await jotformRes.json().catch(() => null);
     const responseCode = data && Number(data.responseCode);
     if (!jotformRes.ok || !data || responseCode !== 200) {
-      return res.status(502).json({ success: false, error: '신청 저장에 실패했습니다' });
+      return respondWithSubmissionError(res, {
+        env: process.env,
+        requestId,
+        statusCode: 502,
+        errorType: 'jotform_upstream_error',
+        errorMessage: '신청 저장에 실패했습니다',
+        params,
+        classification: parsedSelection,
+        upstreamStatus: jotformRes.status,
+        upstreamCode: data && data.responseCode
+      });
     }
-    return res.status(200).json({ success: true });
+    return res.status(200).json({ success: true, request_id: requestId });
   } catch (error) {
-    return res.status(500).json({ success: false, error: '신청 처리 중 오류가 발생했습니다' });
+    return respondWithSubmissionError(res, {
+      env: process.env,
+      requestId,
+      statusCode: 500,
+      errorType: error && error.name === 'AbortError' ? 'jotform_timeout' : 'jotform_network_error',
+      errorMessage: '신청 처리 중 오류가 발생했습니다',
+      params,
+      classification: parsedSelection
+    });
   }
 }

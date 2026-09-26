@@ -147,8 +147,8 @@ test('direct directory applications have a visible summary and bypass matching s
   assert.match(applyHtml, /style\.css\?v=47/);
   assert.match(trialHtml, /style\.css\?v=47/);
   assert.match(applyHtml, /responsive-overrides\.css\?v=7/);
-  assert.match(applyHtml, /script\.js\?v=47/);
-  assert.match(trialHtml, /script\.js\?v=47/);
+  assert.match(applyHtml, /script\.js\?v=48/);
+  assert.match(trialHtml, /script\.js\?v=48/);
   assert.match(applyHtml, /@supabase\/supabase-js@2\.57\.4/);
   assert.match(trialHtml, /@supabase\/supabase-js@2\.57\.4/);
   assert.match(applicationSource, /else if \(DIRECTORY_SELECTION\) \{\s*showSuccess\(\);/);

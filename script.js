@@ -2074,6 +2074,51 @@ backBtn.addEventListener('click', () => {
   if (current > 0){ current--; renderStep(); centerCurrentQuestion(); }
 });
 
+function createSubmissionError(message, details) {
+  const meta = details || {};
+  const error = new Error(String(message || '신청 저장에 실패했습니다.'));
+  const statusCode = Number(meta.statusCode);
+  error.statusCode = Number.isFinite(statusCode) ? statusCode : 0;
+  error.errorType = String(meta.errorType || 'unknown_error').slice(0, 60);
+  error.requestId = String(meta.requestId || '').slice(0, 100);
+  return error;
+}
+
+function compactAnalyticsText(value, maxLength) {
+  return String(value || '').replace(/\s+/g, ' ').trim().slice(0, maxLength || 100);
+}
+
+function analyticsPlan(a) {
+  const value = String((a && a.tier) || '').toLowerCase();
+  if (value.includes('이코노미') || value.includes('economy')) return 'economy';
+  if (value.includes('스탠다드') || value.includes('standard')) return 'standard';
+  if (value.includes('프리미엄') || value.includes('premium')) return 'premium';
+  return compactAnalyticsText(value, 40);
+}
+
+function analyticsRegion(a) {
+  const explicit = compactAnalyticsText(a && a.selected_region, 40);
+  if (explicit) return explicit;
+  const placeText = [a && a.placeType, ...(Array.isArray(a && a.place) ? a.place : [])].filter(Boolean).join(' ');
+  if (/서울/.test(placeText)) return 'Seoul';
+  if (/송도|IGC|트리플/.test(placeText)) return 'Songdo';
+  return '';
+}
+
+function submissionErrorAnalyticsParams(error, a) {
+  return {
+    status_code: Number(error && error.statusCode) || 0,
+    error_type: compactAnalyticsText((error && error.errorType) || 'unknown_error', 60),
+    region: analyticsRegion(a),
+    plan: analyticsPlan(a),
+    matching_type: compactAnalyticsText(a && a.matching_type, 40),
+    teacher_id: compactAnalyticsText(a && a.teacher_id, 80),
+    teacher_name: compactAnalyticsText(a && a.teacher_name, 100),
+    error_message: compactAnalyticsText(error && error.message, 100),
+    request_id: compactAnalyticsText(error && error.requestId, 100)
+  };
+}
+
 async function submitToJotform(a) {
   if (LOCAL_TEST_MODE) {
     await new Promise(resolve => setTimeout(resolve, 350));
@@ -2126,7 +2171,12 @@ async function submitToJotform(a) {
       ? [serviceAreaLabel(a.areaCode), a.preferredPlace || ''].filter(Boolean).join(' / ')
       : (a.preferredPlace || a.songdoPlace || '');
     params.append('submission[44]', placeDetail); // 매칭 지역 + 희망/지정 장소 세부정보
-  if (navigator.onLine === false) throw new Error('인터넷 연결이 끊겨 있어요. 연결을 확인한 후 다시 제출해주세요. 입력 내용은 유지됩니다.');
+  if (navigator.onLine === false) {
+    throw createSubmissionError(
+      '인터넷 연결이 끊겨 있어요. 연결을 확인한 후 다시 제출해주세요. 입력 내용은 유지됩니다.',
+      { statusCode: 0, errorType: 'offline' }
+    );
+  }
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 30000);
   let response;
@@ -2139,15 +2189,36 @@ async function submitToJotform(a) {
     });
   } catch (error) {
     const allowedHost = ['hellonado.com', 'www.hellonado.com', 'nado-intro-web.vercel.app'].includes(location.hostname);
-    throw new Error(!allowedHost
-      ? '현재 미리보기 주소에서는 실제 신청을 전송할 수 없어요. hellonado.com에서 신청해주세요.'
-      : error.name === 'AbortError'
-        ? '서버 응답이 지연되어 접수 여부를 확인하지 못했어요. 중복 신청을 피하려면 카카오톡으로 접수 여부를 먼저 확인해주세요. 입력 내용은 유지됩니다.'
-        : '신청 서버에 연결하지 못해 접수 여부를 확인하지 못했어요. 인터넷 연결을 확인하고, 계속되면 카카오톡으로 접수 여부를 문의해주세요. 입력 내용은 유지됩니다.');
+    if (!allowedHost) {
+      throw createSubmissionError(
+        '현재 미리보기 주소에서는 실제 신청을 전송할 수 없어요. hellonado.com에서 신청해주세요.',
+        { statusCode: 0, errorType: 'preview_origin_blocked' }
+      );
+    }
+    if (error && error.name === 'AbortError') {
+      throw createSubmissionError(
+        '서버 응답이 지연되어 접수 여부를 확인하지 못했어요. 중복 신청을 피하려면 카카오톡으로 접수 여부를 먼저 확인해주세요. 입력 내용은 유지됩니다.',
+        { statusCode: 0, errorType: 'request_timeout' }
+      );
+    }
+    throw createSubmissionError(
+      '신청 서버에 연결하지 못해 접수 여부를 확인하지 못했어요. 인터넷 연결을 확인하고, 계속되면 카카오톡으로 접수 여부를 문의해주세요. 입력 내용은 유지됩니다.',
+      { statusCode: 0, errorType: 'network_error' }
+    );
   } finally { clearTimeout(timeout); }
   const result = await response.json().catch(() => null);
   if (!response.ok || !result || result.success !== true) {
-    throw new Error((result && (result.error || result.message)) || '신청 저장에 실패했습니다.');
+    const fallbackType = !response.ok
+      ? 'http_' + response.status
+      : 'invalid_submit_response';
+    throw createSubmissionError(
+      (result && (result.error || result.message)) || '신청 저장에 실패했습니다.',
+      {
+        statusCode: response.status,
+        errorType: result && result.error_type ? result.error_type : fallbackType,
+        requestId: result && result.request_id ? result.request_id : ''
+      }
+    );
   }
   return result;
 }
@@ -2261,7 +2332,7 @@ async function showSuccess(){
   } catch (err) {
     submissionInProgress = false;
     console.error('Jotform 제출 실패:', err);
-    trackFormEvent('form_submit_error');
+    trackFormEvent('form_submit_error', submissionErrorAnalyticsParams(err, a));
     showSubmitError(err && err.message);
     return;
   }

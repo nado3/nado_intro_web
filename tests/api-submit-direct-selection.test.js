@@ -740,3 +740,61 @@ test('cached metadata-stripped selected payload is allowed only during the rollo
     restoreEnvironment(saved);
   }
 });
+
+test('submission failures return structured diagnostics and write a PII-free Supabase error log when configured', async () => {
+  const api = await apiModulePromise;
+  const originalFetch = global.fetch;
+  const saved = {
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+    SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY,
+    SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
+    JOTFORM_API_KEY: process.env.JOTFORM_API_KEY,
+    VERCEL_ENV: process.env.VERCEL_ENV
+  };
+  process.env.SUPABASE_URL = 'https://project.supabase.co';
+  delete process.env.SUPABASE_ANON_KEY;
+  delete process.env.SUPABASE_PUBLISHABLE_KEY;
+  process.env.SUPABASE_SECRET_KEY = 'sb_secret_test';
+  process.env.JOTFORM_API_KEY = 'jotform-test';
+  process.env.VERCEL_ENV = 'production';
+
+  const calls = [];
+  global.fetch = async (url, init) => {
+    calls.push({ url: String(url), init });
+    return { ok: true, status: 201, json: async () => null };
+  };
+
+  try {
+    const params = directParams({
+      'submission[3]': 'TEST STUDENT',
+      'submission[4][full]': '01012341234'
+    });
+    const res = responseRecorder();
+    await api.default({
+      method: 'POST',
+      headers: { origin: 'https://hellonado.com' },
+      body: params.toString()
+    }, res);
+
+    assert.equal(res.statusCode, 503);
+    assert.equal(res.payload.error_type, 'teacher_directory_config');
+    assert.match(res.payload.request_id, /^sub_/);
+    assert.equal(calls.length, 1, 'only the server-side error log should be written');
+    assert.match(calls[0].url, /\/rest\/v1\/submission_error_logs$/);
+
+    const payload = JSON.parse(calls[0].init.body);
+    assert.equal(payload.status_code, 503);
+    assert.equal(payload.error_type, 'teacher_directory_config');
+    assert.equal(payload.region, 'Songdo');
+    assert.equal(payload.plan, 'economy');
+    assert.equal(payload.teacher_id, TEACHER_ID);
+    assert.equal(payload.teacher_name, 'Amy');
+    assert.equal(payload.environment, 'production');
+    assert.ok(!calls[0].init.body.includes('TEST STUDENT'));
+    assert.ok(!calls[0].init.body.includes('01012341234'));
+  } finally {
+    global.fetch = originalFetch;
+    restoreEnvironment(saved);
+  }
+});
