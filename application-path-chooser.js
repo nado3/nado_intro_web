@@ -70,7 +70,6 @@
       url.searchParams.set('lesson_kind',kind);
       if (index===1) url.searchParams.set('mode',kind);
       if (options.trialType) url.searchParams.set('trial_type',options.trialType);
-      if (options.trialType==='paid' && index===1) url.searchParams.set('plan','economy');
       if (new URL(location.href).searchParams.get('test')==='1') url.searchParams.set('test','1');
       link.href=url.href;
     });
@@ -83,8 +82,11 @@
   }
 
   function openDialog(event) {
-    event.preventDefault();
-    showChoices({kind:event.currentTarget.dataset.lessonKind || 'regular',trigger:event.currentTarget});
+    const target = event.currentTarget;
+    const href = target && target.getAttribute('href');
+    if (!href) return;
+    // The simplified application flow now handles lesson type, plan, and teacher selection inside the form.
+    // Let the original link navigate directly instead of opening the legacy path chooser.
   }
   firstChoice.addEventListener('click',event=>{
     if (!directAction) return;
