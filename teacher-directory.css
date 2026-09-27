@@ -1267,7 +1267,31 @@ body.teacher-dialog-open {
 .teacher-dialog-keywords { justify-content:center; margin-top:16px; gap:7px; }
 .teacher-dialog-keywords span { white-space:normal; word-break:keep-all; }
 
-.timetable-day {margin:16px 0}.timetable-day>strong{display:block;margin-bottom:8px;color:#2865af}.timetable-buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(74px,1fr));gap:8px}.timetable-time{border:1px solid #d5e1ef;border-radius:10px;padding:12px 8px;background:#fff;color:#243d58;font:inherit;cursor:pointer}.timetable-time[aria-pressed="true"]{background:#2865af;border-color:#2865af;color:white}.timetable-hint,.timetable-selection{font-size:.9rem;line-height:1.6;color:#52647a;overflow-wrap:anywhere}.timetable-apply{width:100%;border:0;cursor:pointer}.timetable-apply:disabled{opacity:.45;cursor:default}
+.timetable-hint,.timetable-selection{font-size:.9rem;line-height:1.6;color:#52647a;overflow-wrap:anywhere}
+.timetable-hint{margin:0 0 14px}
+.timetable-note-red{margin:-4px 0 14px;color:#d64545;font-size:.88rem;font-weight:800;line-height:1.55;word-break:keep-all}
+.timetable-selection{margin:12px 0}
+.timetable-calendar{padding:16px;border:1px solid #dce6f2;border-radius:18px;background:#fff;margin:8px 0 20px}
+.timetable-calendar-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;color:#16324f;font-size:1.2rem}
+.timetable-calendar-heading>div{display:flex;gap:8px}
+.timetable-calendar-heading button{width:40px;height:40px;border:0;border-radius:50%;background:#f0f6fd;color:#2869b7;font:600 28px/1 sans-serif;cursor:pointer}
+.timetable-calendar-week,.timetable-calendar-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;text-align:center}
+.timetable-calendar-week{color:#78879a;margin-bottom:8px;font-size:.85rem}
+.timetable-calendar-days button{display:grid;place-items:center;width:100%;aspect-ratio:1;max-height:48px;min-height:34px;padding:0;border:0;border-radius:50%;background:transparent;color:#23374e;font:600 1rem/1 'Pretendard',sans-serif;cursor:pointer}
+.timetable-calendar-days button:hover:not(:disabled){background:#edf5ff}
+.timetable-calendar-days button[aria-pressed="true"]{background:#4a90e2;color:#fff}
+.timetable-calendar-days button:disabled,.timetable-calendar-heading button:disabled{color:#b9c2cc;cursor:default;background:transparent}
+.timetable-calendar button:focus-visible{outline:2px solid #245eaa;outline-offset:2px}
+.timetable-calendar-note{margin:12px 0 0;color:#718197;font-size:.8rem;line-height:1.5;word-break:keep-all}
+.timetable-time-heading{margin:0 0 10px;color:#52647a;font-size:.92rem;font-weight:800}
+.timetable-buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(82px,1fr));gap:10px}
+.timetable-time{border:1px solid #d5e1ef;border-radius:12px;padding:13px 8px;background:#fff;color:#243d58;font:600 1rem/1.2 'Pretendard',sans-serif;cursor:pointer}
+.timetable-time:hover{border-color:#8eb9ea;background:#f7fbff}
+.timetable-time[aria-pressed="true"]{background:#e8f3ff;border-color:#2f7bd8;color:#2467b4}
+.timetable-no-times{grid-column:1/-1;margin:0;color:#7b899a;font-size:.9rem}
+.timetable-apply{width:100%;border:0;cursor:pointer}
+.timetable-apply:disabled{opacity:.45;cursor:default}
+@media(max-width:380px){.timetable-calendar{padding:12px 8px}.timetable-calendar-days,.timetable-calendar-week{gap:2px}}
 
 .teacher-summary-tags .teacher-category-flag,.teach-tags .teacher-category-flag { background:transparent; padding:0 3px; font-size:22px; line-height:1.3; vertical-align:middle; }
 
