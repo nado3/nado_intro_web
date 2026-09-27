@@ -445,3 +445,5 @@ body.form-page .tier-opt-desc .plan-phrase { display:inline-block; max-width:100
 
 body.form-page .time-drag-hint { margin:4px 0 10px; color:#718197; font-size:13px; font-weight:400; line-height:1.5; }
 body.form-page .followup-schedule-note { margin:12px 0 0; color:#718197; font-size:13px; font-weight:400; line-height:1.5; }
+
+.first-lesson-followup-note { display:inline-block; margin-top:.35rem; color:#d64545; font-weight:800; }
