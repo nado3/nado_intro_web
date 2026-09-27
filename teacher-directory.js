@@ -515,6 +515,7 @@
     return (Array.isArray(teachers) ? teachers : []).reduce((result, teacher) => {
       if (!teacher || (effectivePlan && !teacherPlanGroups(teacher).includes(effectivePlan))) return result;
       if (mode !== 'trial' || trialType === 'paid') {
+        if (bookableAvailabilityCount(teacher) < 1) return result;
         result.push(teacher);
         return result;
       }
@@ -529,7 +530,7 @@
         if (!areas.length) return slots;
         slots.push(Object.assign({}, slot, { areas }));
         return slots;
-      }, []);
+      }, []).filter(slot => slotDurationMinutes(slot) >= 60);
       if (!availability.length) return result;
       result.push(Object.assign({}, teacher, {
         availability,
@@ -636,13 +637,15 @@
     const teacherPlans = teacherPlanGroups(teacher);
     const planOptions = uniqueStrings(Array.isArray(settings.planOptions) ? settings.planOptions : [])
       .map(normalizePlanFilter)
-      .filter(plan => (plan === 'economy' || plan === 'standard') && teacherPlans.includes(plan));
+      .filter(plan => (plan === 'economy' || plan === 'standard' || plan === 'premium') && teacherPlans.includes(plan));
     const params = new URLSearchParams();
     params.set('source', 'teacher-directory');
     params.set('teacher_id', safeQueryValue(teacher && teacher.id, 100));
     params.set('teacher_name', safeQueryValue(teacher && teacher.name, 100));
     if (selectedPlan) params.set('plan', selectedPlan);
-    if (!selectedPlan && mode === 'regular' && planOptions.length) params.set('plan_options', planOptions.join(','));
+    if (!selectedPlan && (mode === 'regular' || (mode === 'trial' && trialType === 'paid')) && planOptions.length) {
+      params.set('plan_options', planOptions.join(','));
+    }
     params.set('region', normalizeRegion(teacher && teacher.region));
     params.set('day', safeQueryValue(slot && (slot.dayLabel || slot.dayOfWeek), 40));
     params.set('start', safeQueryValue(slot && slot.startTime, 20));
@@ -964,10 +967,9 @@
   function badgesMarkup(teacher) {
     const badges = ['<span class="directory-teacher-badges__label">수업 플랜</span>'];
     teacherPlanGroups(teacher).forEach(planKey => {
-      const plan = planKey === 'premium' ? 'Premium 상담' : planLabel(planKey);
+      const plan = planLabel(planKey);
       if (plan) badges.push(`<span class="directory-teacher-badge directory-teacher-badge--${escapeHtml(planKey)}">${plan}</span>`);
     });
-    if (teacher.businessEnglish) badges.push('<span class="directory-teacher-badge directory-teacher-badge--premium">Business English</span>');
 
     return badges.length ? `<span class="directory-teacher-badges">${badges.join('')}</span>` : '';
   }
@@ -1052,6 +1054,13 @@
 
   function applicationUrl(teacher, slot, sourceKind, selectedPlan, planOptions) {
     const url = new URL(applicationPage(), window.location.href);
+    const currentParams = new URL(window.location.href).searchParams;
+    const lessonKind = currentParams.get('lesson_kind');
+    if (lessonKind === 'regular' || lessonKind === 'trial') url.searchParams.set('lesson_kind', lessonKind);
+    if (currentParams.get('application_flow') === '1') url.searchParams.set('application_flow', '1');
+    const ageGroup = currentParams.get('age_group');
+    if (ageGroup) url.searchParams.set('age_group', ageGroup);
+    if (currentParams.get('frequency') === '2') url.searchParams.set('frequency', '2');
     if (slot) {
       const directParams = directApplicationParams(teacher, slot, {
         mode: state.mode,
@@ -1087,10 +1096,17 @@
     const isPaidTrial = state.mode === 'trial' && state.trialType === 'paid';
     const premiumSelection = normalizePlanFilter(state.planFilter) === 'premium';
     const teacherPlans = teacherPlanGroups(teacher);
-    const regularPlanOptions = teacherPlans.filter(plan => plan === 'economy' || plan === 'standard');
-    const selectedPlan = state.mode === 'trial'
-      ? (isFreeTrial ? 'economy' : normalizePlanFilter(state.planFilter))
-      : (premiumSelection ? 'premium' : '');
+    const regularPlanOptions = teacherPlans.filter(plan => plan === 'economy' || plan === 'standard' || plan === 'premium');
+    const currentParams = new URL(window.location.href).searchParams;
+    const cameFromApplicationFlow = currentParams.get('application_flow') === '1';
+    const requestedPlan = normalizePlanFilter(state.planFilter);
+    const selectedPlan = isFreeTrial
+      ? 'economy'
+      : (premiumSelection
+        ? 'premium'
+        : (cameFromApplicationFlow && (requestedPlan === 'economy' || requestedPlan === 'standard')
+          ? requestedPlan
+          : ''));
     const plansToValidate = selectedPlan ? [selectedPlan] : regularPlanOptions;
 
     if (availableMinutes < 60) {
@@ -1489,45 +1505,167 @@
     return `<a class="teacher-dialog-cta" href="${escapeHtml(applicationUrl(teacher, null, state.sourceKind))}">${label}</a>`;
   }
 
-  function timetableMarkup(teacher, sourceKind = state.sourceKind) {
-    return '<p class="timetable-hint">가능한 시작 시간을 여러 개 선택해주세요.</p>' + groupAvailabilityByDayForTimetable(teacher, sourceKind) + '<p class="timetable-selection" role="status">선택한 시간이 없습니다.</p><button type="button" class="teacher-dialog-cta timetable-apply" disabled>선택한 시간으로 신청하기</button>';
-  }
-  function groupAvailabilityByDayForTimetable(teacher, sourceKind = state.sourceKind) {
-    const groups = new Map();
-    teacher.availability.forEach(slot=>{
-      const source = document.createElement('div'); source.innerHTML=slotActionMarkup(teacher,slot,sourceKind);
-      const link=source.querySelector('a'); if(!link) return;
-      const day=slot.dayLabel;
-      if(!groups.has(day)) groups.set(day,[]);
-      for(let m=timeToMinutes(slot.startTime,false);m+60<=timeToMinutes(slot.endTime,true);m+=30){
-        const time=String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
-        const url=new URL(link.getAttribute('href'),location.href); url.searchParams.set('preferred_time',time);
-        groups.get(day).push('<button type="button" class="timetable-time" aria-pressed="false" data-time-url="'+escapeHtml(url.search)+'" data-area="'+escapeHtml(slot.areas.join(' · '))+'" data-time-label="'+escapeHtml(day+' '+time)+'">'+time+'</button>');
+  function timetableEntries(teacher, sourceKind = state.sourceKind) {
+    const entries = [];
+    (Array.isArray(teacher && teacher.availability) ? teacher.availability : []).forEach(slot => {
+      const source = document.createElement('div');
+      source.innerHTML = slotActionMarkup(teacher, slot, sourceKind);
+      const link = source.querySelector('a');
+      if (!link) return;
+
+      const dayOfWeek = Number.isInteger(slot.dayOfWeek) ? slot.dayOfWeek : normalizeDay(slot.dayLabel);
+      const start = timeToMinutes(slot.startTime, false);
+      const end = timeToMinutes(slot.endTime, true);
+      if (!Number.isInteger(dayOfWeek) || start === null || end === null || end - start < 60) return;
+
+      for (let minutes = start; minutes + 60 <= end; minutes += 30) {
+        const time = String(Math.floor(minutes / 60)).padStart(2,'0') + ':' + String(minutes % 60).padStart(2,'0');
+        const url = new URL(link.getAttribute('href'), location.href);
+        url.searchParams.set('preferred_time', time);
+        entries.push({
+          dayOfWeek,
+          dayLabel: slot.dayLabel,
+          time,
+          area: slot.areas.join(' · '),
+          url: url.search
+        });
       }
     });
-    return [...groups].map(([day,buttons])=>'<div class="timetable-day"><strong>'+escapeHtml(day)+'</strong><div class="timetable-buttons">'+buttons.join('')+'</div></div>').join('') || '<p>현재 신청 가능한 시간을 확인 중입니다.</p>';
+
+    const seen = new Set();
+    return entries.filter(entry => {
+      const key = [entry.dayOfWeek, entry.time, entry.url].join('|');
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).sort((left, right) => left.dayOfWeek - right.dayOfWeek || left.time.localeCompare(right.time));
   }
-  function bindTimetable() {
-    const selected=new Map(); const summary=dialogContent.querySelector('.timetable-selection'); const apply=dialogContent.querySelector('.timetable-apply');
-    dialogContent.querySelectorAll('[data-time-url]').forEach(button=>button.addEventListener('click',()=>{
-      const key=button.dataset.timeUrl;
-      if(selected.has(key)) selected.delete(key);
-      else {
-        const first=[...selected.values()][0];
-        if(first && first.dataset.area!==button.dataset.area){summary.textContent='장소가 다른 시간은 기존 선택을 해제한 후 선택해주세요.';return;}
-        selected.set(key,button);
+
+  function timetableMarkup(teacher, sourceKind = state.sourceKind) {
+    const entries = timetableEntries(teacher, sourceKind);
+    if (!entries.length) return '<p>현재 신청 가능한 시간을 확인 중입니다.</p>';
+    return '<p class="timetable-hint">첫 수업 날짜를 선택한 뒤 시작 시간을 하나 선택해주세요.</p>'
+      + '<p class="timetable-note-red">첫 수업 이후 일정은 선생님과 직접 조율하실 수 있어요.</p>'
+      + '<div class="timetable-calendar" data-timetable-calendar role="group" aria-label="첫 수업 날짜 선택"></div>'
+      + '<div class="timetable-time-heading">시작 시간</div>'
+      + '<div class="timetable-buttons timetable-calendar-times" data-timetable-times role="group" aria-label="시작 시간 선택"></div>'
+      + '<p class="timetable-selection" role="status">날짜와 시간을 선택해주세요.</p>'
+      + '<button type="button" class="teacher-dialog-cta timetable-apply" disabled>선택한 시간으로 신청하기</button>';
+  }
+
+  function bindTimetable(teacher, sourceKind = state.sourceKind) {
+    const entries = timetableEntries(teacher, sourceKind);
+    const calendar = dialogContent.querySelector('[data-timetable-calendar]');
+    const times = dialogContent.querySelector('[data-timetable-times]');
+    const summary = dialogContent.querySelector('.timetable-selection');
+    const apply = dialogContent.querySelector('.timetable-apply');
+    if (!calendar || !times || !summary || !apply || !entries.length) return;
+
+    const dateKey = date => [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2,'0'),
+      String(date.getDate()).padStart(2,'0')
+    ].join('-');
+    const parseDate = value => {
+      const match = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!match) return null;
+      return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+    };
+    const todayDate = new Date();
+    const today = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate());
+    const todayKey = dateKey(today);
+    const entriesForDate = value => {
+      const date = parseDate(value);
+      if (!date || date < today) return [];
+      return entries.filter(entry => entry.dayOfWeek === date.getDay());
+    };
+    const firstAvailableDate = () => {
+      for (let offset = 0; offset < 90; offset += 1) {
+        const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() + offset);
+        const value = dateKey(date);
+        if (entriesForDate(value).length) return value;
       }
-      button.setAttribute('aria-pressed',String(selected.has(key)));
-      summary.textContent=selected.size?[...selected.values()].map(b=>b.dataset.timeLabel).join(' · '):'선택한 시간이 없습니다.';
-      apply.disabled=!selected.size;
-    }));
-    apply?.addEventListener('click',()=>{
-      const values=[...selected.keys()]; if(!values.length)return;
-      const url=new URL(applicationPage()+values[0],location.href);
-      url.searchParams.set('time_choices',JSON.stringify(values));
-      const kind=new URL(location.href).searchParams.get('lesson_kind'); if(kind)url.searchParams.set('lesson_kind',kind);
+      return '';
+    };
+
+    let selectedDate = firstAvailableDate();
+    let selectedEntry = null;
+    let visibleMonth = (selectedDate || todayKey).slice(0,7);
+
+    const renderCalendar = () => {
+      const [year, month] = visibleMonth.split('-').map(Number);
+      const first = new Date(year, month - 1, 1);
+      const count = new Date(year, month, 0).getDate();
+      calendar.innerHTML = '<div class="timetable-calendar-heading"><strong aria-live="polite">'+year+'년 '+month+'월</strong><div>'
+        + '<button type="button" data-timetable-month="-1" aria-label="이전 달" '+(visibleMonth<=todayKey.slice(0,7)?'disabled':'')+'>‹</button>'
+        + '<button type="button" data-timetable-month="1" aria-label="다음 달">›</button></div></div>'
+        + '<div class="timetable-calendar-week" aria-hidden="true">'+['일','월','화','수','목','금','토'].map(day=>'<span>'+day+'</span>').join('')+'</div>'
+        + '<div class="timetable-calendar-days">'+Array.from({length:first.getDay()},()=>'<span aria-hidden="true"></span>').join('')
+        + Array.from({length:count},(_,index)=>{
+          const value = visibleMonth+'-'+String(index+1).padStart(2,'0');
+          const enabled = entriesForDate(value).length > 0;
+          return '<button type="button" data-timetable-date="'+value+'" aria-pressed="'+(value===selectedDate)+'" '+(value===todayKey?'aria-current="date" ':'')+(enabled?'':'disabled')+'>'+(index+1)+'</button>';
+        }).join('')
+        + '</div><p class="timetable-calendar-note">한국 시간 기준</p>';
+    };
+
+    const renderTimes = () => {
+      const available = entriesForDate(selectedDate);
+      times.innerHTML = available.map((entry,index) =>
+        '<button type="button" class="timetable-time" data-timetable-entry="'+index+'" aria-pressed="'+(selectedEntry===entry)+'">'+escapeHtml(entry.time)+'</button>'
+      ).join('');
+      if (!available.length) {
+        times.innerHTML = '<p class="timetable-no-times">선택 가능한 시간이 없습니다.</p>';
+      }
+      if (selectedEntry && !available.includes(selectedEntry)) selectedEntry = null;
+      summary.textContent = selectedEntry
+        ? selectedDate + ' · ' + selectedEntry.time
+        : '시작 시간을 하나 선택해주세요.';
+      apply.disabled = !selectedEntry;
+    };
+
+    calendar.addEventListener('click', event => {
+      const day = event.target.closest('[data-timetable-date]');
+      if (day && !day.disabled) {
+        selectedDate = day.dataset.timetableDate;
+        selectedEntry = null;
+        renderCalendar();
+        renderTimes();
+        calendar.querySelector('[data-timetable-date="'+selectedDate+'"]')?.focus({preventScroll:true});
+        return;
+      }
+      const nav = event.target.closest('[data-timetable-month]');
+      if (nav && !nav.disabled) {
+        const delta = Number(nav.dataset.timetableMonth);
+        const [year, month] = visibleMonth.split('-').map(Number);
+        visibleMonth = dateKey(new Date(year, month - 1 + delta, 1)).slice(0,7);
+        renderCalendar();
+        calendar.querySelector('[data-timetable-month="'+delta+'"]')?.focus({preventScroll:true});
+      }
+    });
+
+    times.addEventListener('click', event => {
+      const button = event.target.closest('[data-timetable-entry]');
+      if (!button) return;
+      const available = entriesForDate(selectedDate);
+      selectedEntry = available[Number(button.dataset.timetableEntry)] || null;
+      renderTimes();
+      times.querySelector('[data-timetable-entry="'+button.dataset.timetableEntry+'"]')?.focus({preventScroll:true});
+    });
+
+    apply.addEventListener('click', () => {
+      if (!selectedEntry || !selectedDate) return;
+      const url = new URL(applicationPage() + selectedEntry.url, location.href);
+      url.searchParams.set('preferred_date', selectedDate);
+      url.searchParams.set('preferred_time', selectedEntry.time);
+      url.searchParams.set('time_choices', JSON.stringify([selectedEntry.url]));
+      const kind = new URL(location.href).searchParams.get('lesson_kind');
+      if (kind) url.searchParams.set('lesson_kind', kind);
       location.assign(url.href);
     });
+
+    renderCalendar();
+    renderTimes();
   }
 
   function bindProfileRegions(originalTeacher) {
@@ -1543,7 +1681,7 @@
         return;
       }
       panel.innerHTML = `<ul class="directory-area-chips">${areasMarkup(teacher.areas)}</ul><h3 class="teacher-region-times">가능 시간</h3>${timetableMarkup(teacher, sourceKind)}`;
-      bindTimetable();
+      bindTimetable(teacher, sourceKind);
     };
     const select = async region => {
       const token = ++request;
@@ -1730,12 +1868,6 @@
       } else {
         rerenderCurrentView();
       }
-    } else if (nextMode === 'trial' && state.trialType === 'paid' && !state.planFilter) {
-      state.region = '';
-      state.teachers = [];
-      state.rawTeachers = [];
-      picker.hidden = true;
-      directory.hidden = true;
     } else if (nextMode === 'trial' && state.trialType === 'paid') {
       rerenderCurrentView();
       if (!state.region) showRegionPicker(false);
@@ -1807,9 +1939,10 @@
   const initialOptions = global.NADO_TEACHER_DIRECTORY_OPTIONS && typeof global.NADO_TEACHER_DIRECTORY_OPTIONS === 'object'
     ? global.NADO_TEACHER_DIRECTORY_OPTIONS
     : {};
-  state.mode = normalizeDirectoryMode(new URL(location.href).searchParams.get('mode') || initialOptions.mode);
-  state.trialType = state.mode === 'trial' ? normalizeTrialType(initialOptions.trialType) : '';
-  state.planFilter = normalizePlanFilter(initialOptions.planFilter || initialOptions.plan);
+  const initialUrlParams = new URL(location.href).searchParams;
+  state.mode = normalizeDirectoryMode(initialUrlParams.get('mode') || initialOptions.mode);
+  state.trialType = state.mode === 'trial' ? normalizeTrialType(initialUrlParams.get('trial_type') || initialOptions.trialType) : '';
+  state.planFilter = normalizePlanFilter(initialUrlParams.get('plan') || initialOptions.planFilter || initialOptions.plan);
 
   const publicApi = Object.freeze({
     setMode: setDirectoryMode,
