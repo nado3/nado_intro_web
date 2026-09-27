@@ -26,14 +26,31 @@
   const source = (Array.isArray(window.NADO_TEACHER_DIRECTORY_FALLBACK)
     ? window.NADO_TEACHER_DIRECTORY_FALLBACK : [])
     .filter(teacher => liveNames.has(String(teacher.displayName || '').trim().toLocaleLowerCase()));
+  function timeToMinutes(value) {
+    const match = String(value || '').match(/^(\d{1,2}):(\d{2})$/);
+    if (!match) return null;
+    const hours = Number(match[1]);
+    const minutes = Number(match[2]);
+    if (!Number.isInteger(hours) || !Number.isInteger(minutes) || hours < 0 || hours > 24 || minutes < 0 || minutes > 59) return null;
+    return hours * 60 + minutes;
+  }
+
+  function hasBookableAvailability(teacher) {
+    if (!teacher || !teacher.regions) return false;
+    return Object.values(teacher.regions).some(region => (
+      region && Array.isArray(region.availability) && region.availability.some(slot => {
+        const start = timeToMinutes(slot && slot.startTime);
+        const end = timeToMinutes(slot && slot.endTime);
+        return start !== null && end !== null && end - start >= 60;
+      })
+    ));
+  }
+
   const teachers = source.filter(teacher => (
     teacher
     && teacher.displayName
     && teacher.profilePhotoPath
-    && teacher.regions
-    && Object.values(teacher.regions).some(region => (
-      region && Array.isArray(region.availability) && region.availability.length
-    ))
+    && hasBookableAvailability(teacher)
   ));
 
   if (!teachers.length) {
