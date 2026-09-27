@@ -121,6 +121,11 @@ const steps = [
     ]
   },
   {
+    key: 'matchingMethod', type: 'single', required: true,
+    title: '어떻게 선생님을 선택하시겠어요?',
+    options: ['선생님 직접 선택','나도 추천받기']
+  },
+  {
     key: 'duration', type: 'duration', required: true,
     title: '회당 수업 길이를 선택해주세요',
     sub: ''
@@ -128,8 +133,6 @@ const steps = [
   {
     key: 'place', type: 'rank', required: true
   },
-
-
   {
     key: 'gender', type: 'single', required: true,
     title: '성별이 어떻게 되시나요?',
@@ -149,7 +152,7 @@ const steps = [
   {
     key: 'schedule', type: 'firstlesson', required: true,
     title: '첫 수업 날짜·시간을 선택해주세요',
-    sub: '가능한 시간을 <strong class="all-times-emphasis">모두</strong> 선택해주세요.'
+    sub: '가능한 시작 시간을 하나 선택해주세요.<br><span class="first-lesson-followup-note">첫 수업 이후 일정은 선생님과 직접 조율하실 수 있어요.</span>'
   },
    {
     key: 'startDate', type: 'date', required: true,
@@ -318,7 +321,7 @@ function parseDirectorySelection(search, options) {
   const plan = directoryMapValue(DIRECTORY_PLAN_LABELS, rawPlan)
     || directoryMapValue(DIRECTORY_PLAN_LABELS, suppliedPlan);
   const rawPlanOptions = cleanDirectoryText(params.get('plan_options'), 60).toLowerCase();
-  const planOptionKeys = /^(economy|standard)(,(economy|standard))*$/.test(rawPlanOptions)
+  const planOptionKeys = /^(economy|standard|premium)(,(economy|standard|premium))*$/.test(rawPlanOptions)
     ? Array.from(new Set(rawPlanOptions.split(',')))
     : [];
   const planOptions = planOptionKeys.map(key => directoryMapValue(DIRECTORY_PLAN_LABELS, key));
@@ -395,7 +398,7 @@ const DIRECTORY_TIME_CHOICES = (() => {
   try {
     const raw = JSON.parse(new URLSearchParams(location.search).get('time_choices') || '[]');
     if (!Array.isArray(raw)) return [];
-    return raw.slice(0,150).map(query => {
+    return raw.slice(0,1).map(query => {
       const slot = parseDirectorySelection(query,{pageMode:TRIAL_MODE?'trial':'regular',localTestMode:LOCAL_TEST_MODE});
       const time = new URLSearchParams(query).get('preferred_time');
       if (!slot || slot.teacherId!==DIRECTORY_SELECTION.teacherId || slot.region!==DIRECTORY_SELECTION.region || slot.area!==DIRECTORY_SELECTION.area || slot.plan!==DIRECTORY_SELECTION.plan || !/^\d{2}:(00|30)$/.test(time || '')) return null;
@@ -403,6 +406,13 @@ const DIRECTORY_TIME_CHOICES = (() => {
       return {...slot,preferredTime:time};
     }).filter(Boolean);
   } catch (_) { return []; }
+})();
+const DIRECTORY_PREFERRED_DATE = (() => {
+  if (!DIRECTORY_SELECTION || DIRECTORY_TIME_CHOICES.length !== 1) return '';
+  const value = cleanDirectoryText(new URLSearchParams(location.search).get('preferred_date'), 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return '';
+  const slot = DIRECTORY_TIME_CHOICES[0];
+  return isValidDirectoryStartDate(value, slot.day) ? value : '';
 })();
 function directorySlots() { return DIRECTORY_TIME_CHOICES.length ? DIRECTORY_TIME_CHOICES : DIRECTORY_SELECTION ? [DIRECTORY_SELECTION] : []; }
 function slotForOption(option) {
@@ -421,11 +431,21 @@ const answers = {
   preferredPlace: '',
   areaCode: ''
 };
+const FLOW_PARAMS = new URLSearchParams(window.location.search);
+const FLOW_AGE_GROUPS = ['초등학생 이하','중고등학생','20대','30대','40대','50대 이상'];
+const initialAgeGroup = cleanDirectoryText(FLOW_PARAMS.get('age_group'), 30);
+const initialRequestedPlan = directoryMapValue(DIRECTORY_PLAN_LABELS, cleanDirectoryText(FLOW_PARAMS.get('plan'), 30).toLowerCase());
+if (FLOW_AGE_GROUPS.includes(initialAgeGroup)) answers.ageGroup = initialAgeGroup;
+if (initialRequestedPlan) answers.tier = initialRequestedPlan;
+if (!TRIAL_MODE && FLOW_PARAMS.get('frequency') === '2') answers.frequency = '주 2회';
 
 if (!DIRECTORY_SELECTION) {
   const initialParams = new URLSearchParams(window.location.search);
   const initialPlan = directoryMapValue(DIRECTORY_PLAN_LABELS, cleanDirectoryText(initialParams.get('plan'), 30).toLowerCase());
   if (initialPlan) answers.tier = initialPlan;
+  const initialMatchingMethod = cleanDirectoryText(initialParams.get('matching_method'), 20).toLowerCase();
+  if (initialMatchingMethod === 'recommended') answers.matchingMethod = '나도 추천받기';
+  if (initialMatchingMethod === 'direct') answers.matchingMethod = '선생님 직접 선택';
   if (TRIAL_MODE) {
     const initialTrialType = cleanDirectoryText(initialParams.get('trial_type'), 10).toLowerCase();
     if (initialTrialType === 'free') {
@@ -467,10 +487,11 @@ if (DIRECTORY_SELECTION) {
   const premiumInquiry = DIRECTORY_SELECTION.plan === '프리미엄';
 
   Object.assign(answers, {
+    matchingMethod: '선생님 직접 선택',
     matching_type: premiumInquiry ? 'premium_inquiry' : 'directory_selected',
     teacher_id: DIRECTORY_SELECTION.teacherId,
     teacher_name: DIRECTORY_SELECTION.teacherName,
-    tier: DIRECTORY_SELECTION.plan,
+    tier: DIRECTORY_SELECTION.plan || answers.tier || '',
     schedule: [DIRECTORY_SELECTION.timeLabel],
     duration: { index: 0 },
     trialType: isFreeDirectoryTrial ? '무료 체험' : (isPaidDirectoryTrial ? '플랜 선택 체험' : undefined),
@@ -528,9 +549,13 @@ function applyStudentAgePolicy(){
 
 function buildLessonSteps(){
   if (DIRECTORY_SELECTION) {
-    const skipped = new Set(['trialType', 'place', 'startDate']);
+    const skipped = new Set(['trialType', 'place', 'startDate', 'matchingMethod']);
+    if (DIRECTORY_PREFERRED_DATE && DIRECTORY_TIME_CHOICES.length === 1) skipped.add('schedule');
     if (TRIAL_MODE) skipped.add('duration');
-    if (DIRECTORY_SELECTION.plan) skipped.add('tier');
+    if (TRIAL_MODE && DIRECTORY_SELECTION.trialType === 'free') {
+      skipped.add('tier');
+      skipped.add('matchingMethod');
+    }
     return steps.filter(step => !skipped.has(step.key));
   }
   if (!TRIAL_MODE) return steps.filter(s => s.key !== 'trialType' && s.key !== 'startDate');
@@ -538,7 +563,7 @@ function buildLessonSteps(){
   if (answers.trialType === '플랜 선택 체험') {
     return steps.filter(s => s.key !== 'duration' && s.key !== 'startDate');
   }
-  return steps.filter(s => s.key !== 'startDate' && s.key !== 'tier' && s.key !== 'place' && s.key !== 'duration');
+  return steps.filter(s => s.key !== 'startDate' && s.key !== 'tier' && s.key !== 'matchingMethod' && s.key !== 'place' && s.key !== 'duration');
 }
 function buildActiveSteps() {
   const options = ['정규 수업', '체험 수업'];
@@ -556,12 +581,50 @@ function lessonKindUrl(kind) {
   else url.searchParams.delete('trial_type');
   return url.href;
 }
+function teacherSelectionUrl() {
+  const url = new URL('teachers.html', location.href);
+  url.searchParams.set('application_flow', '1');
+  url.searchParams.set('lesson_kind', TRIAL_MODE ? 'trial' : 'regular');
+  url.searchParams.set('mode', TRIAL_MODE ? 'trial' : 'regular');
+  if (TRIAL_MODE) url.searchParams.set('trial_type', answers.trialType === '무료 체험' ? 'free' : 'paid');
+  if (answers.tier && PLAN_GROUP[answers.tier]) url.searchParams.set('plan', PLAN_GROUP[answers.tier]);
+  if (answers.ageGroup) url.searchParams.set('age_group', answers.ageGroup);
+  if (!TRIAL_MODE && answers.frequency === '주 2회') url.searchParams.set('frequency', '2');
+  if (new URL(location.href).searchParams.get('test') === '1') url.searchParams.set('test', '1');
+  url.hash = 'teacherRegionPicker';
+  return url.href;
+}
+function recommendedApplicationUrl() {
+  const url = new URL(TRIAL_MODE ? 'trial.html' : 'apply.html', location.href);
+  url.search = '';
+  url.searchParams.set('lesson_kind', TRIAL_MODE ? 'trial' : 'regular');
+  if (TRIAL_MODE) url.searchParams.set('trial_type', answers.trialType === '무료 체험' ? 'free' : 'paid');
+  if (answers.tier && PLAN_GROUP[answers.tier]) url.searchParams.set('plan', PLAN_GROUP[answers.tier]);
+  if (answers.ageGroup) url.searchParams.set('age_group', answers.ageGroup);
+  if (!TRIAL_MODE && answers.frequency === '주 2회') url.searchParams.set('frequency', '2');
+  url.searchParams.set('matching_method', 'recommended');
+  url.searchParams.set('resume', 'details');
+  if (new URL(location.href).searchParams.get('test') === '1') url.searchParams.set('test', '1');
+  return url.href;
+}
 const initialLessonKind = new URL(location.href).searchParams.get('lesson_kind');
 answers.lessonKind = initialLessonKind === 'trial' ? (DIRECTORY_SELECTION?.trialType === 'free' ? '송도 무료 체험' : '체험 수업') : initialLessonKind === 'regular' ? '정규 수업' : '';
 let activeSteps = buildActiveSteps();
 if (answers.lessonKind) current = 1;
+if (DIRECTORY_SELECTION && FLOW_PARAMS.get('application_flow') === '1' && answers.ageGroup && answers.tier) {
+  const tierIndex = activeSteps.findIndex(step => step.key === 'tier');
+  if (tierIndex >= 0) current = tierIndex + 1;
+}
+if (!DIRECTORY_SELECTION && new URL(location.href).searchParams.get('resume') === 'details' && answers.tier && answers.matchingMethod) {
+  const matchingIndex = activeSteps.findIndex(step => step.key === 'matchingMethod');
+  if (matchingIndex >= 0) current = matchingIndex + 1;
+}
 if (DIRECTORY_TIME_CHOICES.length) {
-  answers.firstLessonOptions = DIRECTORY_TIME_CHOICES.map(slot=>({date:nextDirectoryWeekday(slot.day,new Date()),time:slot.preferredTime})).filter((option,index,all)=>all.findIndex(other=>other.date===option.date&&other.time===option.time)===index).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  const slot = DIRECTORY_TIME_CHOICES[0];
+  answers.firstLessonOptions = [{
+    date: DIRECTORY_PREFERRED_DATE || nextDirectoryWeekday(slot.day, new Date()),
+    time: slot.preferredTime
+  }];
   syncFirstLessonOptions();
 }
 const ANALYTICS_FORM_ID = TRIAL_MODE ? 'nado_trial_application' : 'nado_regular_application';
@@ -828,7 +891,7 @@ function checkValid(step){
     if (!v) return false;
     return DIRECTORY_SELECTION ? isValidDirectoryStartDate(v, DIRECTORY_SELECTION.day) : true;
   }
-  if (step.type === 'firstlesson') return Array.isArray(answers.firstLessonOptions) && answers.firstLessonOptions.length > 0 && answers.firstLessonOptions.every(validFirstLessonOption);
+  if (step.type === 'firstlesson') return Array.isArray(answers.firstLessonOptions) && answers.firstLessonOptions.length === 1 && answers.firstLessonOptions.every(validFirstLessonOption);
   if (step.type === 'gridtime') return Array.isArray(v) && v.length > 0;
   if (step.type === 'duration') return v && typeof v.index === 'number';
   if (step.type === 'text') return true;
@@ -846,7 +909,7 @@ function setNextState(step){
       ? '상담 요청하기'
       : '제출하기')
     : '다음';
-  skipBtn.style.display = step.required ? 'none' : 'block';
+  skipBtn.style.display = (!step.required && step.key !== 'notes') ? 'block' : 'none';
 }
 
 function focusRenderedChoice(selector, datasetKey, value){
@@ -967,7 +1030,13 @@ if (step.type === 'trialType'){
           + '<span class="tier-opt-top">'
           + '<span class="tier-opt-name">' + opt.name + '</span>'
           + '<span class="tier-opt-price">₩' + calcPrice(opt.name, 0, answers.frequency).toLocaleString() + (TRIAL_MODE ? '' : '~') + '</span>'          + '</span>'
-          + (TRIAL_MODE ? '' : '<span class="tier-opt-desc">' + (opt.name === '프리미엄' ? '<span class="plan-phrase">나도 최우수 선생님과 함께</span> <span class="plan-phrase">비즈니스·전문 목표에 집중하세요.</span>' : opt.desc) + '</span>')
+          + (TRIAL_MODE
+            ? '<span class="tier-opt-desc">' + ({
+                '이코노미': '가볍게 시작하는 기본 체험 수업 · 일상회화·여행영어·기초 말하기 중심',
+                '스탠다드': '목표와 수준에 맞춘 체험 수업 · 선생님이 수업 흐름과 자료를 개별 준비',
+                '프리미엄': '비즈니스·전문 목표를 위한 체험 수업 · 목표 확인 후 맞춤 진행'
+              }[opt.name] || '') + '</span>'
+            : '<span class="tier-opt-desc">' + (opt.name === '프리미엄' ? '<span class="plan-phrase">나도 최우수 선생님과 함께</span> <span class="plan-phrase">비즈니스·전문 목표에 집중하세요.</span>' : opt.desc) + '</span>')
           + (TRIAL_MODE ? '' : '<span class="tier-more ' + (isSel?'open':'') + '" id="tierMore' + idx + '">'
             + opt.more.replace(/(?:<br>\s*)?(?:·\s*)?(?:가능 영어|수업 타입):([^<]*)/, (_, types) => '<span class="plan-lesson-types"><strong>수업 타입</strong>' + types.trim().split(/\s*·\s*/).map(type => '<span class="plan-type-item">' + type + '</span>').join(' · ') + '</span>')
             + (opt.moreCaption ? '<span class="tier-more-caption">' + opt.moreCaption + '</span>' : '')
@@ -1136,7 +1205,7 @@ if (step.type === 'trialType'){
     }
   } else if (step.type === 'firstlesson') {
     inner += '<div class="sr-only" id="firstLessonDateLabel">첫 수업 날짜</div><input type="hidden" id="firstLessonDate"><div class="lesson-calendar" id="firstLessonCalendar" role="group" aria-labelledby="firstLessonDateLabel"></div>';
-    inner += '<label class="field-label" id="firstLessonTimeLabel">시작 시간</label><p class="time-drag-hint">드래그로 여러 시간 선택 가능</p><input type="hidden" id="firstLessonTime"><div class="first-lesson-time-buttons" role="group" aria-labelledby="firstLessonTimeLabel">';
+    inner += '<label class="field-label" id="firstLessonTimeLabel">시작 시간</label><p class="time-drag-hint">가능한 시작 시간을 하나 선택해주세요.</p><input type="hidden" id="firstLessonTime"><div class="first-lesson-time-buttons" role="group" aria-labelledby="firstLessonTimeLabel">';
     for (let minutes = 540; minutes <= 1440 - (answers.duration?.index === 1 ? 120 : 60); minutes += 30) {
       const label = String(Math.floor(minutes / 60)).padStart(2, '0') + ':' + String(minutes % 60).padStart(2, '0');
       if (DIRECTORY_SELECTION) {
@@ -1145,7 +1214,7 @@ if (step.type === 'trialType'){
       }
       inner += '<button type="button" class="first-lesson-time" data-first-time="' + label + '" aria-pressed="false">' + label + '</button>';
     }
-    inner += '</div><div class="time-selection-actions"><button type="button" id="selectAllTimes">모두 선택</button><button type="button" id="clearAllTimes">선택 해제</button></div><p id="firstLessonError" role="status" aria-live="polite"></p>';
+    inner += '</div><p id="firstLessonError" role="status" aria-live="polite"></p>';
     inner += '<p class="followup-schedule-note">이후 수업 일정은 선생님과 자유롭게 조율해요.</p>';
   } else if (step.type === 'gridtime'){
     const days = ['월','화','수','목','금','토','일'];
@@ -1492,95 +1561,93 @@ if (step.type === 'trialType'){
 } else if (step.type === 'firstlesson') {
     const dateInput = document.getElementById('firstLessonDate');
     const timeButtons = [...qcardWrap.querySelectorAll('[data-first-time]')];
-    const timeGrid = qcardWrap.querySelector('.first-lesson-time-buttons');
-    let selectedTimes = new Set();
+    let selectedTime = '';
+
     const paintTimes = (save=true) => {
-      timeButtons.forEach(button => button.setAttribute('aria-pressed',String(selectedTimes.has(button.dataset.firstTime))));
-      if(save) {
-        const date=dateInput.value;
-        const options=[...selectedTimes].map(time=>({date,time}));
-        if(!date || options.some(option=>!validFirstLessonOption(option))) {
-          document.getElementById('firstLessonError').textContent='먼저 가능한 날짜를 선택해주세요.';return;
-        }
-        answers.firstLessonOptions=[...(answers.firstLessonOptions||[]).filter(item=>item.date!==date),...options].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
-        syncFirstLessonOptions();setNextState(step);renderCalendar();
-        document.getElementById('firstLessonError').textContent='선택한 시간은 자동으로 반영됩니다.';
+      timeButtons.forEach(button => {
+        button.setAttribute('aria-pressed', String(selectedTime === button.dataset.firstTime));
+      });
+      if (!save) return;
+
+      const date = dateInput.value;
+      const option = selectedTime ? { date, time: selectedTime } : null;
+      if (!date || !option || !validFirstLessonOption(option)) {
+        document.getElementById('firstLessonError').textContent = '먼저 가능한 날짜와 시간을 하나 선택해주세요.';
+        return;
       }
+
+      answers.firstLessonOptions = [option];
+      syncFirstLessonOptions();
+      setNextState(step);
+      renderCalendar();
+      document.getElementById('firstLessonError').textContent = '선택한 시간이 자동으로 반영됩니다.';
     };
+
     const loadDateTimes = () => {
-      timeButtons.forEach(button=>{ button.disabled=Boolean(DIRECTORY_SELECTION)&&!validFirstLessonOption({date:dateInput.value,time:button.dataset.firstTime}); });
-      selectedTimes = new Set((answers.firstLessonOptions || []).filter(item => item.date === dateInput.value).map(item => item.time));
+      timeButtons.forEach(button => {
+        button.disabled = Boolean(DIRECTORY_SELECTION)
+          && !validFirstLessonOption({ date: dateInput.value, time: button.dataset.firstTime });
+      });
+      const currentOption = answers.firstLessonOptions?.[0];
+      selectedTime = currentOption && currentOption.date === dateInput.value ? currentOption.time : '';
       paintTimes(false);
     };
-    const calendar=document.getElementById('firstLessonCalendar');
-    const today=localDateInputValue(new Date());
-    const canSelectDate=date=>date>=today && timeButtons.some(button=>validFirstLessonOption({date,time:button.dataset.firstTime}));
-    const initialDate=firstLessonCalendarDate || answers.firstLessonOptions?.[0]?.date || today;
-    dateInput.value=canSelectDate(initialDate) ? initialDate : (availableFirstLessonDates().find(canSelectDate) || '');
-    let visibleMonth=(dateInput.value || today).slice(0,7);
+
+    const calendar = document.getElementById('firstLessonCalendar');
+    const today = localDateInputValue(new Date());
+    const canSelectDate = date => date >= today
+      && timeButtons.some(button => validFirstLessonOption({ date, time: button.dataset.firstTime }));
+    const initialDate = firstLessonCalendarDate || answers.firstLessonOptions?.[0]?.date || today;
+    dateInput.value = canSelectDate(initialDate)
+      ? initialDate
+      : (availableFirstLessonDates().find(canSelectDate) || '');
+    let visibleMonth = (dateInput.value || today).slice(0,7);
+
     function renderCalendar() {
-      const [year,month]=visibleMonth.split('-').map(Number);
-      const first=new Date(year,month-1,1);
-      const count=new Date(year,month,0).getDate();
-      const chosenDates=new Set((answers.firstLessonOptions||[]).map(option=>option.date));
-      calendar.innerHTML='<div class="lesson-calendar-heading"><strong aria-live="polite">'+year+'년 '+month+'월</strong><div><button type="button" data-calendar-month="-1" aria-label="이전 달" '+(visibleMonth<=today.slice(0,7)?'disabled':'')+'>‹</button><button type="button" data-calendar-month="1" aria-label="다음 달">›</button></div></div>'
-        +'<div class="lesson-calendar-week" aria-hidden="true">'+['일','월','화','수','목','금','토'].map(day=>'<span>'+day+'</span>').join('')+'</div>'
-        +'<div class="lesson-calendar-days">'+Array.from({length:first.getDay()},()=>'<span aria-hidden="true"></span>').join('')
-        +Array.from({length:count},(_,i)=>{
-          const date=visibleMonth+'-'+String(i+1).padStart(2,'0');
-          return '<button type="button" data-calendar-date="'+date+'" aria-label="'+date+(chosenDates.has(date)?' 시간 선택됨':'')+'" aria-pressed="'+(date===dateInput.value)+'" '+(date===today?'aria-current="date" ':'')+(canSelectDate(date)?'':'disabled')+' class="'+(chosenDates.has(date)?'has-selected-times':'')+'">'+(i+1)+'</button>';
-        }).join('')+'</div><p class="lesson-calendar-note">한국 시간 기준</p>';
+      const [year, month] = visibleMonth.split('-').map(Number);
+      const first = new Date(year, month - 1, 1);
+      const count = new Date(year, month, 0).getDate();
+      const chosenDate = answers.firstLessonOptions?.[0]?.date || '';
+      calendar.innerHTML = '<div class="lesson-calendar-heading"><strong aria-live="polite">'+year+'년 '+month+'월</strong><div><button type="button" data-calendar-month="-1" aria-label="이전 달" '+(visibleMonth<=today.slice(0,7)?'disabled':'')+'>‹</button><button type="button" data-calendar-month="1" aria-label="다음 달">›</button></div></div>'
+        + '<div class="lesson-calendar-week" aria-hidden="true">'+['일','월','화','수','목','금','토'].map(day=>'<span>'+day+'</span>').join('')+'</div>'
+        + '<div class="lesson-calendar-days">'+Array.from({length:first.getDay()},()=>'<span aria-hidden="true"></span>').join('')
+        + Array.from({length:count},(_,i)=>{
+          const date = visibleMonth+'-'+String(i+1).padStart(2,'0');
+          return '<button type="button" data-calendar-date="'+date+'" aria-label="'+date+(chosenDate===date?' 시간 선택됨':'')+'" aria-pressed="'+(date===dateInput.value)+'" '+(date===today?'aria-current="date" ':'')+(canSelectDate(date)?'':'disabled')+' class="'+(chosenDate===date?'has-selected-times':'')+'">'+(i+1)+'</button>';
+        }).join('')
+        + '</div><p class="lesson-calendar-note">한국 시간 기준</p>';
     }
-    calendar.addEventListener('click',event=>{
-      const day=event.target.closest('[data-calendar-date]');
-      if(day && !day.disabled) {
-        dateInput.value=day.dataset.calendarDate;firstLessonCalendarDate=dateInput.value;
-        document.getElementById('firstLessonError').textContent='';
-        loadDateTimes();renderCalendar();
+
+    calendar.addEventListener('click', event => {
+      const day = event.target.closest('[data-calendar-date]');
+      if (day && !day.disabled) {
+        dateInput.value = day.dataset.calendarDate;
+        firstLessonCalendarDate = dateInput.value;
+        document.getElementById('firstLessonError').textContent = '';
+        loadDateTimes();
+        renderCalendar();
         calendar.querySelector('[data-calendar-date="'+dateInput.value+'"]')?.focus({preventScroll:true});
       }
-      const nav=event.target.closest('[data-calendar-month]');
-      if(nav && !nav.disabled) {
-        const delta=Number(nav.dataset.calendarMonth);
-        const [year,month]=visibleMonth.split('-').map(Number);
-        visibleMonth=localDateInputValue(new Date(year,month-1+delta,1)).slice(0,7);renderCalendar();
+
+      const nav = event.target.closest('[data-calendar-month]');
+      if (nav && !nav.disabled) {
+        const delta = Number(nav.dataset.calendarMonth);
+        const [year, month] = visibleMonth.split('-').map(Number);
+        visibleMonth = localDateInputValue(new Date(year, month - 1 + delta, 1)).slice(0,7);
+        renderCalendar();
         calendar.querySelector('[data-calendar-month="'+delta+'"]')?.focus({preventScroll:true});
       }
     });
-    dateInput.addEventListener('change',loadDateTimes);
-    loadDateTimes();renderCalendar();
-    let drag = null;
-    const paintRange = index => {
-      selectedTimes = new Set(drag.before);
-      for (let i=Math.min(drag.start,index); i<=Math.max(drag.start,index); i++) {
-        if(timeButtons[i].disabled)continue;
-        const value = timeButtons[i].dataset.firstTime;
-        if (drag.add) selectedTimes.add(value); else selectedTimes.delete(value);
-      }
-      paintTimes();
-    };
-    timeGrid.addEventListener('pointerdown', event => {
-      const button = event.target.closest('[data-first-time]');
-      if (!button || button.disabled || (event.pointerType === 'mouse' && event.button !== 0)) return;
-      event.preventDefault();
-      drag = {start:timeButtons.indexOf(button),before:new Set(selectedTimes),add:!selectedTimes.has(button.dataset.firstTime)};
-      timeGrid.setPointerCapture?.(event.pointerId); paintRange(drag.start);
-    });
-    timeGrid.addEventListener('pointermove', event => {
-      if (!drag) return;
-      const button = document.elementFromPoint(event.clientX,event.clientY)?.closest('[data-first-time]');
-      const index = timeButtons.indexOf(button); if (index>=0) paintRange(index);
-    });
-    timeGrid.addEventListener('pointerup', () => {drag=null;});
-    timeGrid.addEventListener('pointercancel', () => {if(drag){selectedTimes=drag.before;paintTimes();}drag=null;});
-    timeButtons.forEach(button => button.addEventListener('click', event => {
-      if(event.detail !== 0 || button.disabled) return;
-      const value=button.dataset.firstTime;
-      if(selectedTimes.has(value))selectedTimes.delete(value);else selectedTimes.add(value);
+
+    dateInput.addEventListener('change', loadDateTimes);
+    loadDateTimes();
+    renderCalendar();
+
+    timeButtons.forEach(button => button.addEventListener('click', () => {
+      if (button.disabled) return;
+      selectedTime = button.dataset.firstTime;
       paintTimes();
     }));
-    document.getElementById('selectAllTimes').onclick=()=>{selectedTimes=new Set(timeButtons.filter(button=>!button.disabled).map(button=>button.dataset.firstTime));paintTimes();};
-    document.getElementById('clearAllTimes').onclick=()=>{selectedTimes.clear();paintTimes();};
 
 } else if (step.type === 'gridtime'){
     const selectedArr = answers[step.key] || [];
@@ -2021,13 +2088,15 @@ async function startTeacherMatching() {
 nextBtn.addEventListener('click', () => {
   const step = activeSteps[current];
   if (!checkValid(step)) return;
-  if (step.type === 'trialType' && answers.trialType === '플랜 선택 체험' && !DIRECTORY_SELECTION && window.NADOApplicationChooser) {
-    window.NADOApplicationChooser.open({kind:'trial', trialType:'paid', trigger:nextBtn, onDirect:() => {
-      current++;
-      renderStep();
-      centerCurrentQuestion();
-    }});
-    return;
+  if (step.key === 'matchingMethod') {
+    if (answers.matchingMethod === '선생님 직접 선택' && !DIRECTORY_SELECTION) {
+      location.assign(teacherSelectionUrl());
+      return;
+    }
+    if (answers.matchingMethod === '나도 추천받기' && DIRECTORY_SELECTION) {
+      location.assign(recommendedApplicationUrl());
+      return;
+    }
   }
   if (!formStartTracked) {
     formStartTracked = true;
@@ -2163,7 +2232,7 @@ async function submitToJotform(a) {
       'selected_region=' + (a.selected_region || ''),
       'selected_area=' + (a.selected_area || '')
     ].join('\n');
-    params.append('submission[28]', [a.notes || '', a.firstLessonOptions?.length ? '[첫 수업 희망 후보]\n' + a.firstLessonOptions.map(firstLessonOptionLabel).join('\n') : '', matchingMeta].filter(Boolean).join('\n\n')); // 문의사항 + 안전한 내부 매칭 정보
+    params.append('submission[28]', [a.notes || '', a.firstLessonOptions?.length ? '[첫 수업 희망 시간]\n' + a.firstLessonOptions.map(firstLessonOptionLabel).join('\n') : '', matchingMeta].filter(Boolean).join('\n\n')); // 문의사항 + 안전한 내부 매칭 정보
     params.append('submission[62]', a.matching_type || 'manual');     // 매칭 방식
     params.append('submission[63]', a.teacher_name || '');           // 선택 선생님 이름
     params.append('submission[64]', a.teacher_id || '');             // 선택 선생님 UUID
@@ -2302,7 +2371,23 @@ function applicationSummaryMarkup() {
     const value=step.type === 'firstlesson' ? compactFirstLessonSummary(answers.firstLessonOptions || []) : labelFor(step,answers[step.key]);
     return value ? '<div class="pay-row"><span>'+escapeApplicationHtml(labels[step.key]||'선택 내용')+'</span><strong>'+escapeApplicationHtml(value)+'</strong></div>' : '';
   }).join('');
-  return '<div class="pay-box application-summary-box">'+rows+'</div>';
+  let directSelectionRows = '';
+  if (answers.teacher_name) {
+    directSelectionRows += '<div class="pay-row"><span>선생님</span><strong>'+escapeApplicationHtml(answers.teacher_name)+'</strong></div>';
+  }
+  if (DIRECTORY_SELECTION) {
+    const timeLabel = DIRECTORY_SELECTION.timeLabel || ((answers.schedule || []).join(', '));
+    const areaLabel = answers.selected_area
+      ? ((DIRECTORY_SELECTION.region === 'Songdo' ? '송도' : '서울') + ' · ' + answers.selected_area)
+      : labelFor({ key: 'place', type: 'rank' }, answers.place);
+    if (timeLabel) {
+      directSelectionRows += '<div class="pay-row"><span>희망 시간대</span><strong>'+escapeApplicationHtml(timeLabel)+'</strong></div>';
+    }
+    if (areaLabel) {
+      directSelectionRows += '<div class="pay-row"><span>가능 장소</span><strong>'+escapeApplicationHtml(areaLabel)+'</strong></div>';
+    }
+  }
+  return '<div class="pay-box application-summary-box">'+rows+directSelectionRows+'</div>';
 }
 async function showSuccess(){
   if (elementaryPolicyViolation()) {
