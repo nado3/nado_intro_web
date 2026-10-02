@@ -50,12 +50,13 @@ body.form-page .kakao-chat-button {
 
 @media (max-width: 640px) {
   .kakao-chat-button {
-    right: max(14px, env(safe-area-inset-right));
-    bottom: max(14px, env(safe-area-inset-bottom));
-    min-height: 50px;
-    padding: 0 18px;
-    font-size: 14px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+    /* Keep the support shortcut available without covering primary mobile content/CTAs. */
+    right: max(10px, env(safe-area-inset-right));
+    bottom: max(10px, env(safe-area-inset-bottom));
+    min-height: 42px;
+    padding: 0 14px;
+    font-size: 13px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
   }
 
   body.form-page .kakao-chat-button {
