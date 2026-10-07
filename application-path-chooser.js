@@ -69,7 +69,8 @@
       const url = new URL(index===0 ? (kind==='trial'?'trial.html':'apply.html') : 'teachers.html',location.href);
       url.searchParams.set('lesson_kind',kind);
       if (index===1) url.searchParams.set('mode',kind);
-      if (options.trialType) url.searchParams.set('trial_type',options.trialType);
+      if (kind === 'trial') url.searchParams.set('trial_type','paid');
+      else if (options.trialType) url.searchParams.set('trial_type',options.trialType);
       if (new URL(location.href).searchParams.get('test')==='1') url.searchParams.set('test','1');
       link.href=url.href;
     });

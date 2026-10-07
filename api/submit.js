@@ -76,17 +76,18 @@ export function validateStudentPolicy(params) {
   if (ages.length !== 1) return studentPolicyError('나이대를 하나만 선택해주세요.');
   const ageGroup = cleanText(ages[0], 40);
   if (!ageGroup || !AGE_GROUPS.has(ageGroup)) return studentPolicyError('나이대를 다시 선택해주세요.');
+
+  const modeValues = params.getAll('submission[43]');
+  if (modeValues.length === 1 && cleanText(modeValues[0], 40) === '무료 체험 신청') {
+    return studentPolicyError('무료 체험은 종료되었습니다. 1회 유료 체험을 선택해주세요.');
+  }
   if (!isElementaryOrYounger(ageGroup)) return { ok: true };
 
   const tierValues = params.getAll('submission[30]');
-  const modeValues = params.getAll('submission[43]');
   if (tierValues.length !== 1 || modeValues.length !== 1) return studentPolicyError();
   const tierValue = cleanText(tierValues[0], 60);
   const modeValue = cleanText(modeValues[0], 40);
   const plan = canonicalPlan(tierValue.replace(/\([^)]*\)\s*$/, ''));
-  if (modeValue === '무료 체험 신청') {
-    return studentPolicyError('초등학생 이하는 무료 체험을 이용할 수 없습니다. Standard 1회 유료 체험을 선택해주세요.');
-  }
   if (plan !== 'standard' || (modeValue !== '정규 신청' && modeValue !== '플랜 선택 체험 신청')) {
     return studentPolicyError('초등학생 이하는 Standard 수업만 신청할 수 있습니다.');
   }
@@ -307,16 +308,7 @@ export function parseDirectSelection(params, options = {}) {
     if (!plan || !durationMinutes || !placeOptions.includes(expectedPlace)) return directError();
     if ((matchingType === PREMIUM_INQUIRY_TYPE) !== (plan === 'premium' && modeValue === 'Premium 상담 요청')) return directError();
   } else if (modeValue === '무료 체험 신청') {
-    mode = 'trial';
-    trialType = 'free';
-    plan = tierValue === '이코노미(무료 체험)' ? 'economy' : '';
-    durationMinutes = durationValue === '1시간' ? 60 : 0;
-    if (
-      region !== 'Songdo' || plan !== 'economy' || !durationMinutes
-      || !placeOptions.includes(metadata.selected_area)
-      || selectedAreas.some(area => area.canonical !== 'igc' && area.canonical !== 'triple-street')
-    ) return directError();
-    if (matchingType !== DIRECT_MATCHING_TYPE) return directError();
+    return directError('무료 체험은 종료되었습니다. 1회 유료 체험을 선택해주세요.');
   } else if (modeValue === '플랜 선택 체험 신청' || modeValue === 'Premium 체험 상담 요청') {
     mode = 'trial';
     trialType = 'paid';
@@ -523,8 +515,7 @@ export function validateSelectionAgainstDirectory(selection, rows) {
   const currentPlans = directoryPlanGroups(teacher);
   if (!currentName || !currentPlans) return directoryError();
   if (comparableText(currentName) !== comparableText(selection.teacherName) || !currentPlans.includes(selection.plan)) return directError();
-  if (selection.mode === 'trial' && selection.trialType === 'free' && (selection.region !== 'Songdo' || selection.plan !== 'economy')) return directError();
-  if (selection.mode === 'trial' && selection.trialType !== 'free' && selection.trialType !== 'paid') return directError();
+  if (selection.mode === 'trial' && selection.trialType !== 'paid') return directError();
 
   const availability = boundedJsonArray(teacher.availability, 1000000, 1000);
   if (!availability) return directoryError();
@@ -540,7 +531,6 @@ export function validateSelectionAgainstDirectory(selection, rows) {
   }
   if (!sameWindowAreas.size) return directError();
   if (!selection.selectedAreas.every(area => sameWindowAreas.has(area.canonical))) return directError();
-  if (selection.mode === 'trial' && selection.trialType === 'free' && selection.selectedAreas.some(area => area.canonical !== 'igc' && area.canonical !== 'triple-street')) return directError();
   if (selection.durationMinutes > selection.schedule.availableMinutes) return directError();
   return { ok: true, direct: true };
 }

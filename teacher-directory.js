@@ -494,7 +494,8 @@
 
   function normalizeTrialType(value) {
     const type = String(value || '').trim().toLocaleLowerCase();
-    return type === 'paid' ? 'paid' : (type === 'free' ? 'free' : '');
+    // Free trials are discontinued; legacy free links use the paid one-time trial flow.
+    return type === 'paid' || type === 'free' ? 'paid' : '';
   }
 
   function isTrialArea(value) {
@@ -508,7 +509,7 @@
   function teachersForView(teachers, options) {
     const settings = options || {};
     const mode = normalizeDirectoryMode(settings.mode);
-    const trialType = mode === 'trial' ? (normalizeTrialType(settings.trialType) || 'free') : '';
+    const trialType = mode === 'trial' ? (normalizeTrialType(settings.trialType) || 'paid') : '';
     const requestedPlan = normalizePlanFilter(settings.planFilter || settings.plan);
     const effectivePlan = mode === 'trial' && trialType === 'free' ? 'economy' : requestedPlan;
 
@@ -629,7 +630,7 @@
   function directApplicationParams(teacher, slot, options) {
     const settings = options || {};
     const mode = normalizeDirectoryMode(settings.mode);
-    const trialType = mode === 'trial' ? (normalizeTrialType(settings.trialType) || 'free') : '';
+    const trialType = mode === 'trial' ? (normalizeTrialType(settings.trialType) || 'paid') : '';
     const sourceKind = settings.sourceKind === 'live' ? 'live' : 'snapshot';
     const selectedPlan = mode === 'trial' && trialType === 'free'
       ? 'economy'
@@ -1858,7 +1859,7 @@
     const hasPlan = Object.prototype.hasOwnProperty.call(settings, 'planFilter')
       || Object.prototype.hasOwnProperty.call(settings, 'plan');
     state.mode = nextMode;
-    state.trialType = nextMode === 'trial' ? normalizeTrialType(settings.trialType) : '';
+    state.trialType = nextMode === 'trial' ? (normalizeTrialType(settings.trialType) || 'paid') : '';
     if (hasPlan) state.planFilter = normalizePlanFilter(settings.planFilter || settings.plan);
     if (!state.initialized) return getPublicState();
 
@@ -1941,7 +1942,7 @@
     : {};
   const initialUrlParams = new URL(location.href).searchParams;
   state.mode = normalizeDirectoryMode(initialUrlParams.get('mode') || initialOptions.mode);
-  state.trialType = state.mode === 'trial' ? normalizeTrialType(initialUrlParams.get('trial_type') || initialOptions.trialType) : '';
+  state.trialType = state.mode === 'trial' ? (normalizeTrialType(initialUrlParams.get('trial_type') || initialOptions.trialType) || 'paid') : '';
   state.planFilter = normalizePlanFilter(initialUrlParams.get('plan') || initialOptions.planFilter || initialOptions.plan);
 
   const publicApi = Object.freeze({

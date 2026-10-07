@@ -6,7 +6,7 @@
   const selection = root.querySelector('#finderSelection');
   const directory = root.querySelector('#teacherDirectory');
   const params = new URL(location.href).searchParams;
-  const paidTrial = params.get('trial_type') === 'paid' && (params.get('mode') === 'trial' || params.get('finder') === 'trial');
+  const paidTrial = params.get('mode') === 'trial' || params.get('finder') === 'trial';
   const applicationFlow = params.get('application_flow') === '1';
   const requestedPlan = ['economy','standard','premium'].includes(params.get('plan')) ? params.get('plan') : '';
   let paidPlan = requestedPlan;

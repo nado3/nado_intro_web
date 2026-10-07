@@ -6,7 +6,6 @@ const PRICE_TABLE = {
 };
 const SONGDO_LOCATION_DISCOUNT = 10000;
 const FREQ_MULTIPLIER = { '주 1회': 1, '주 2회': 2, '체험 1회': 0.25 };
-const TRIAL_DEPOSIT = 20000;
 const PLAN_GROUP = { '이코노미': 'economy', '스탠다드': 'standard', '프리미엄': 'premium' };
 const DAY_OF_WEEK = { '일': 0, '월': 1, '화': 2, '수': 3, '목': 4, '금': 5, '토': 6 };
 const SEOUL_SERVICE_AREAS = [
@@ -46,9 +45,7 @@ function durationLabel(idx){
 }
 function calcPrice(tier, idx, freq){
   if (!PRICE_TABLE[tier]) return 0;
-  if (TRIAL_MODE) {
-    return answers.trialType === '플랜 선택 체험' ? PRICE_TABLE[tier][idx] / 4 : 0;
-  }
+  if (TRIAL_MODE) return PRICE_TABLE[tier][idx] / 4;
   const regularPrice = PRICE_TABLE[tier][idx] * FREQ_MULTIPLIER[freq];
   const songdoDiscount = answers.placeType === '송도 할인 장소'
     ? SONGDO_LOCATION_DISCOUNT
@@ -56,7 +53,7 @@ function calcPrice(tier, idx, freq){
   return Math.max(0, regularPrice - songdoDiscount);
 }
 function freqLabel(freq){
-  if (TRIAL_MODE) return answers.trialType || '체험수업';
+  if (TRIAL_MODE) return '1회 체험';
   return freq;
 }
 function placeLabel(a){
@@ -307,9 +304,8 @@ function parseDirectorySelection(search, options) {
 
   const pageMode = options && options.pageMode === 'trial' ? 'trial' : 'regular';
   const mode = String(params.get('mode') || '').toLowerCase();
-  const trialType = mode === 'trial'
-    ? (String(params.get('trial_type') || 'free').toLowerCase() === 'paid' ? 'paid' : 'free')
-    : '';
+  // Free trials are discontinued. Legacy/free trial links are normalized to the paid one-time trial flow.
+  const trialType = mode === 'trial' ? 'paid' : '';
   const sourceKind = String(params.get('source_kind') || '').toLowerCase();
   if (mode !== pageMode || (sourceKind !== 'live' && sourceKind !== 'snapshot')) return null;
   if (sourceKind === 'snapshot' && !(options && options.localTestMode)) return null;
@@ -343,16 +339,10 @@ function parseDirectorySelection(search, options) {
   const availableMinutes = /^\d{1,4}$/.test(rawAvailableMinutes) ? Number(rawAvailableMinutes) : NaN;
 
   if (!teacherName || !hasPlanChoice || !region || !day || !start || !end || !area) return null;
-  if (mode === 'trial' && trialType === 'free' && !plan) return null;
   if (!Number.isFinite(startMinutes) || !Number.isFinite(endMinutes) || endMinutes <= startMinutes) return null;
   if (!Number.isInteger(availableMinutes) || availableMinutes < 60 || availableMinutes !== endMinutes - startMinutes) return null;
   if (sourceKind === 'live' && !liveTeacherIdIsValid) return null;
   if (sourceKind === 'snapshot' && !snapshotTeacherIdIsValid) return null;
-  if (mode === 'trial' && trialType === 'free' && (
-    region !== 'Songdo'
-    || plan !== '이코노미'
-    || !isTrialDirectoryAreaValue(area)
-  )) return null;
 
   return {
     sourceKind,
@@ -373,7 +363,7 @@ function parseDirectorySelection(search, options) {
 
 function directoryReturnHrefFor(selection, trialMode, trialAnswer) {
   const region = selection?.region || '';
-  const type = selection?.trialType || (trialAnswer === '플랜 선택 체험' ? 'paid' : 'free');
+  const type = trialMode ? 'paid' : (selection?.trialType || '');
   const plan = selection?.plan
     ? Object.keys(DIRECTORY_PLAN_LABELS).find(key => DIRECTORY_PLAN_LABELS[key] === selection.plan && /^[a-z]+$/.test(key))
     : '';
@@ -447,13 +437,8 @@ if (!DIRECTORY_SELECTION) {
   if (initialMatchingMethod === 'recommended') answers.matchingMethod = '나도 추천받기';
   if (initialMatchingMethod === 'direct') answers.matchingMethod = '선생님 직접 선택';
   if (TRIAL_MODE) {
-    const initialTrialType = cleanDirectoryText(initialParams.get('trial_type'), 10).toLowerCase();
-    if (initialTrialType === 'free') {
-      answers.trialType = '무료 체험';
-      answers.tier = '이코노미';
-    } else if (initialTrialType === 'paid') {
-      answers.trialType = '플랜 선택 체험';
-    }
+    // All trial applications now use the paid one-time trial flow.
+    answers.trialType = '플랜 선택 체험';
   }
 }
 
@@ -467,8 +452,8 @@ if (DIRECTORY_SELECTION) {
   }).filter(Boolean)));
   const areaNeedsConfirmation = normalizedAreas.length > 1;
   const songdoDiscountApplies = isSongdo && isSongdoDiscountAreaList(normalizedAreas);
-  const isFreeDirectoryTrial = TRIAL_MODE && DIRECTORY_SELECTION.trialType === 'free';
-  const isPaidDirectoryTrial = TRIAL_MODE && DIRECTORY_SELECTION.trialType === 'paid';
+  const isFreeDirectoryTrial = false;
+  const isPaidDirectoryTrial = TRIAL_MODE;
   const areaConfirmationLabel = isSongdo && !songdoDiscountApplies && !TRIAL_MODE
     ? '신청 후 최종 장소 조율'
     : '신청 후 한 곳 확정';
@@ -479,7 +464,6 @@ if (DIRECTORY_SELECTION) {
   }
   const songdoArea = selectedAreaDisplay;
   const seoulAreaCode = directoryMapValue(DIRECTORY_SEOUL_AREA_CODES, DIRECTORY_SELECTION.area) || DIRECTORY_SELECTION.area;
-  const trialPlaceType = areaNeedsConfirmation ? '송도 무료 체험 가능 장소' : songdoArea;
   const regularPlaceType = isSongdo
     ? (songdoDiscountApplies ? '송도 할인 장소' : '송도')
     : '서울 원하는 장소';
@@ -494,13 +478,13 @@ if (DIRECTORY_SELECTION) {
     tier: DIRECTORY_SELECTION.plan || answers.tier || '',
     schedule: [DIRECTORY_SELECTION.timeLabel],
     duration: { index: 0 },
-    trialType: isFreeDirectoryTrial ? '무료 체험' : (isPaidDirectoryTrial ? '플랜 선택 체험' : undefined),
-    place: [isFreeDirectoryTrial ? songdoArea : (isPaidDirectoryTrial ? paidTrialPlaceType : regularPlaceType)],
-    placeType: isFreeDirectoryTrial ? trialPlaceType : (isPaidDirectoryTrial ? paidTrialPlaceType : regularPlaceType),
-    songdoPlace: isSongdo && (isFreeDirectoryTrial || (!TRIAL_MODE && songdoDiscountApplies)) ? songdoArea : '',
+    trialType: isPaidDirectoryTrial ? '플랜 선택 체험' : undefined,
+    place: [isPaidDirectoryTrial ? paidTrialPlaceType : regularPlaceType],
+    placeType: isPaidDirectoryTrial ? paidTrialPlaceType : regularPlaceType,
+    songdoPlace: isSongdo && (!TRIAL_MODE && songdoDiscountApplies) ? songdoArea : '',
     preferredPlace: isPaidDirectoryTrial
       ? selectedAreaDisplay
-      : (isSongdo && !isFreeDirectoryTrial && !songdoDiscountApplies ? selectedAreaDisplay : ''),
+      : (isSongdo && !songdoDiscountApplies ? selectedAreaDisplay : ''),
     areaCode: isSongdo ? '' : seoulAreaCode,
     selection_source: 'teacher-directory',
     selection_source_kind: DIRECTORY_SELECTION.sourceKind,
@@ -511,7 +495,6 @@ if (DIRECTORY_SELECTION) {
 
 function elementaryPolicyViolation(){
   if (!isElementaryOrYounger(answers.ageGroup)) return '';
-  if (TRIAL_MODE && answers.trialType === '무료 체험') return 'free-trial';
   if (DIRECTORY_SELECTION && DIRECTORY_SELECTION.plan && DIRECTORY_SELECTION.plan !== '스탠다드') {
     return TRIAL_MODE ? 'trial-plan' : 'regular-plan';
   }
@@ -534,8 +517,7 @@ function applyStudentAgePolicy(){
     answers.goals = answers.goals.filter(goal => goal !== '비즈니스');
   }
   const fixedDirectoryPlan = Boolean(DIRECTORY_SELECTION && DIRECTORY_SELECTION.plan);
-  const freeTrial = TRIAL_MODE && answers.trialType === '무료 체험';
-  if (!fixedDirectoryPlan && !freeTrial && answers.tier && answers.tier !== '스탠다드') {
+  if (!fixedDirectoryPlan && answers.tier && answers.tier !== '스탠다드') {
     answers.tier = '';
     if (!DIRECTORY_SELECTION) {
       answers.place = [];
@@ -552,22 +534,13 @@ function buildLessonSteps(){
     const skipped = new Set(['trialType', 'place', 'startDate', 'matchingMethod']);
     if (DIRECTORY_PREFERRED_DATE && DIRECTORY_TIME_CHOICES.length === 1) skipped.add('schedule');
     if (TRIAL_MODE) skipped.add('duration');
-    if (TRIAL_MODE && DIRECTORY_SELECTION.trialType === 'free') {
-      skipped.add('tier');
-      skipped.add('matchingMethod');
-    }
     return steps.filter(step => !skipped.has(step.key));
   }
   if (!TRIAL_MODE) return steps.filter(s => s.key !== 'trialType' && s.key !== 'startDate');
-  if (!answers.trialType) return steps.filter(s => s.key === 'trialType');
-  if (answers.trialType === '플랜 선택 체험') {
-    return steps.filter(s => s.key !== 'duration' && s.key !== 'startDate');
-  }
-  return steps.filter(s => s.key !== 'startDate' && s.key !== 'tier' && s.key !== 'matchingMethod' && s.key !== 'place' && s.key !== 'duration');
+  return steps.filter(s => s.key !== 'trialType' && s.key !== 'duration' && s.key !== 'startDate');
 }
 function buildActiveSteps() {
   const options = ['정규 수업', '체험 수업'];
-  if (DIRECTORY_SELECTION?.region === 'Songdo' && isTrialDirectoryAreaValue(DIRECTORY_SELECTION.area) && (DIRECTORY_SELECTION.plan === '이코노미' || DIRECTORY_SELECTION.planOptions.includes('이코노미'))) options.push('송도 무료 체험');
   return [{key:'lessonKind',type:'single',required:true,title:'어떤 수업을 신청하시겠어요?',options}, ...buildLessonSteps()];
 }
 function lessonKindUrl(kind) {
@@ -576,8 +549,7 @@ function lessonKindUrl(kind) {
   url.pathname = url.pathname.replace(/[^/]*$/,trial ? 'trial.html' : 'apply.html');
   url.searchParams.set('lesson_kind',trial ? 'trial' : 'regular');
   url.searchParams.set('mode',trial ? 'trial' : 'regular');
-  if (kind === '송도 무료 체험') { url.searchParams.set('trial_type','free'); url.searchParams.set('plan','economy'); }
-  else if (trial && DIRECTORY_SELECTION) url.searchParams.set('trial_type','paid');
+  if (trial) url.searchParams.set('trial_type','paid');
   else url.searchParams.delete('trial_type');
   return url.href;
 }
@@ -586,7 +558,7 @@ function teacherSelectionUrl() {
   url.searchParams.set('application_flow', '1');
   url.searchParams.set('lesson_kind', TRIAL_MODE ? 'trial' : 'regular');
   url.searchParams.set('mode', TRIAL_MODE ? 'trial' : 'regular');
-  if (TRIAL_MODE) url.searchParams.set('trial_type', answers.trialType === '무료 체험' ? 'free' : 'paid');
+  if (TRIAL_MODE) url.searchParams.set('trial_type', 'paid');
   if (answers.tier && PLAN_GROUP[answers.tier]) url.searchParams.set('plan', PLAN_GROUP[answers.tier]);
   if (answers.ageGroup) url.searchParams.set('age_group', answers.ageGroup);
   if (!TRIAL_MODE && answers.frequency === '주 2회') url.searchParams.set('frequency', '2');
@@ -598,7 +570,7 @@ function recommendedApplicationUrl() {
   const url = new URL(TRIAL_MODE ? 'trial.html' : 'apply.html', location.href);
   url.search = '';
   url.searchParams.set('lesson_kind', TRIAL_MODE ? 'trial' : 'regular');
-  if (TRIAL_MODE) url.searchParams.set('trial_type', answers.trialType === '무료 체험' ? 'free' : 'paid');
+  if (TRIAL_MODE) url.searchParams.set('trial_type', 'paid');
   if (answers.tier && PLAN_GROUP[answers.tier]) url.searchParams.set('plan', PLAN_GROUP[answers.tier]);
   if (answers.ageGroup) url.searchParams.set('age_group', answers.ageGroup);
   if (!TRIAL_MODE && answers.frequency === '주 2회') url.searchParams.set('frequency', '2');
@@ -608,7 +580,7 @@ function recommendedApplicationUrl() {
   return url.href;
 }
 const initialLessonKind = new URL(location.href).searchParams.get('lesson_kind');
-answers.lessonKind = initialLessonKind === 'trial' ? (DIRECTORY_SELECTION?.trialType === 'free' ? '송도 무료 체험' : '체험 수업') : initialLessonKind === 'regular' ? '정규 수업' : '';
+answers.lessonKind = TRIAL_MODE ? '체험 수업' : (initialLessonKind === 'regular' ? '정규 수업' : '');
 let activeSteps = buildActiveSteps();
 if (answers.lessonKind) current = 1;
 if (DIRECTORY_SELECTION && FLOW_PARAMS.get('application_flow') === '1' && answers.ageGroup && answers.tier) {
@@ -653,7 +625,7 @@ function renderDirectorySelectionSummary() {
   summary.hidden = false;
   const isPremiumSelection = DIRECTORY_SELECTION.plan === '프리미엄';
   const selectionTypeLabel = TRIAL_MODE
-    ? (DIRECTORY_SELECTION.trialType === 'paid' ? '1회 유료 체험' : '송도 무료 체험')
+    ? '1회 유료 체험'
     : DIRECTORY_SELECTION.plan;
   const values = {
     directorySelectionPlan: DIRECTORY_SELECTION.plan
@@ -1509,7 +1481,7 @@ if (step.type === 'trialType'){
     qcardWrap.querySelectorAll('.opt').forEach(el => {
       el.addEventListener('click', () => {
         const val = el.dataset.value;
-        if (step.key === 'lessonKind' && ((val !== '정규 수업') !== TRIAL_MODE || (val === '송도 무료 체험' && answers.trialType !== '무료 체험') || (DIRECTORY_SELECTION && val === '체험 수업' && answers.trialType === '무료 체험'))) {
+        if (step.key === 'lessonKind' && ((val !== '정규 수업') !== TRIAL_MODE)) {
           location.assign(lessonKindUrl(val)); return;
         }
         if (step.type === 'single'){
@@ -2200,10 +2172,10 @@ async function submitToJotform(a) {
   params.append('submission[7]', a.level);                            // 영어 수준
   (a.goals || []).forEach(g => params.append('submission[8][]', g));  // 학습 목표 (다중)
   (a.place || []).forEach(p => params.append('submission[29][]', p)); // 진행방식
-  params.append('submission[30]', TRIAL_MODE ? ((a.tier || '이코노미') + '(' + (a.trialType || '체험수업') + ')') : (a.tier || ''));  // 선택 플랜
+  params.append('submission[30]', TRIAL_MODE ? ((a.tier || '이코노미') + '(플랜 선택 체험)') : (a.tier || ''));  // 선택 플랜
   params.append('submission[31]', a.tier === '프리미엄'
     ? (a.payment ? 'Premium 상담 절차 확인' : '')
-    : (TRIAL_MODE && a.trialType === '무료 체험' ? (a.payment ? '보증금 안내 확인' : '') : (a.payment ? '완료' : '')));  // 결제/상담 확인
+    : (a.payment ? '완료' : ''));  // 결제/상담 확인
   params.append(
     'submission[32]',
     (a.schedule || []).join(', ')
@@ -2221,7 +2193,7 @@ async function submitToJotform(a) {
     params.append('submission[41]', a.duration ? durationLabel(a.duration.index, a.tier) : ''); // 수업 시간
     params.append('submission[43]', a.tier === '프리미엄'
       ? (TRIAL_MODE ? 'Premium 체험 상담 요청' : 'Premium 상담 요청')
-      : (TRIAL_MODE ? ((a.trialType || '체험수업') + ' 신청') : '정규 신청')); // 신청 구분
+      : (TRIAL_MODE ? '플랜 선택 체험 신청' : '정규 신청')); // 신청 구분
     const matchingMeta = [
       '[매칭 정보]',
       'matching_type=' + (a.matching_type || 'manual'),
@@ -2460,11 +2432,8 @@ async function showSuccess(){
   }
 
   if (!isPremiumInquiry && !teacherWasSelected && TRIAL_MODE) {
-    const isFreeTrial = a.trialType === '무료 체험';
     document.querySelector('.success-title').textContent = '체험수업 신청이 정상적으로 접수됐어요';
-    document.querySelector('.success-text').innerHTML = isFreeTrial
-      ? '<strong>이 화면이 보이면 제출이 완료된 상태예요.</strong>24시간 내에 카카오톡으로 보증금 입금 계좌를 안내드려요. 수업 참석 시 전액 환불됩니다.'
-      : '<strong>이 화면이 보이면 제출이 완료된 상태예요.</strong>24시간 내에 카카오톡으로 1회 수업 결제 방법을 안내드려요.';
+    document.querySelector('.success-text').innerHTML = '<strong>이 화면이 보이면 제출이 완료된 상태예요.</strong>24시간 내에 카카오톡으로 1회 수업 결제 방법을 안내드려요.';
   } else if (!isPremiumInquiry && !teacherWasSelected) {
     document.querySelector('.success-title').textContent = '신청이 정상적으로 접수됐어요';
     document.querySelector('.success-text').innerHTML = '<strong>이 화면이 보이면 제출이 완료된 상태예요.</strong>희망 조건을 확인한 뒤 24시간 내에 입력하신 연락처로 카카오톡 안내를 보내드려요.';
