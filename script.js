@@ -540,8 +540,9 @@ function buildLessonSteps(){
   return steps.filter(s => s.key !== 'trialType' && s.key !== 'duration' && s.key !== 'startDate');
 }
 function buildActiveSteps() {
-  const options = ['정규 수업', '체험 수업'];
-  return [{key:'lessonKind',type:'single',required:true,title:'어떤 수업을 신청하시겠어요?',options}, ...buildLessonSteps()];
+  // The entry CTA already determines whether this is a regular or trial application.
+  // Do not ask the user to choose the lesson type again inside the form.
+  return buildLessonSteps();
 }
 function lessonKindUrl(kind) {
   const url = new URL(location.href);
@@ -579,10 +580,8 @@ function recommendedApplicationUrl() {
   if (new URL(location.href).searchParams.get('test') === '1') url.searchParams.set('test', '1');
   return url.href;
 }
-const initialLessonKind = new URL(location.href).searchParams.get('lesson_kind');
-answers.lessonKind = TRIAL_MODE ? '체험 수업' : (initialLessonKind === 'regular' ? '정규 수업' : '');
+answers.lessonKind = TRIAL_MODE ? '체험 수업' : '정규 수업';
 let activeSteps = buildActiveSteps();
-if (answers.lessonKind) current = 1;
 if (DIRECTORY_SELECTION && FLOW_PARAMS.get('application_flow') === '1' && answers.ageGroup && answers.tier) {
   const tierIndex = activeSteps.findIndex(step => step.key === 'tier');
   if (tierIndex >= 0) current = tierIndex + 1;
