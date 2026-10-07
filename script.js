@@ -43,14 +43,30 @@ function serviceAreaLabel(code){
 function durationLabel(idx){
   return DURATIONS[idx] || DURATIONS[0];
 }
+function calcRegularPrice(tier, idx, freq){
+  if (!PRICE_TABLE[tier]) return 0;
+  return PRICE_TABLE[tier][idx] * FREQ_MULTIPLIER[freq];
+}
 function calcPrice(tier, idx, freq){
   if (!PRICE_TABLE[tier]) return 0;
   if (TRIAL_MODE) return PRICE_TABLE[tier][idx] / 4;
-  const regularPrice = PRICE_TABLE[tier][idx] * FREQ_MULTIPLIER[freq];
+  const regularPrice = calcRegularPrice(tier, idx, freq);
   const songdoDiscount = answers.placeType === '송도 할인 장소'
     ? SONGDO_LOCATION_DISCOUNT
     : 0;
   return Math.max(0, regularPrice - songdoDiscount);
+}
+function tierPriceMarkup(tier){
+  const discountedPrice = calcPrice(tier, 0, answers.frequency);
+  if (!TRIAL_MODE && answers.placeType === '송도 할인 장소') {
+    const originalPrice = calcRegularPrice(tier, 0, answers.frequency);
+    return '<span class="tier-opt-price tier-opt-price-discount">'
+      + '<span class="tier-opt-price-original">₩' + originalPrice.toLocaleString() + '~</span>'
+      + '<span class="tier-opt-price-sale">₩' + discountedPrice.toLocaleString() + '~</span>'
+      + '<span class="tier-opt-discount-note">송도 선택 시 1만원 할인</span>'
+      + '</span>';
+  }
+  return '<span class="tier-opt-price">₩' + discountedPrice.toLocaleString() + (TRIAL_MODE ? '' : '~') + '</span>';
 }
 function freqLabel(freq){
   if (TRIAL_MODE) return '1회 체험';
@@ -1000,7 +1016,8 @@ if (step.type === 'trialType'){
           + (!TRIAL_MODE && opt.badge ? '<span class="tier-opt-badge">' + opt.badge + '</span>' : '')
           + '<span class="tier-opt-top">'
           + '<span class="tier-opt-name">' + opt.name + '</span>'
-          + '<span class="tier-opt-price">₩' + calcPrice(opt.name, 0, answers.frequency).toLocaleString() + (TRIAL_MODE ? '' : '~') + '</span>'          + '</span>'
+          + tierPriceMarkup(opt.name)
+          + '</span>'
           + (TRIAL_MODE
             ? '<span class="tier-opt-desc">' + ({
                 '이코노미': '가볍게 시작하는 기본 체험 수업 · 일상회화·여행영어·기초 말하기 중심',
