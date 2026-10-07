@@ -77,6 +77,9 @@ main{max-width:640px;margin:0 auto;padding:5.2rem 1.2rem 7rem;min-height:100vh;}
 .tier-opt-price-discount{display:flex;flex-direction:column;align-items:flex-end;gap:.08rem;white-space:normal;}
 .tier-opt-price-original{color:var(--accent-deep);font-size:.82em;font-weight:800;line-height:1.15;text-decoration-line:line-through;text-decoration-color:currentColor;text-decoration-thickness:2px;white-space:nowrap;}
 .tier-opt-price-sale{color:#e0352b;font-size:1.08em;font-weight:900;line-height:1.2;white-space:nowrap;}
+.tier-toolbar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;}
+.tier-toolbar-actions{margin-left:auto;display:flex;align-items:center;}
+.tier-toolbar-discount{display:inline-flex;align-items:center;padding:.38rem .72rem;border-radius:999px;background:#fff0ee;color:#d92d20;font-size:.78rem;font-weight:800;line-height:1.2;white-space:nowrap;}
 .tier-opt-discount-note{display:inline-flex;align-items:center;margin-top:.28rem;padding:.2rem .48rem;border-radius:999px;background:#fff0ee;color:#d92d20;font-size:.66rem;font-weight:800;line-height:1.25;white-space:nowrap;}
 .tier-opt-desc{display:block;font-size:.88rem;color:var(--gray);margin-top:.35rem;line-height:1.55;}
 .tier-more-arrow{display:inline-block;transition:transform .2s;font-size:.7rem;}
@@ -439,6 +442,8 @@ body.form-page .qcard:has(.application-summary-box) .consent-row { font-size:.84
 body.form-page .tier-opt-price { font-size:clamp(1.2rem,4.8vw,1.5rem); font-weight:900; }
 body.form-page .tier-opt-price-discount .tier-opt-price-original { font-size:.72em; }
 body.form-page .tier-opt-price-discount .tier-opt-price-sale { font-size:1em; }
+body.form-page .tier-toolbar { gap:.55rem; }
+body.form-page .tier-toolbar-discount { font-size:.72rem; padding:.34rem .64rem; }
 body.form-page .tier-opt-price-discount .tier-opt-discount-note { font-size:.68rem; }
 body.form-page #durPrice { font-size:1.5rem !important; color:var(--accent-deep); }
 body.form-page .application-payment-amount strong { font-size:1.5rem; font-weight:900; color:var(--accent-deep); }

@@ -63,7 +63,6 @@ function tierPriceMarkup(tier){
     return '<span class="tier-opt-price tier-opt-price-discount">'
       + '<span class="tier-opt-price-original">₩' + originalPrice.toLocaleString() + '~</span>'
       + '<span class="tier-opt-price-sale">₩' + discountedPrice.toLocaleString() + '~</span>'
-      + '<span class="tier-opt-discount-note">송도 선택 시 1만원 할인</span>'
       + '</span>';
   }
   return '<span class="tier-opt-price">₩' + discountedPrice.toLocaleString() + (TRIAL_MODE ? '' : '~') + '</span>';
@@ -995,11 +994,14 @@ if (step.type === 'trialType'){
       const showFrequencyScheduleHelp = Boolean(DIRECTORY_SELECTION && answers.frequency === '주 2회');
       if (!TRIAL_MODE) {
         inner += ''
-          + '<div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">'
+          + '<div class="tier-toolbar">'
+          + (answers.placeType === '송도 할인 장소' ? '<span class="tier-toolbar-discount">송도 선택 시 1만원 할인</span>' : '')
+          + '<div class="tier-toolbar-actions">'
           + '<button type="button" id="freqToggle" aria-label="수업 횟수: ' + answers.frequency + '. 눌러서 변경"' + (showFrequencyScheduleHelp ? ' aria-describedby="frequencyScheduleHelp"' : '') + ' style="background:var(--navy);color:#fff;border:none;padding:.5rem 1.1rem;border-radius:2rem;font-weight:800;font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:.35rem;">'
           + answers.frequency
           + '<span style="font-size:.68rem;opacity:.75;">↻ 변경</span>'
           + '</button>'
+          + '</div>'
           + '</div>';
       }
       inner += '<div class="opt-list" role="group" aria-labelledby="questionTitle">';
