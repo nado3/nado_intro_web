@@ -133,11 +133,6 @@ const steps = [
     ]
   },
   {
-    key: 'matchingMethod', type: 'single', required: true,
-    title: '어떻게 선생님을 선택하시겠어요?',
-    options: ['선생님 직접 선택','나도 추천받기']
-  },
-  {
     key: 'duration', type: 'duration', required: true,
     title: '회당 수업 길이를 선택해주세요',
     sub: ''
@@ -448,9 +443,8 @@ if (!DIRECTORY_SELECTION) {
   const initialParams = new URLSearchParams(window.location.search);
   const initialPlan = directoryMapValue(DIRECTORY_PLAN_LABELS, cleanDirectoryText(initialParams.get('plan'), 30).toLowerCase());
   if (initialPlan) answers.tier = initialPlan;
-  const initialMatchingMethod = cleanDirectoryText(initialParams.get('matching_method'), 20).toLowerCase();
-  if (initialMatchingMethod === 'recommended') answers.matchingMethod = '나도 추천받기';
-  if (initialMatchingMethod === 'direct') answers.matchingMethod = '선생님 직접 선택';
+  // Applications entered without a selected teacher follow the recommendation flow.
+  answers.matchingMethod = '나도 추천받기';
   if (TRIAL_MODE) {
     // All trial applications now use the paid one-time trial flow.
     answers.trialType = '플랜 선택 체험';
@@ -601,9 +595,9 @@ if (DIRECTORY_SELECTION && FLOW_PARAMS.get('application_flow') === '1' && answer
   const tierIndex = activeSteps.findIndex(step => step.key === 'tier');
   if (tierIndex >= 0) current = tierIndex + 1;
 }
-if (!DIRECTORY_SELECTION && new URL(location.href).searchParams.get('resume') === 'details' && answers.tier && answers.matchingMethod) {
-  const matchingIndex = activeSteps.findIndex(step => step.key === 'matchingMethod');
-  if (matchingIndex >= 0) current = matchingIndex + 1;
+if (!DIRECTORY_SELECTION && FLOW_PARAMS.get('resume') === 'details' && answers.tier) {
+  const tierIndex = activeSteps.findIndex(step => step.key === 'tier');
+  if (tierIndex >= 0) current = tierIndex + 1;
 }
 if (DIRECTORY_TIME_CHOICES.length) {
   const slot = DIRECTORY_TIME_CHOICES[0];
@@ -2078,16 +2072,6 @@ async function startTeacherMatching() {
 nextBtn.addEventListener('click', () => {
   const step = activeSteps[current];
   if (!checkValid(step)) return;
-  if (step.key === 'matchingMethod') {
-    if (answers.matchingMethod === '선생님 직접 선택' && !DIRECTORY_SELECTION) {
-      location.assign(teacherSelectionUrl());
-      return;
-    }
-    if (answers.matchingMethod === '나도 추천받기' && DIRECTORY_SELECTION) {
-      location.assign(recommendedApplicationUrl());
-      return;
-    }
-  }
   if (!formStartTracked) {
     formStartTracked = true;
     trackFormEvent('form_start');
