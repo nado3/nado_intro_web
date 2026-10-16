@@ -868,6 +868,7 @@
   let dialogSurface;
   let dialogContent;
   let dialogClose;
+  let timetableCleanup = null;
 
   function localPhotoFor(name) {
     const key = String(name || '').trim().toLocaleLowerCase();
@@ -1546,6 +1547,7 @@
     const entries = timetableEntries(teacher, sourceKind);
     if (!entries.length) return '<p>현재 신청 가능한 시간을 확인 중입니다.</p>';
     return '<p class="timetable-hint">첫 수업 날짜를 선택한 뒤 시작 시간을 하나 선택해주세요.</p>'
+      + '<p class="timetable-calendar-note">' + escapeHtml(global.NADO_LESSON_TIME_POLICY.message) + '</p>'
       + '<p class="timetable-note-red">첫 수업 이후 일정은 선생님과 직접 조율하실 수 있어요.</p>'
       + '<div class="timetable-calendar" data-timetable-calendar role="group" aria-label="첫 수업 날짜 선택"></div>'
       + '<div class="timetable-time-heading">시작 시간</div>'
@@ -1555,79 +1557,95 @@
   }
 
   function bindTimetable(teacher, sourceKind = state.sourceKind) {
+    if (timetableCleanup) timetableCleanup();
     const entries = timetableEntries(teacher, sourceKind);
+    const policy = global.NADO_LESSON_TIME_POLICY;
     const calendar = dialogContent.querySelector('[data-timetable-calendar]');
     const times = dialogContent.querySelector('[data-timetable-times]');
     const summary = dialogContent.querySelector('.timetable-selection');
     const apply = dialogContent.querySelector('.timetable-apply');
-    if (!calendar || !times || !summary || !apply || !entries.length) return;
+    if (!calendar || !times || !summary || !apply || !entries.length || !policy) return;
 
-    const dateKey = date => [
-      date.getFullYear(),
-      String(date.getMonth() + 1).padStart(2,'0'),
-      String(date.getDate()).padStart(2,'0')
-    ].join('-');
+    // Calendar arithmetic uses UTC dates; the actual lesson cutoff uses KST.
+    const dateKey = date => date.toISOString().slice(0, 10);
     const parseDate = value => {
-      const match = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
-      if (!match) return null;
-      return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ''))) return null;
+      const date = new Date(value + 'T00:00:00Z');
+      return Number.isFinite(date.getTime()) && dateKey(date) === value ? date : null;
     };
-    const todayDate = new Date();
-    const today = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate());
-    const todayKey = dateKey(today);
-    const entriesForDate = value => {
+    const scheduledEntriesForDate = value => {
       const date = parseDate(value);
-      if (!date || date < today) return [];
-      return entries.filter(entry => entry.dayOfWeek === date.getDay());
+      return date ? entries.filter(entry => entry.dayOfWeek === date.getUTCDay()) : [];
     };
-    const firstAvailableDate = () => {
+    const entriesForDate = (value, now = Date.now()) => scheduledEntriesForDate(value)
+      .filter(entry => policy.isAllowed(value, entry.time, now));
+    const firstAvailableDate = (now = Date.now()) => {
+      const today = parseDate(policy.today(now));
       for (let offset = 0; offset < 90; offset += 1) {
-        const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() + offset);
+        const date = new Date(today.getTime() + offset * 24 * 60 * 60 * 1000);
         const value = dateKey(date);
-        if (entriesForDate(value).length) return value;
+        if (entriesForDate(value, now).length) return value;
       }
       return '';
     };
 
     let selectedDate = firstAvailableDate();
     let selectedEntry = null;
-    let visibleMonth = (selectedDate || todayKey).slice(0,7);
+    let visibleMonth = (selectedDate || policy.today()).slice(0,7);
+    let renderedCalendar = '';
+    let renderedTimes = '';
 
-    const renderCalendar = () => {
+    const renderCalendar = (now = Date.now()) => {
+      const todayKey = policy.today(now);
       const [year, month] = visibleMonth.split('-').map(Number);
-      const first = new Date(year, month - 1, 1);
-      const count = new Date(year, month, 0).getDate();
-      calendar.innerHTML = '<div class="timetable-calendar-heading"><strong aria-live="polite">'+year+'년 '+month+'월</strong><div>'
+      const first = new Date(Date.UTC(year, month - 1, 1));
+      const count = new Date(Date.UTC(year, month, 0)).getUTCDate();
+      const markup = '<div class="timetable-calendar-heading"><strong aria-live="polite">'+year+'년 '+month+'월</strong><div>'
         + '<button type="button" data-timetable-month="-1" aria-label="이전 달" '+(visibleMonth<=todayKey.slice(0,7)?'disabled':'')+'>‹</button>'
         + '<button type="button" data-timetable-month="1" aria-label="다음 달">›</button></div></div>'
         + '<div class="timetable-calendar-week" aria-hidden="true">'+['일','월','화','수','목','금','토'].map(day=>'<span>'+day+'</span>').join('')+'</div>'
-        + '<div class="timetable-calendar-days">'+Array.from({length:first.getDay()},()=>'<span aria-hidden="true"></span>').join('')
+        + '<div class="timetable-calendar-days">'+Array.from({length:first.getUTCDay()},()=>'<span aria-hidden="true"></span>').join('')
         + Array.from({length:count},(_,index)=>{
           const value = visibleMonth+'-'+String(index+1).padStart(2,'0');
-          const enabled = entriesForDate(value).length > 0;
+          const enabled = entriesForDate(value, now).length > 0;
           return '<button type="button" data-timetable-date="'+value+'" aria-pressed="'+(value===selectedDate)+'" '+(value===todayKey?'aria-current="date" ':'')+(enabled?'':'disabled')+'>'+(index+1)+'</button>';
         }).join('')
         + '</div><p class="timetable-calendar-note">한국 시간 기준</p>';
+      if (renderedCalendar !== markup) {
+        calendar.innerHTML = markup;
+        renderedCalendar = markup;
+      }
     };
 
-    const renderTimes = () => {
-      const available = entriesForDate(selectedDate);
-      times.innerHTML = available.map((entry,index) =>
-        '<button type="button" class="timetable-time" data-timetable-entry="'+index+'" aria-pressed="'+(selectedEntry===entry)+'">'+escapeHtml(entry.time)+'</button>'
-      ).join('');
-      if (!available.length) {
-        times.innerHTML = '<p class="timetable-no-times">선택 가능한 시간이 없습니다.</p>';
+    const renderTimes = (notice = '', now = Date.now()) => {
+      const available = entriesForDate(selectedDate, now);
+      if (selectedEntry && !available.includes(selectedEntry)) {
+        selectedEntry = null;
+        notice = policy.message;
       }
-      if (selectedEntry && !available.includes(selectedEntry)) selectedEntry = null;
+      // Keep each button tied to its original entry even as the cutoff advances.
+      const markup = scheduledEntriesForDate(selectedDate).map(entry =>
+        '<button type="button" class="timetable-time" data-timetable-entry="'+entries.indexOf(entry)+'" aria-pressed="'+(selectedEntry===entry)+'" '+(available.includes(entry)?'':'disabled')+'>'+escapeHtml(entry.time)+'</button>'
+      ).join('');
+      const content = markup || '<p class="timetable-no-times">선택 가능한 시간이 없습니다.</p>';
+      if (renderedTimes !== content) {
+        times.innerHTML = content;
+        renderedTimes = content;
+      }
       summary.textContent = selectedEntry
         ? selectedDate + ' · ' + selectedEntry.time
-        : '시작 시간을 하나 선택해주세요.';
+        : notice || (available.length ? '시작 시간을 하나 선택해주세요.' : '선택 가능한 시간이 없습니다. 다른 날짜를 선택해주세요.');
       apply.disabled = !selectedEntry;
     };
 
     calendar.addEventListener('click', event => {
       const day = event.target.closest('[data-timetable-date]');
       if (day && !day.disabled) {
+        if (!entriesForDate(day.dataset.timetableDate).length) {
+          renderCalendar();
+          renderTimes(policy.message);
+          return;
+        }
         selectedDate = day.dataset.timetableDate;
         selectedEntry = null;
         renderCalendar();
@@ -1639,7 +1657,7 @@
       if (nav && !nav.disabled) {
         const delta = Number(nav.dataset.timetableMonth);
         const [year, month] = visibleMonth.split('-').map(Number);
-        visibleMonth = dateKey(new Date(year, month - 1 + delta, 1)).slice(0,7);
+        visibleMonth = dateKey(new Date(Date.UTC(year, month - 1 + delta, 1))).slice(0,7);
         renderCalendar();
         calendar.querySelector('[data-timetable-month="'+delta+'"]')?.focus({preventScroll:true});
       }
@@ -1647,15 +1665,22 @@
 
     times.addEventListener('click', event => {
       const button = event.target.closest('[data-timetable-entry]');
-      if (!button) return;
+      if (!button || button.disabled) return;
       const available = entriesForDate(selectedDate);
-      selectedEntry = available[Number(button.dataset.timetableEntry)] || null;
-      renderTimes();
+      const entry = entries[Number(button.dataset.timetableEntry)];
+      selectedEntry = available.includes(entry) ? entry : null;
+      renderCalendar();
+      renderTimes(selectedEntry ? '' : policy.message);
       times.querySelector('[data-timetable-entry="'+button.dataset.timetableEntry+'"]')?.focus({preventScroll:true});
     });
 
     apply.addEventListener('click', () => {
       if (!selectedEntry || !selectedDate) return;
+      if (!entriesForDate(selectedDate).includes(selectedEntry)) {
+        renderCalendar();
+        renderTimes(policy.message);
+        return;
+      }
       const url = new URL(applicationPage() + selectedEntry.url, location.href);
       url.searchParams.set('preferred_date', selectedDate);
       url.searchParams.set('preferred_time', selectedEntry.time);
@@ -1667,6 +1692,25 @@
 
     renderCalendar();
     renderTimes();
+    const refresh = () => {
+      if (!calendar.isConnected) {
+        cleanup();
+        return;
+      }
+      const now = Date.now();
+      renderCalendar(now);
+      renderTimes('', now);
+    };
+    const timer = global.setInterval(refresh, 30 * 1000);
+    const cleanup = () => {
+      global.clearInterval(timer);
+      global.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', refresh);
+      if (timetableCleanup === cleanup) timetableCleanup = null;
+    };
+    timetableCleanup = cleanup;
+    global.addEventListener('focus', refresh);
+    document.addEventListener('visibilitychange', refresh);
   }
 
   function bindProfileRegions(originalTeacher) {
@@ -1770,6 +1814,7 @@
   }
 
   function finishDialogClose() {
+    if (timetableCleanup) timetableCleanup();
     if (new URL(location.href).searchParams.has('teacher')) { location.replace('teachers.html'); return; }
     dialogContent.innerHTML = '';
     state.dialogVideoSources = [];

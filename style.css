@@ -365,6 +365,7 @@ textarea{min-height:110px;resize:vertical;line-height:1.6;}
 .first-lesson-time { padding:12px 4px; background:#fff; border:1px solid #d4dfef; border-radius:10px; color:#183550; font:inherit; font-size:.95rem; cursor:pointer; }
 .first-lesson-time[aria-pressed="true"] { background:#e2f2ff; border-color:#3276ce; color:#2361ae; font-weight:700; }
 .first-lesson-time:focus-visible { outline:2px solid #3276ce; outline-offset:2px; }
+.first-lesson-time:disabled { background:#f2f4f7; border-color:#e3e7ed; color:#9aa6b3; cursor:not-allowed; }
 
 #history .history-edit { background:transparent!important; padding:0!important; border:0; border-radius:0; box-shadow:none!important; }
 #history .history-bubble { background:transparent!important; padding:6px 8px; }
