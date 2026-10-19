@@ -1,8 +1,8 @@
-// Local preview fallback generated from the active NADO teacher directory on 2026-09-21.
-// Production prefers the public directory RPC and uses this only if it is unavailable.
+// Local preview snapshot generated on 2026-09-21; Hyesung Shin added on 2026-10-19.
+// Homepage cards use these profiles after checking eligibility in the live directory.
 // Every snapshot profile lists English because this is an English-conversation service;
 // no additional spoken language is inferred without an approved teacher profile value.
-window.NADO_TEACHER_DIRECTORY_FALLBACK_UPDATED_AT = '2026-09-21';
+window.NADO_TEACHER_DIRECTORY_FALLBACK_UPDATED_AT = '2026-10-19';
 window.NADO_TEACHER_DIRECTORY_FALLBACK = [
   {
     "id": "preview-abhinay",
@@ -1628,5 +1628,310 @@ window.NADO_TEACHER_DIRECTORY_FALLBACK = [
       "standard"
     ],
     "businessEnglish": false
+  },
+  {
+    "id": "preview-hyesung",
+    "bio": "순천향대학교병원 국제진료센터에서 영어·한국어 통역 봉사를 하며 외국인 환자와 의료진의 소통을 도왔습니다. 이 경험을 바탕으로, 어려운 표현은 한국어로 쉽게 설명하고 영어로 편하게 말할 수 있도록 돕겠습니다.",
+    "major": "Global Affairs",
+    "school": "George Mason University",
+    "regions": {
+      "Seoul": {
+        "areas": [
+          "3호선 인근",
+          "강남",
+          "대치",
+          "서초",
+          "선유도",
+          "신촌",
+          "양천구",
+          "영등포구",
+          "용산",
+          "잠실",
+          "한티",
+          "합정",
+          "홍대"
+        ],
+        "availability": [
+          {
+            "endTime": "22:00",
+            "areaCode": "Line 3 vicinity",
+            "areaLabel": "3호선 인근",
+            "dayOfWeek": 0,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Gangnam",
+            "areaLabel": "강남",
+            "dayOfWeek": 0,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Daechi",
+            "areaLabel": "대치",
+            "dayOfWeek": 0,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Seocho",
+            "areaLabel": "서초",
+            "dayOfWeek": 0,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Seonyudo",
+            "areaLabel": "선유도",
+            "dayOfWeek": 0,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Sinchon",
+            "areaLabel": "신촌",
+            "dayOfWeek": 0,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Yangcheon-gu",
+            "areaLabel": "양천구",
+            "dayOfWeek": 0,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Yeongdeungpo-gu",
+            "areaLabel": "영등포구",
+            "dayOfWeek": 0,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Yongsan",
+            "areaLabel": "용산",
+            "dayOfWeek": 0,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Jamsil",
+            "areaLabel": "잠실",
+            "dayOfWeek": 0,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Hanti",
+            "areaLabel": "한티",
+            "dayOfWeek": 0,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Hapjeong",
+            "areaLabel": "합정",
+            "dayOfWeek": 0,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Hongdae",
+            "areaLabel": "홍대",
+            "dayOfWeek": 0,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Line 3 vicinity",
+            "areaLabel": "3호선 인근",
+            "dayOfWeek": 6,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Gangnam",
+            "areaLabel": "강남",
+            "dayOfWeek": 6,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Daechi",
+            "areaLabel": "대치",
+            "dayOfWeek": 6,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Seocho",
+            "areaLabel": "서초",
+            "dayOfWeek": 6,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Seonyudo",
+            "areaLabel": "선유도",
+            "dayOfWeek": 6,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Sinchon",
+            "areaLabel": "신촌",
+            "dayOfWeek": 6,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Yangcheon-gu",
+            "areaLabel": "양천구",
+            "dayOfWeek": 6,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Yeongdeungpo-gu",
+            "areaLabel": "영등포구",
+            "dayOfWeek": 6,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Yongsan",
+            "areaLabel": "용산",
+            "dayOfWeek": 6,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Jamsil",
+            "areaLabel": "잠실",
+            "dayOfWeek": 6,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Hanti",
+            "areaLabel": "한티",
+            "dayOfWeek": 6,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Hapjeong",
+            "areaLabel": "합정",
+            "dayOfWeek": 6,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "22:00",
+            "areaCode": "Hongdae",
+            "areaLabel": "홍대",
+            "dayOfWeek": 6,
+            "startTime": "08:00"
+          }
+        ]
+      },
+      "Songdo": {
+        "areas": [
+          "송도 내 협의"
+        ],
+        "availability": [
+          {
+            "endTime": "15:30",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의",
+            "dayOfWeek": 1,
+            "startTime": "12:30"
+          },
+          {
+            "endTime": "24:00",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의",
+            "dayOfWeek": 1,
+            "startTime": "19:00"
+          },
+          {
+            "endTime": "15:00",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의",
+            "dayOfWeek": 2,
+            "startTime": "12:30"
+          },
+          {
+            "endTime": "18:30",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의",
+            "dayOfWeek": 2,
+            "startTime": "17:00"
+          },
+          {
+            "endTime": "24:00",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의",
+            "dayOfWeek": 2,
+            "startTime": "21:00"
+          },
+          {
+            "endTime": "15:00",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의",
+            "dayOfWeek": 3,
+            "startTime": "12:30"
+          },
+          {
+            "endTime": "24:00",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의",
+            "dayOfWeek": 3,
+            "startTime": "19:00"
+          },
+          {
+            "endTime": "14:30",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의",
+            "dayOfWeek": 4,
+            "startTime": "08:00"
+          },
+          {
+            "endTime": "18:30",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의",
+            "dayOfWeek": 4,
+            "startTime": "17:00"
+          },
+          {
+            "endTime": "24:00",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의",
+            "dayOfWeek": 4,
+            "startTime": "20:30"
+          },
+          {
+            "endTime": "20:00",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의",
+            "dayOfWeek": 5,
+            "startTime": "16:30"
+          }
+        ]
+      }
+    },
+    "videoUrl": "",
+    "languages": [
+      "en",
+      "ko"
+    ],
+    "planGroups": [
+      "economy",
+      "standard"
+    ],
+    "displayName": "Hyesung Shin",
+    "businessEnglish": false,
+    "profilePhotoPath": "img/hyesung.jpg"
   }
 ];

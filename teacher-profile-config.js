@@ -221,6 +221,20 @@ window.NADO_TEACHER_PROFILE_CONFIG = {
     "languages": [
       "en"
     ]
+  },
+  "img/hyesung.jpg": {
+    "name": "Hyesung",
+    "teacherType": "korean",
+    "keywords": [
+      "🇰🇷",
+      "초급/중급",
+      "한영 통역 경험",
+      "한국어 설명"
+    ],
+    "languages": [
+      "en",
+      "ko"
+    ]
   }
 };
 window.nadoTeacherProfile = function(teacher) {

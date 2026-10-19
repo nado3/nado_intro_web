@@ -109,6 +109,12 @@
     "bio": "Hi! I’m Valeria, a Business student at George Mason University. I studied at an American school, so English has been a big part of my academic and everyday life. I’m patient, friendly, and passionate about helping others feel confident speaking English. My classes are relaxed and personalized, and I’m happy to adapt our lessons to the learning style that works best for you. Let’s make English fun, practical, and comfortable!",
     "ko": "안녕하세요! 저는 George Mason University에서 경영학을 공부하는 Valeria입니다. 미국 학교에서 공부했기 때문에 영어는 학업과 일상에서 큰 부분을 차지해왔어요. 저는 인내심이 있고 친근한 성격이며, 다른 사람들이 자신 있게 영어로 말하도록 돕는 데 열정을 가지고 있습니다. 수업은 편안하고 학생에게 맞춰 진행하며, 여러분에게 가장 잘 맞는 학습 방식에 맞춰 수업을 조정하고 싶어요. 영어를 재미있고 실용적이며 편안하게 배워봐요!",
     "en": "Hi! I’m Valeria, a Business student at George Mason University. I studied at an American school, so English has been a big part of my academic and everyday life. I’m patient, friendly, and passionate about helping others feel confident speaking English. My classes are relaxed and personalized, and I’m happy to adapt our lessons to the learning style that works best for you. Let’s make English fun, practical, and comfortable!"
+  },
+  {
+    "name": "Hyesung Shin",
+    "bio": "순천향대학교병원 국제진료센터에서 영어·한국어 통역 봉사를 하며 외국인 환자와 의료진의 소통을 도왔습니다. 이 경험을 바탕으로, 어려운 표현은 한국어로 쉽게 설명하고 영어로 편하게 말할 수 있도록 돕겠습니다.",
+    "ko": "순천향대학교병원 국제진료센터에서 영어·한국어 통역 봉사를 하며 외국인 환자와 의료진의 소통을 도왔습니다. 이 경험을 바탕으로, 어려운 표현은 한국어로 쉽게 설명하고 영어로 편하게 말할 수 있도록 돕겠습니다.",
+    "en": "I volunteered as an English–Korean interpreter at the international healthcare center of Soonchunhyang University Hospital, helping international patients and medical staff communicate. Drawing on this experience, I’ll explain difficult expressions in simple Korean and help you feel comfortable speaking English."
   }
 ];
   const normalize = value => String(value || '').replace(/George Mason Uni(?:v)?ersity Korea/gi, 'George Mason University').replace(/Mason Korea(?: \(Songdo\))?/gi, 'George Mason University').replace(/\s+/g, ' ').trim();
