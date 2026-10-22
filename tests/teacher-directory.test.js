@@ -77,7 +77,7 @@ test('teachers are sorted by longest introduction after filtering', () => {
     helpers.teachersForView(helpers.teachersForRegion(fallback, 'Songdo'), {})
   );
   assert.deepEqual(songdo.map(teacher => `${teacher.name}:${helpers.introductionLength(teacher)}`), [
-    'Justina:443', 'Valeria:428', 'Vita:386', 'Abhinay:351', 'Amelia:237', 'Hayden:219', 'Anniah:192', 'Amy:172',
+    'Justina:443', 'Valeria:428', 'Vita:386', 'Abhinay:351', 'Selena:238', 'Amelia:237', 'Hayden:219', 'Anniah:192', 'Amy:172',
     'Oscar:164', 'Braydon:159', 'Victoria:147', 'Yerin:136', 'Hyesung Shin:115', 'Ej:92', 'May:84', 'Sophie:71', 'Hara:49', 'Tae:37'
   ]);
 
