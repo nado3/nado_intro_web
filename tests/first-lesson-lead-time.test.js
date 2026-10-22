@@ -8,7 +8,7 @@ const root = path.resolve(__dirname, '..');
 const policy = require(path.join(root, 'lesson-time-policy.js'));
 const policySource = fs.readFileSync(path.join(root, 'lesson-time-policy.js'), 'utf8');
 const source = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
-const NOW = '2026-10-16T09:00:00+09:00';
+const NOW = '2026-10-15T14:00:00+09:00';
 
 function section(start, end) {
   const from = source.indexOf(start);
@@ -83,26 +83,31 @@ function directoryParams({ preferredDate, preferredTime = '15:00', end = '18:00'
   };
 }
 
-test('the shared policy rejects before and exactly five hours, and permits later starts', () => {
+test('the shared policy rejects same-day and under-24-hour starts, and includes the exact boundary', () => {
   const now = Date.parse(NOW);
+  assert.equal(policy.isAllowed('2026-10-15', '23:59', now), false);
   assert.equal(policy.isAllowed('2026-10-16', '13:59', now), false);
-  assert.equal(policy.isAllowed('2026-10-16', '14:00', now), false);
+  assert.equal(policy.isAllowed('2026-10-16', '14:00', now), true);
   assert.equal(policy.isAllowed('2026-10-16', '14:01', now), true);
+  // The same start has 24 hours + 1 ms, exactly 24 hours, or 24 hours - 1 ms of notice.
   assert.equal(policy.isAllowed('2026-10-16', '14:00', now - 1), true);
   assert.equal(policy.isAllowed('2026-10-16', '14:00', now + 1), false);
 });
 
-test('five-hour cutoff and today roll over using Korea time', () => {
+test('the 24-hour cutoff keeps the current clock time across Korea calendar dates', () => {
   const now = Date.parse('2026-10-16T23:30:00+09:00');
   assert.equal(policy.today(now), '2026-10-16');
   assert.equal(policy.today(Date.parse('2026-10-16T15:00:00Z')), '2026-10-17');
   assert.equal(policy.isAllowed('2026-10-16', '23:59', now), false);
-  assert.equal(policy.isAllowed('2026-10-17', '04:30', now), false);
-  assert.equal(policy.isAllowed('2026-10-17', '04:31', now), true);
+  assert.equal(policy.isAllowed('2026-10-17', '00:00', now), false);
+  assert.equal(policy.isAllowed('2026-10-17', '23:29', now), false);
+  assert.equal(policy.isAllowed('2026-10-17', '23:30', now), true);
+  assert.equal(policy.isAllowed('2026-10-17', '23:31', now), true);
   const app = createApplication({ now: '2026-10-16T15:00:00Z' });
   assert.equal(app.run('availableFirstLessonDates()[0]'), '2026-10-17');
   assert.equal(app.valid('2026-10-16', '23:00'), false);
-  assert.equal(app.valid('2026-10-17', '09:00'), true);
+  assert.equal(app.valid('2026-10-17', '09:00'), false);
+  assert.equal(app.valid('2026-10-18', '09:00'), true);
 });
 
 test('invalid calendar dates, malformed times, and invalid clocks are rejected', () => {
@@ -120,8 +125,9 @@ test('invalid calendar dates, malformed times, and invalid clocks are rejected',
 test('both application modes combine the lead time with half-hour and operating-hour limits', () => {
   for (const trial of [false, true]) {
     const app = createApplication({ trial });
+    assert.equal(app.valid('2026-10-15', '23:00'), false);
     assert.equal(app.valid('2026-10-16', '13:30'), false);
-    assert.equal(app.valid('2026-10-16', '14:00'), false);
+    assert.equal(app.valid('2026-10-16', '14:00'), true);
     assert.equal(app.valid('2026-10-16', '14:01'), false);
     assert.equal(app.valid('2026-10-16', '14:30'), true);
     assert.equal(app.valid('2026-10-17', '08:30'), false);
@@ -156,19 +162,21 @@ test('teacher-selected applications still enforce weekday, time window, and chos
   assert.equal(fixed.valid('2026-10-16', '15:30'), false);
 });
 
-test('stale or exact-cutoff preferred-date URLs must retain the schedule question', () => {
+test('preferred-date URLs retain the schedule question below 24 hours and accept the exact cutoff', () => {
   for (const trial of [false, true]) {
     for (const [preferredDate, preferredTime] of [
-      ['2026-10-09', '15:00'], ['2026-10-16', '13:30'], ['2026-10-16', '14:00']
+      ['2026-10-09', '15:00'], ['2026-10-16', '13:00'], ['2026-10-16', '13:30']
     ]) {
       const app = createApplication({ trial, params: directoryParams({ preferredDate, preferredTime, trial }) });
       assert.equal(app.run('DIRECTORY_PREFERRED_DATE'), '');
       assert.equal(app.run("activeSteps.some(step => step.key === 'schedule')"), true);
     }
-    const valid = createApplication({ trial, params: directoryParams({ preferredDate: '2026-10-16', trial }) });
-    assert.equal(valid.run('DIRECTORY_PREFERRED_DATE'), '2026-10-16');
-    assert.equal(valid.run("activeSteps.some(step => step.key === 'schedule')"), false);
-    assert.equal(valid.run('answers.firstLessonOptions.every(validFirstLessonOption)'), true);
+    for (const preferredTime of ['14:00', '15:00']) {
+      const valid = createApplication({ trial, params: directoryParams({ preferredDate: '2026-10-16', preferredTime, trial }) });
+      assert.equal(valid.run('DIRECTORY_PREFERRED_DATE'), '2026-10-16');
+      assert.equal(valid.run("activeSteps.some(step => step.key === 'schedule')"), false);
+      assert.equal(valid.run('answers.firstLessonOptions.every(validFirstLessonOption)'), true);
+    }
   }
 });
 
@@ -184,7 +192,7 @@ test('a selected time is revalidated as time passes and returns to schedule sele
   `);
   assert.equal(app.run("checkValid({ key: 'schedule', type: 'firstlesson', required: true })"), true);
   assert.equal(app.run('ensureFirstLessonSelection()'), true);
-  app.clock.now = Date.parse('2026-10-16T10:00:00+09:00');
+  app.clock.now = Date.parse('2026-10-15T15:00:00.001+09:00');
   assert.equal(app.run("checkValid({ key: 'schedule', type: 'firstlesson', required: true })"), false);
   assert.equal(app.run('ensureFirstLessonSelection()'), false);
   assert.deepEqual(app.data('answers.firstLessonOptions'), []);
@@ -194,13 +202,13 @@ test('a selected time is revalidated as time passes and returns to schedule sele
   assert.equal(app.run('matchingViewActive || matchingInProgress'), false);
   assert.equal(app.run('nextBtn.dataset.submitted'), undefined);
   assert.equal(app.elements.get('bottombar').style.display, 'block');
-  assert.match(app.elements.get('firstLessonError').textContent, /5시간/);
+  assert.match(app.elements.get('firstLessonError').textContent, /24시간/);
 });
 
 test('an expiring preferred URL restores the previously skipped schedule question', () => {
   const app = createApplication({ params: directoryParams({ preferredDate: '2026-10-16' }) });
   assert.equal(app.run("activeSteps.some(step => step.key === 'schedule')"), false);
-  app.clock.now = Date.parse('2026-10-16T10:00:00+09:00');
+  app.clock.now = Date.parse('2026-10-15T15:00:00.001+09:00');
   assert.equal(app.run('ensureFirstLessonSelection()'), false);
   assert.equal(app.run('activeSteps[current].key'), 'schedule');
   assert.equal(app.run("buildActiveSteps().some(step => step.key === 'schedule')"), true);
@@ -211,6 +219,8 @@ test('matching and final submission stop before external work when a selected ti
   for (const method of ['startTeacherMatching', 'showSuccess']) {
     const app = createApplication();
     app.run(`answers.firstLessonOptions = [{ date: '2026-10-16', time: '14:00' }];`);
+    assert.equal(app.run('answers.firstLessonOptions.every(validFirstLessonOption)'), true);
+    app.clock.now += 1;
     await app.run(method + '()');
     assert.equal(app.run('activeSteps[current].key'), 'schedule');
     assert.equal(app.run('submissionInProgress'), false);

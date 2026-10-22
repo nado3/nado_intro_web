@@ -2,7 +2,7 @@
   'use strict';
 
   const HOUR_MS = 60 * 60 * 1000;
-  const message = '첫 수업은 현재 시각으로부터 5시간이 지난 시간부터 선택할 수 있어요.';
+  const message = '첫 수업은 현재 시각으로부터 24시간 뒤부터 선택할 수 있어요.';
 
   function today(now = Date.now()) {
     return new Date(Number(now) + 9 * HOUR_MS).toISOString().slice(0, 10);
@@ -14,7 +14,7 @@
     if (!Number.isFinite(timestamp) || !Number.isFinite(Number(now))) return false;
     // Reject impossible calendar dates that Date.parse would otherwise normalize.
     if (today(timestamp) !== date) return false;
-    return timestamp > Number(now) + 5 * HOUR_MS;
+    return timestamp >= Number(now) + 24 * HOUR_MS;
   }
 
   const policy = Object.freeze({ isAllowed, today, message });

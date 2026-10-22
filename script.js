@@ -159,7 +159,7 @@ const steps = [
   {
     key: 'schedule', type: 'firstlesson', required: true,
     title: '첫 수업 날짜·시간을 선택해주세요',
-    sub: '첫 수업은 현재 시각으로부터 5시간이 지난 시간부터 선택할 수 있어요.<br><span class="first-lesson-followup-note">첫 수업 이후 일정은 선생님과 직접 조율하실 수 있어요.</span>'
+    sub: '첫 수업은 현재 시각으로부터 24시간 뒤부터 선택할 수 있어요.<br><span class="first-lesson-followup-note">첫 수업 이후 일정은 선생님과 직접 조율하실 수 있어요.</span>'
   },
    {
     key: 'startDate', type: 'date', required: true,

@@ -8,7 +8,7 @@ const policy = require('../lesson-time-policy.js');
 const source = fs.readFileSync(path.join(__dirname, '../teacher-directory.js'), 'utf8');
 const bindSource = source.slice(source.indexOf('  function bindTimetable('), source.indexOf('  function bindProfileRegions('));
 
-function setup({ now = '2026-10-16T10:00:00+09:00', entries } = {}) {
+function setup({ now = '2026-10-15T15:30:00+09:00', entries } = {}) {
   let currentTime = Date.parse(now);
   class ClockDate extends Date {
     constructor(...args) { super(...(args.length ? args : [currentTime])); }
@@ -79,7 +79,7 @@ function setup({ now = '2026-10-16T10:00:00+09:00', entries } = {}) {
   };
 }
 
-test('directory disables the exact five-hour boundary and accepts a later first lesson', () => {
+test('directory disables starts below 24 hours and accepts the exact 24-hour boundary', () => {
   const ui = setup();
   assert.match(ui.times.innerHTML, /data-timetable-entry="0"[^>]*disabled>15:00/);
   assert.match(ui.times.innerHTML, /data-timetable-entry="1"[^>]*aria-pressed="false" >15:30/);
@@ -99,22 +99,23 @@ test('directory date and cutoff are based on KST across the year boundary', () =
     now: '2026-12-31T20:00:00+09:00',
     entries: [
       { dayOfWeek: 4, time: '23:00', url: '?teacher_id=sample' },
-      { dayOfWeek: 5, time: '01:00', url: '?teacher_id=sample' },
-      { dayOfWeek: 5, time: '01:30', url: '?teacher_id=sample' }
+      { dayOfWeek: 5, time: '19:30', url: '?teacher_id=sample' },
+      { dayOfWeek: 5, time: '20:00', url: '?teacher_id=sample' }
     ]
   });
   assert.match(ui.calendar.innerHTML, /2027년 1월/);
-  assert.match(ui.times.innerHTML, /data-timetable-entry="1"[^>]*disabled>01:00/);
+  assert.match(ui.times.innerHTML, /data-timetable-entry="1"[^>]*disabled>19:30/);
   ui.clickTime(2);
-  assert.equal(ui.summary.textContent, '2027-01-01 · 01:30');
+  assert.equal(ui.summary.textContent, '2027-01-01 · 20:00');
   const midnight = setup({ now: '2026-10-16T00:05:00+09:00' });
   assert.match(midnight.calendar.innerHTML, /data-timetable-date="2026-10-16"[^>]*aria-current="date"/);
+  assert.match(midnight.calendar.innerHTML, /data-timetable-date="2026-10-16"[^>]*disabled/);
   assert.match(midnight.calendar.innerHTML, /data-timetable-date="2026-10-15"[^>]*disabled/);
 });
 
 test('dates with no eligible teacher times are disabled and cannot be selected after waiting', () => {
   const ui = setup();
-  ui.setTime('2026-10-16T11:00:00+09:00');
+  ui.setTime('2026-10-15T16:00:00.001+09:00');
   ui.clickDate('2026-10-16');
   assert.match(ui.calendar.innerHTML, /data-timetable-date="2026-10-16"[^>]*disabled/);
   assert.equal(ui.apply.disabled, true);
@@ -126,7 +127,7 @@ test('dates with no eligible teacher times are disabled and cannot be selected a
 
 test('a stale time click never silently selects a different time when eligible slots shrink', () => {
   const ui = setup();
-  ui.setTime('2026-10-16T10:31:00+09:00');
+  ui.setTime('2026-10-15T15:31:00+09:00');
   ui.clickTime(1);
   assert.equal(ui.apply.disabled, true);
   assert.equal(ui.summary.textContent, policy.message);
@@ -137,7 +138,7 @@ test('a stale time click never silently selects a different time when eligible s
 test('application navigation rechecks a previously selected time against the current cutoff', () => {
   const ui = setup();
   ui.clickTime(1);
-  ui.setTime('2026-10-16T10:30:00+09:00');
+  ui.setTime('2026-10-15T15:30:00.001+09:00');
   ui.apply.listeners.click();
   assert.equal(ui.destinations.length, 0);
   assert.equal(ui.apply.disabled, true);
@@ -147,12 +148,12 @@ test('application navigation rechecks a previously selected time against the cur
 test('periodic and focus refresh remove stale selections and clean up detached timetables', () => {
   const ui = setup();
   ui.clickTime(1);
-  ui.setTime('2026-10-16T10:30:00+09:00');
+  ui.setTime('2026-10-15T15:30:00.001+09:00');
   ui.tick();
   assert.equal(ui.apply.disabled, true);
   assert.equal(ui.summary.textContent, policy.message);
   ui.clickTime(2);
-  ui.setTime('2026-10-16T11:00:00+09:00');
+  ui.setTime('2026-10-15T16:00:00.001+09:00');
   ui.events.focus();
   assert.equal(ui.apply.disabled, true);
   ui.calendar.isConnected = false;
