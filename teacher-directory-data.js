@@ -1,8 +1,8 @@
-// Local preview snapshot generated on 2026-09-21; Hyesung Shin added on 2026-10-19.
+// Local preview snapshot generated on 2026-09-21; Hyesung Shin added on 2026-10-19; Selena added on 2026-10-22.
 // Homepage cards use these profiles after checking eligibility in the live directory.
 // Every snapshot profile lists English because this is an English-conversation service;
 // no additional spoken language is inferred without an approved teacher profile value.
-window.NADO_TEACHER_DIRECTORY_FALLBACK_UPDATED_AT = '2026-10-19';
+window.NADO_TEACHER_DIRECTORY_FALLBACK_UPDATED_AT = '2026-10-22';
 window.NADO_TEACHER_DIRECTORY_FALLBACK = [
   {
     "id": "preview-abhinay",
@@ -1933,5 +1933,250 @@ window.NADO_TEACHER_DIRECTORY_FALLBACK = [
     "displayName": "Hyesung Shin",
     "businessEnglish": false,
     "profilePhotoPath": "img/hyesung.jpg"
+  },
+  {
+    "id": "preview-selena",
+    "bio": "With experience teaching English to both children and college students, I adapt my lessons to different ages and learning levels. I focus on creating a supportive environment where students can build confidence and enjoy speaking English.",
+    "major": "Computer Game Design",
+    "school": "George Mason University",
+    "regions": {
+      "Seoul": {
+        "areas": [
+          "서초",
+          "성수",
+          "합정"
+        ],
+        "availability": [
+          {
+            "dayOfWeek": 0,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Seocho",
+            "areaLabel": "서초"
+          },
+          {
+            "dayOfWeek": 0,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Seongsu",
+            "areaLabel": "성수"
+          },
+          {
+            "dayOfWeek": 0,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Hapjeong",
+            "areaLabel": "합정"
+          },
+          {
+            "dayOfWeek": 1,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Seocho",
+            "areaLabel": "서초"
+          },
+          {
+            "dayOfWeek": 1,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Seongsu",
+            "areaLabel": "성수"
+          },
+          {
+            "dayOfWeek": 1,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Hapjeong",
+            "areaLabel": "합정"
+          },
+          {
+            "dayOfWeek": 2,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Seocho",
+            "areaLabel": "서초"
+          },
+          {
+            "dayOfWeek": 2,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Seongsu",
+            "areaLabel": "성수"
+          },
+          {
+            "dayOfWeek": 2,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Hapjeong",
+            "areaLabel": "합정"
+          },
+          {
+            "dayOfWeek": 3,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Seocho",
+            "areaLabel": "서초"
+          },
+          {
+            "dayOfWeek": 3,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Seongsu",
+            "areaLabel": "성수"
+          },
+          {
+            "dayOfWeek": 3,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Hapjeong",
+            "areaLabel": "합정"
+          },
+          {
+            "dayOfWeek": 4,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Seocho",
+            "areaLabel": "서초"
+          },
+          {
+            "dayOfWeek": 4,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Seongsu",
+            "areaLabel": "성수"
+          },
+          {
+            "dayOfWeek": 4,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Hapjeong",
+            "areaLabel": "합정"
+          },
+          {
+            "dayOfWeek": 5,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Seocho",
+            "areaLabel": "서초"
+          },
+          {
+            "dayOfWeek": 5,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Seongsu",
+            "areaLabel": "성수"
+          },
+          {
+            "dayOfWeek": 5,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Hapjeong",
+            "areaLabel": "합정"
+          },
+          {
+            "dayOfWeek": 6,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Seocho",
+            "areaLabel": "서초"
+          },
+          {
+            "dayOfWeek": 6,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Seongsu",
+            "areaLabel": "성수"
+          },
+          {
+            "dayOfWeek": 6,
+            "startTime": "13:00",
+            "endTime": "15:00",
+            "areaCode": "Hapjeong",
+            "areaLabel": "합정"
+          }
+        ]
+      },
+      "Songdo": {
+        "areas": [
+          "송도 내 협의"
+        ],
+        "availability": [
+          {
+            "dayOfWeek": 0,
+            "startTime": "11:30",
+            "endTime": "12:00",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의"
+          },
+          {
+            "dayOfWeek": 0,
+            "startTime": "12:30",
+            "endTime": "15:00",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의"
+          },
+          {
+            "dayOfWeek": 1,
+            "startTime": "11:00",
+            "endTime": "16:00",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의"
+          },
+          {
+            "dayOfWeek": 2,
+            "startTime": "11:00",
+            "endTime": "14:30",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의"
+          },
+          {
+            "dayOfWeek": 2,
+            "startTime": "15:00",
+            "endTime": "15:30",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의"
+          },
+          {
+            "dayOfWeek": 3,
+            "startTime": "11:00",
+            "endTime": "15:30",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의"
+          },
+          {
+            "dayOfWeek": 4,
+            "startTime": "11:00",
+            "endTime": "15:30",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의"
+          },
+          {
+            "dayOfWeek": 5,
+            "startTime": "11:00",
+            "endTime": "15:00",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의"
+          },
+          {
+            "dayOfWeek": 6,
+            "startTime": "11:00",
+            "endTime": "15:00",
+            "areaCode": "Songdo",
+            "areaLabel": "송도 내 협의"
+          }
+        ]
+      }
+    },
+    "videoUrl": "",
+    "languages": [
+      "en"
+    ],
+    "planGroups": [
+      "economy",
+      "standard"
+    ],
+    "displayName": "Selena",
+    "businessEnglish": false,
+    "profilePhotoPath": "img/selena.jpg"
   }
 ];

@@ -6,8 +6,8 @@ const path = require('node:path');
 const root=path.join(__dirname,'..');
 const ctx={};ctx.window=ctx;vm.createContext(ctx);
 for(const file of ['teacher-directory-data.js','teacher-bio-translations.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),ctx);
-test('all 19 public introductions have English defaults and Korean translations',()=>{
- assert.equal(ctx.NADO_TEACHER_DIRECTORY_FALLBACK.length,19);
+test('all 20 public introductions have English defaults and Korean translations',()=>{
+ assert.equal(ctx.NADO_TEACHER_DIRECTORY_FALLBACK.length,20);
  for(const teacher of ctx.NADO_TEACHER_DIRECTORY_FALLBACK){
   const bio=ctx.nadoTeacherBio(teacher);assert.ok(bio,teacher.displayName);
   assert.match(bio.en,/[A-Za-z]/);assert.doesNotMatch(bio.en,/[가-힣]/);assert.match(bio.ko,/[가-힣]/);

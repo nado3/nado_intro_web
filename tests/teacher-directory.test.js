@@ -17,11 +17,11 @@ test('directory snapshot contains only teachers available in the selected region
   const songdo = helpers.teachersForRegion(fallback, 'Songdo');
   const seoul = helpers.teachersForRegion(fallback, 'Seoul');
 
-  assert.equal(songdo.length, 18);
-  assert.equal(seoul.length, 11);
+  assert.equal(songdo.length, 19);
+  assert.equal(seoul.length, 12);
   assert.deepEqual(
     seoul.map(teacher => teacher.name),
-    ['Abhinay', 'Amelia', 'Ej', 'Hyesung Shin', 'Hyunwoo', 'Justina', 'May', 'Tae', 'Valeria', 'Victoria', 'Yerin']
+    ['Abhinay', 'Amelia', 'Ej', 'Hyesung Shin', 'Hyunwoo', 'Justina', 'May', 'Selena', 'Tae', 'Valeria', 'Victoria', 'Yerin']
   );
   assert.equal(helpers.teachersForRegion(fallback, 'Incheon').length, 0);
   assert.equal(helpers.teachersForRegion(fallback, '구월동').length, 0);
@@ -67,7 +67,7 @@ test('paid trial keeps the selected plan and supports both public regions', () =
     trialType: 'paid',
     planFilter: 'standard'
   });
-  assert.equal(paidStandard.length, 11);
+  assert.equal(paidStandard.length, 12);
   assert.ok(paidStandard.every(teacher => teacher.region === 'Seoul'));
   assert.ok(paidStandard.every(teacher => teacher.planGroups.includes('standard')));
 });
@@ -160,8 +160,8 @@ test('lesson types are capabilities, with Oscar as the only current exception', 
     JSON.stringify(teacher.planGroups) === JSON.stringify(['economy', 'standard'])
   )));
   assert.deepEqual(oscar.planGroups, ['standard', 'premium']);
-  assert.equal(helpers.teachersForView(songdo, { planFilter: 'economy' }).length, 17);
-  assert.equal(helpers.teachersForView(songdo, { planFilter: 'standard' }).length, 18);
+  assert.equal(helpers.teachersForView(songdo, { planFilter: 'economy' }).length, 18);
+  assert.equal(helpers.teachersForView(songdo, { planFilter: 'standard' }).length, 19);
   assert.deepEqual(
     helpers.teachersForView(songdo, { planFilter: 'premium' }).map(teacher => teacher.name),
     ['Oscar']

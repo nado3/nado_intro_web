@@ -115,6 +115,12 @@
     "bio": "순천향대학교병원 국제진료센터에서 영어·한국어 통역 봉사를 하며 외국인 환자와 의료진의 소통을 도왔습니다. 이 경험을 바탕으로, 어려운 표현은 한국어로 쉽게 설명하고 영어로 편하게 말할 수 있도록 돕겠습니다.",
     "ko": "순천향대학교병원 국제진료센터에서 영어·한국어 통역 봉사를 하며 외국인 환자와 의료진의 소통을 도왔습니다. 이 경험을 바탕으로, 어려운 표현은 한국어로 쉽게 설명하고 영어로 편하게 말할 수 있도록 돕겠습니다.",
     "en": "I volunteered as an English–Korean interpreter at the international healthcare center of Soonchunhyang University Hospital, helping international patients and medical staff communicate. Drawing on this experience, I’ll explain difficult expressions in simple Korean and help you feel comfortable speaking English."
+  },
+  {
+    "name": "Selena",
+    "bio": "With experience teaching English to both children and college students, I adapt my lessons to different ages and learning levels. I focus on creating a supportive environment where students can build confidence and enjoy speaking English.",
+    "ko": "어린이부터 대학생까지 다양한 연령대의 학생들에게 영어를 가르친 경험이 있습니다. 학생의 수준에 맞춰 수업을 진행하며, 편안한 분위기에서 자신감을 갖고 영어로 말할 수 있도록 돕겠습니다.",
+    "en": "With experience teaching English to both children and college students, I adapt my lessons to different ages and learning levels. I focus on creating a supportive environment where students can build confidence and enjoy speaking English."
   }
 ];
   const normalize = value => String(value || '').replace(/George Mason Uni(?:v)?ersity Korea/gi, 'George Mason University').replace(/Mason Korea(?: \(Songdo\))?/gi, 'George Mason University').replace(/\s+/g, ' ').trim();
