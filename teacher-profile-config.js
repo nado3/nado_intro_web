@@ -238,7 +238,8 @@ window.NADO_TEACHER_PROFILE_CONFIG = {
   },
   "img/selena.jpg": {
     "name": "Selena",
-    "keywords": ["다양한 연령 지도", "맞춤형 수업", "영어 자신감 향상"],
+    "teacherType": "native",
+    "keywords": ["🇺🇸", "다양한 연령 지도", "맞춤형 수업", "영어 자신감 향상"],
     "languages": ["en"]
   }
 };
