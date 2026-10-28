@@ -118,19 +118,24 @@ const steps = [
       {
         name: '이코노미',
         desc: '부담 없이 시작하는 일상 영어',
-        more: '· 일상회화와 기본 문장 교정<br>· 나도 제공 커리큘럼 내에서 진행<br>· 중·고등학생 및 성인 대상<br>· 서울 및 송도 지역에서 수업 가능<br>· 구체적인 수업 장소는 선생님과 직접 조율<br>· 수업 타입: 일상회화 · 여행영어 · 시험/면접 · 발음교정'
+        more: '· 일상회화와 기본 문장 교정<br>· 나도 제공 커리큘럼 내에서 진행<br>· 중·고등학생 및 성인 대상<br>· 수업 타입: 일상회화 · 여행영어 · 시험/면접 · 발음교정'
       },
       {
         name: '스탠다드', badge: 'Most Popular',
         desc: '내 목표와 수준에 맞춘 맞춤 수업',
-        more: '· 나도 커리큘럼에 선생님의 맞춤 자료 추가<br>· 초등학생부터 성인까지 누구나 신청 가능<br>· 영어 수준·목표·관심사에 맞춘 커리큘럼<br>· 선생님이 자료와 수업 흐름을 개별적으로 추가 준비<br>· 서울 및 송도 지역에서 수업 가능<br>· 구체적인 수업 장소는 선생님과 직접 조율<br>· 수업 타입: 여행·시험·면접 등 비즈니스 외 모든 수업'
+        more: '· 나도 커리큘럼에 선생님의 맞춤 자료 추가<br>· 초등학생부터 성인까지 누구나 신청 가능<br>· 영어 수준·목표·관심사에 맞춘 커리큘럼<br>· 선생님이 자료와 수업 흐름을 개별적으로 추가 준비<br>· 수업 타입: 여행·시험·면접 등 비즈니스 외 모든 수업'
       },
       {
         name: '프리미엄',
         desc: '나도 최우수 선생님과 비즈니스 영어 집중 완성',
-        more: '· 비즈니스 영어 및 전문적인 학습 목표 중심<br>· 신청 후 목표를 확인하고 적합한 선생님 안내<br>· 선생님의 진행 의사와 일정을 확인한 후 확정<br>· 서울 및 송도 지역에서 수업 가능<br>· 세부 장소는 선생님과 조율<br>· 수업 타입: 일상회화 · 비즈니스 · 여행영어 · 시험/면접 · 발음교정'
+        more: '· 비즈니스 영어 및 전문적인 학습 목표 중심<br>· 신청 후 목표를 확인하고 적합한 선생님 안내<br>· 선생님의 진행 의사와 일정을 확인한 후 확정<br>· 수업 타입: 일상회화 · 비즈니스 · 여행영어 · 시험/면접 · 발음교정'
       }
     ]
+  },
+  {
+    key: 'matchingMethod', type: 'single', required: true,
+    title: '어떻게 선생님을 선택하시겠어요?',
+    options: ['선생님 직접 선택','나도 추천받기']
   },
   {
     key: 'duration', type: 'duration', required: true,
@@ -159,7 +164,7 @@ const steps = [
   {
     key: 'schedule', type: 'firstlesson', required: true,
     title: '첫 수업 날짜·시간을 선택해주세요',
-    sub: '첫 수업은 현재 시각으로부터 24시간 뒤부터 선택할 수 있어요.<br><span class="first-lesson-followup-note">첫 수업 이후 일정은 선생님과 직접 조율하실 수 있어요.</span>'
+    sub: '가능한 시작 시간을 하나 선택해주세요.<br><span class="first-lesson-followup-note">첫 수업 이후 일정은 선생님과 직접 조율하실 수 있어요.</span>'
   },
    {
     key: 'startDate', type: 'date', required: true,
@@ -412,8 +417,7 @@ const DIRECTORY_PREFERRED_DATE = (() => {
   const value = cleanDirectoryText(new URLSearchParams(location.search).get('preferred_date'), 10);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return '';
   const slot = DIRECTORY_TIME_CHOICES[0];
-  return isValidDirectoryStartDate(value, slot.day)
-    && window.NADO_LESSON_TIME_POLICY.isAllowed(value, slot.preferredTime) ? value : '';
+  return isValidDirectoryStartDate(value, slot.day) ? value : '';
 })();
 function directorySlots() { return DIRECTORY_TIME_CHOICES.length ? DIRECTORY_TIME_CHOICES : DIRECTORY_SELECTION ? [DIRECTORY_SELECTION] : []; }
 function slotForOption(option) {
@@ -426,7 +430,6 @@ function directoryReturnHref() {
 }
 
 let current = 0;
-let firstLessonReselectionRequired = false;
 const answers = {
   frequency: TRIAL_MODE ? '체험 1회' : '주 1회',
   duration: { index: 0 },
@@ -445,8 +448,9 @@ if (!DIRECTORY_SELECTION) {
   const initialParams = new URLSearchParams(window.location.search);
   const initialPlan = directoryMapValue(DIRECTORY_PLAN_LABELS, cleanDirectoryText(initialParams.get('plan'), 30).toLowerCase());
   if (initialPlan) answers.tier = initialPlan;
-  // Applications entered without a selected teacher follow the recommendation flow.
-  answers.matchingMethod = '나도 추천받기';
+  const initialMatchingMethod = cleanDirectoryText(initialParams.get('matching_method'), 20).toLowerCase();
+  if (initialMatchingMethod === 'recommended') answers.matchingMethod = '나도 추천받기';
+  if (initialMatchingMethod === 'direct') answers.matchingMethod = '선생님 직접 선택';
   if (TRIAL_MODE) {
     // All trial applications now use the paid one-time trial flow.
     answers.trialType = '플랜 선택 체험';
@@ -543,8 +547,7 @@ function applyStudentAgePolicy(){
 function buildLessonSteps(){
   if (DIRECTORY_SELECTION) {
     const skipped = new Set(['trialType', 'place', 'startDate', 'matchingMethod']);
-    if (!firstLessonReselectionRequired && DIRECTORY_PREFERRED_DATE && DIRECTORY_TIME_CHOICES.length === 1
-      && window.NADO_LESSON_TIME_POLICY.isAllowed(DIRECTORY_PREFERRED_DATE, DIRECTORY_TIME_CHOICES[0].preferredTime)) skipped.add('schedule');
+    if (DIRECTORY_PREFERRED_DATE && DIRECTORY_TIME_CHOICES.length === 1) skipped.add('schedule');
     if (TRIAL_MODE) skipped.add('duration');
     return steps.filter(step => !skipped.has(step.key));
   }
@@ -598,13 +601,13 @@ if (DIRECTORY_SELECTION && FLOW_PARAMS.get('application_flow') === '1' && answer
   const tierIndex = activeSteps.findIndex(step => step.key === 'tier');
   if (tierIndex >= 0) current = tierIndex + 1;
 }
-if (!DIRECTORY_SELECTION && FLOW_PARAMS.get('resume') === 'details' && answers.tier) {
-  const tierIndex = activeSteps.findIndex(step => step.key === 'tier');
-  if (tierIndex >= 0) current = tierIndex + 1;
+if (!DIRECTORY_SELECTION && new URL(location.href).searchParams.get('resume') === 'details' && answers.tier && answers.matchingMethod) {
+  const matchingIndex = activeSteps.findIndex(step => step.key === 'matchingMethod');
+  if (matchingIndex >= 0) current = matchingIndex + 1;
 }
 if (DIRECTORY_TIME_CHOICES.length) {
   const slot = DIRECTORY_TIME_CHOICES[0];
-  answers.firstLessonOptions = FLOW_PARAMS.has('preferred_date') && !DIRECTORY_PREFERRED_DATE ? [] : [{
+  answers.firstLessonOptions = [{
     date: DIRECTORY_PREFERRED_DATE || nextDirectoryWeekday(slot.day, new Date()),
     time: slot.preferredTime
   }];
@@ -712,14 +715,9 @@ function labelFor(step, value){
 
 let firstLessonDateWindow = 90;
 let firstLessonCalendarDate = '';
-let firstLessonRefreshTimer = null;
-let refreshFirstLessonCalendar = null;
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && refreshFirstLessonCalendar) refreshFirstLessonCalendar();
-});
 function availableFirstLessonDates() {
   const options = [];
-  const today = parseLocalDateInput(window.NADO_LESSON_TIME_POLICY.today());
+  const today = new Date();
   for (let offset = 0; offset < firstLessonDateWindow; offset++) {
     const date = new Date(today.getFullYear(),today.getMonth(),today.getDate()+offset);
     const value = localDateInputValue(date);
@@ -732,8 +730,7 @@ function firstLessonOptionLabel(option) {
   return option.date + ' (' + day + ') ' + option.time;
 }
 function validFirstLessonOption(option) {
-  if (!option || !parseLocalDateInput(option.date)
-    || !window.NADO_LESSON_TIME_POLICY.isAllowed(option.date, option.time)) return false;
+  if (!option || !parseLocalDateInput(option.date) || option.date < localDateInputValue(new Date()) || !/^\d{2}:\d{2}$/.test(option.time)) return false;
   const [hour, minute] = option.time.split(':').map(Number);
   const start = hour * 60 + minute;
   const duration = answers.duration?.index === 1 ? 120 : 60;
@@ -755,24 +752,6 @@ function syncFirstLessonOptions() {
     return day + ' ' + option.time;
   })));
   answers.payment = false;
-}
-
-function ensureFirstLessonSelection() {
-  if (answers.firstLessonOptions?.length === 1 && answers.firstLessonOptions.every(validFirstLessonOption)) return true;
-  firstLessonReselectionRequired = true;
-  answers.firstLessonOptions = [];
-  syncFirstLessonOptions();
-  matchingRequestId++;
-  matchingViewActive = false;
-  matchingInProgress = false;
-  delete nextBtn.dataset.submitted;
-  activeSteps = buildActiveSteps();
-  current = activeSteps.findIndex(step => step.key === 'schedule');
-  document.getElementById('bottombar').style.display = 'block';
-  renderStep();
-  const error = document.getElementById('firstLessonError');
-  if (error) error.textContent = '선택한 시간으로 신청할 수 없어요. ' + window.NADO_LESSON_TIME_POLICY.message;
-  return false;
 }
 
 function renderHistory(){
@@ -926,9 +905,6 @@ function focusRenderedChoice(selector, datasetKey, value){
 }
 
 function renderStep(){
-  if (firstLessonRefreshTimer) window.clearInterval(firstLessonRefreshTimer);
-  firstLessonRefreshTimer = null;
-  refreshFirstLessonCalendar = null;
   if (current >= activeSteps.length){ showSuccess(); return; }
   const step = activeSteps[current];
   const topbarTitle = document.querySelector('.topbar-title');
@@ -1586,9 +1562,7 @@ if (step.type === 'trialType'){
       const date = dateInput.value;
       const option = selectedTime ? { date, time: selectedTime } : null;
       if (!date || !option || !validFirstLessonOption(option)) {
-        loadDateTimes();
-        renderCalendar();
-        document.getElementById('firstLessonError').textContent = window.NADO_LESSON_TIME_POLICY.message;
+        document.getElementById('firstLessonError').textContent = '먼저 가능한 날짜와 시간을 하나 선택해주세요.';
         return;
       }
 
@@ -1600,22 +1574,17 @@ if (step.type === 'trialType'){
     };
 
     const loadDateTimes = () => {
-      if (answers.firstLessonOptions?.some(option => !validFirstLessonOption(option))) {
-        answers.firstLessonOptions = [];
-        syncFirstLessonOptions();
-        document.getElementById('firstLessonError').textContent = '선택한 시간이 만료됐어요. ' + window.NADO_LESSON_TIME_POLICY.message;
-      }
       timeButtons.forEach(button => {
-        button.disabled = !validFirstLessonOption({ date: dateInput.value, time: button.dataset.firstTime });
+        button.disabled = Boolean(DIRECTORY_SELECTION)
+          && !validFirstLessonOption({ date: dateInput.value, time: button.dataset.firstTime });
       });
       const currentOption = answers.firstLessonOptions?.[0];
       selectedTime = currentOption && currentOption.date === dateInput.value ? currentOption.time : '';
       paintTimes(false);
-      setNextState(step);
     };
 
     const calendar = document.getElementById('firstLessonCalendar');
-    let today = window.NADO_LESSON_TIME_POLICY.today();
+    const today = localDateInputValue(new Date());
     const canSelectDate = date => date >= today
       && timeButtons.some(button => validFirstLessonOption({ date, time: button.dataset.firstTime }));
     const initialDate = firstLessonCalendarDate || answers.firstLessonOptions?.[0]?.date || today;
@@ -1663,20 +1632,6 @@ if (step.type === 'trialType'){
     dateInput.addEventListener('change', loadDateTimes);
     loadDateTimes();
     renderCalendar();
-
-    let lastRefreshMinute = Math.floor(Date.now() / 60000);
-    refreshFirstLessonCalendar = () => {
-      today = window.NADO_LESSON_TIME_POLICY.today();
-      loadDateTimes();
-      renderCalendar();
-    };
-    firstLessonRefreshTimer = window.setInterval(() => {
-      const minute = Math.floor(Date.now() / 60000);
-      if (minute !== lastRefreshMinute) {
-        lastRefreshMinute = minute;
-        refreshFirstLessonCalendar();
-      }
-    }, 1000);
 
     timeButtons.forEach(button => button.addEventListener('click', () => {
       if (button.disabled) return;
@@ -2087,7 +2042,6 @@ async function selectTeacher(teacher) {
 
 async function startTeacherMatching() {
   if (matchingInProgress || alreadySubmitted) return;
-  if (!ensureFirstLessonSelection()) return;
   if (answers.tier === '프리미엄') {
     answers.matching_type = 'premium_inquiry';
     await showSuccess();
@@ -2123,9 +2077,16 @@ async function startTeacherMatching() {
 
 nextBtn.addEventListener('click', () => {
   const step = activeSteps[current];
-  if (!checkValid(step)) {
-    if (step.type === 'firstlesson') ensureFirstLessonSelection();
-    return;
+  if (!checkValid(step)) return;
+  if (step.key === 'matchingMethod') {
+    if (answers.matchingMethod === '선생님 직접 선택' && !DIRECTORY_SELECTION) {
+      location.assign(teacherSelectionUrl());
+      return;
+    }
+    if (answers.matchingMethod === '나도 추천받기' && DIRECTORY_SELECTION) {
+      location.assign(recommendedApplicationUrl());
+      return;
+    }
   }
   if (!formStartTracked) {
     formStartTracked = true;
@@ -2419,8 +2380,6 @@ function applicationSummaryMarkup() {
   return '<div class="pay-box application-summary-box">'+rows+directSelectionRows+'</div>';
 }
 async function showSuccess(){
-  if (alreadySubmitted || submissionInProgress) return;
-  if (!ensureFirstLessonSelection()) return;
   if (elementaryPolicyViolation()) {
     matchingViewActive = false;
     matchingInProgress = false;
