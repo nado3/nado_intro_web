@@ -1169,6 +1169,13 @@ if (step.type === 'trialType'){
         }
       });
       inner += '</div>';
+      // A non-blocking venue recommendation shown only when a learner can suggest a place.
+      if (answers.placeType === '서울 원하는 장소' || answers.placeType === '송도 원하는 장소') {
+        inner += '<div class="place-safety-notice" role="note">'
+          + '<strong class="place-safety-notice__title"><span class="place-safety-notice__icon" aria-hidden="true">!</span>수업 장소 안전 안내</strong>'
+          + '<p class="place-safety-notice__text">학생과 선생님의 안전을 위해 자택 등 개인 주거 공간보다는 카페·스터디룸 등 외부 장소를 권장합니다.</p>'
+          + '</div>';
+      }
 
       if (answers.placeType === '송도 할인 장소') {
         inner += '<div id="songdoPlaceWrap" style="margin-top:1.2rem;">'

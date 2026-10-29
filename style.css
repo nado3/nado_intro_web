@@ -460,3 +460,43 @@ body.form-page .time-drag-hint { margin:4px 0 10px; color:#718197; font-size:13p
 body.form-page .followup-schedule-note { margin:12px 0 0; color:#718197; font-size:13px; font-weight:400; line-height:1.5; }
 
 .first-lesson-followup-note { display:inline-block; margin-top:.35rem; color:#d64545; font-weight:800; }
+
+/* Safety note under optional Seoul/Songdo preferred place fields (non-blocking). */
+.place-safety-notice {
+  margin-top: 1rem;
+  padding: .95rem 1rem;
+  border: 1px solid #f1c3c8;
+  border-radius: 1rem;
+  background: #fff0f2;
+  color: #773744;
+  line-height: 1.65;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+.place-safety-notice__title {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  margin-bottom: .4rem;
+  color: #ae263a;
+  font-size: .88rem;
+  font-weight: 800;
+}
+.place-safety-notice__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 1.28rem;
+  width: 1.28rem;
+  height: 1.28rem;
+  border: 1px solid #eab2be;
+  border-radius: 50%;
+  background: #ffe1e6;
+  font-size: .8rem;
+  font-weight: 900;
+}
+.place-safety-notice__text {
+  margin: 0;
+  font-size: .84rem;
+  font-weight: 500;
+}
