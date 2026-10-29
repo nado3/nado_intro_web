@@ -1,0 +1,165 @@
+/* Availability hints in the first-lesson time picker. */
+.lesson-time-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin: 20px 0 8px;
+}
+
+body.form-page .lesson-time-header .field-label {
+  margin: 0;
+  color: #183550;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.lesson-availability-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  color: #586f91;
+  font-size: .76rem;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.lesson-availability-swatch {
+  display: inline-block;
+  flex: 0 0 15px;
+  width: 15px;
+  height: 15px;
+  box-sizing: border-box;
+  border: 1px solid var(--lesson-availability-border, #d4dfef);
+  border-radius: 4px;
+  background: var(--lesson-availability-fill, #fff);
+}
+
+.lesson-availability-help {
+  margin: 0 0 12px;
+  line-height: 1.5;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.lesson-availability-help strong {
+  display: block;
+  color: #17375e;
+  font-size: .98rem;
+  font-weight: 800;
+}
+
+.lesson-availability-help span {
+  display: block;
+  margin-top: 3px;
+  color: #586f91;
+  font-size: .85rem;
+}
+
+.lesson-availability-status {
+  margin: 0 0 10px;
+  color: #586f91;
+  font-size: .78rem;
+  line-height: 1.5;
+}
+
+.lesson-availability-status:empty,
+:is(.lesson-time-header, .lesson-availability-legend, .lesson-availability-swatch, .lesson-availability-help, .lesson-availability-status, .lesson-time-grid)[hidden],
+.lesson-availability-help > [hidden] {
+  display: none !important;
+}
+
+:is(.lesson-availability-swatch, .lesson-time-chip)[data-availability="low"] {
+  --lesson-availability-fill: #edf5ff;
+  --lesson-availability-border: #7aa7de;
+  --lesson-availability-text: #17375e;
+}
+
+:is(.lesson-availability-swatch, .lesson-time-chip)[data-availability="medium"] {
+  --lesson-availability-fill: #bfd9f7;
+  --lesson-availability-border: #8eb7e7;
+  --lesson-availability-text: #17375e;
+}
+
+:is(.lesson-availability-swatch, .lesson-time-chip)[data-availability="high"] {
+  --lesson-availability-fill: #2e6dc2;
+  --lesson-availability-border: #2e6dc2;
+  --lesson-availability-text: #fff;
+}
+
+.lesson-time-grid[data-availability-hints] {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  touch-action: pan-y;
+}
+
+.lesson-time-grid[data-availability-hints] .lesson-time-chip {
+  position: relative;
+  min-width: 0;
+  min-height: 46px;
+  padding: 10px 4px;
+  border-width: 1.5px;
+  border-radius: 10px;
+  font-size: .95rem;
+  font-weight: 600;
+  line-height: 1.4;
+  touch-action: pan-y;
+}
+
+.lesson-time-grid .lesson-time-chip[data-availability]:not(:disabled) {
+  background: var(--lesson-availability-fill, #fff);
+  border-color: var(--lesson-availability-border, #d4dfef);
+  color: var(--lesson-availability-text, #183550);
+}
+
+/* Selection stays distinct while retaining the availability fill. */
+.lesson-time-grid .lesson-time-chip[data-availability]:is(.selected, [aria-pressed="true"]):not(:disabled) {
+  border-color: #17375e;
+  outline: 2px solid #17375e;
+  outline-offset: 1px;
+  box-shadow: inset 0 0 0 1px #fff;
+  font-weight: 700;
+}
+
+.lesson-time-grid .lesson-time-chip[data-availability]:is(.selected, [aria-pressed="true"]):not(:disabled)::after {
+  content: "\2713";
+  position: absolute;
+  top: -6px;
+  right: -5px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  border: 1.5px solid #17375e;
+  border-radius: 50%;
+  background: #fff;
+  color: #17375e;
+  box-shadow: 0 0 0 2px #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.lesson-time-grid .lesson-time-chip[data-availability]:focus-visible {
+  outline: 3px solid #17375e;
+  outline-offset: 3px;
+}
+
+.lesson-time-grid .lesson-time-chip[data-availability]:disabled {
+  background: #f2f4f7;
+  border-color: #e3e7ed;
+  color: #9aa6b3;
+  box-shadow: none;
+  outline: none;
+  cursor: not-allowed;
+}
+
+@media (max-width: 420px) {
+  .lesson-time-grid[data-availability-hints] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

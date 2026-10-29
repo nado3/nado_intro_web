@@ -158,8 +158,7 @@ const steps = [
   },
   {
     key: 'schedule', type: 'firstlesson', required: true,
-    title: '첫 수업 날짜·시간을 선택해주세요',
-    sub: '첫 수업은 현재 시각으로부터 24시간 뒤부터 선택할 수 있어요.<br><span class="first-lesson-followup-note">첫 수업 이후 일정은 선생님과 직접 조율하실 수 있어요.</span>'
+    title: '첫 수업 날짜·시간을 선택해주세요'
   },
    {
     key: 'startDate', type: 'date', required: true,
@@ -615,6 +614,7 @@ let formStartTracked = false;
 let matchingViewActive = false;
 let matchingInProgress = false;
 let matchingClient = null;
+let firstLessonDirectoryLoader = null;
 let matchingRequestId = 0;
 const historyEl = document.getElementById('history');
 const qcardWrap = document.getElementById('qcardWrap');
@@ -1226,17 +1226,27 @@ if (step.type === 'trialType'){
     }
   } else if (step.type === 'firstlesson') {
     inner += '<div class="sr-only" id="firstLessonDateLabel">첫 수업 날짜</div><input type="hidden" id="firstLessonDate"><div class="lesson-calendar" id="firstLessonCalendar" role="group" aria-labelledby="firstLessonDateLabel"></div>';
-    inner += '<label class="field-label" id="firstLessonTimeLabel">시작 시간</label><p class="time-drag-hint">가능한 시작 시간을 하나 선택해주세요.</p><input type="hidden" id="firstLessonTime"><div class="first-lesson-time-buttons" role="group" aria-labelledby="firstLessonTimeLabel">';
+    inner += '<div class="lesson-time-header"><span class="field-label" id="firstLessonTimeLabel">시작 시간</span>';
+    if (!DIRECTORY_SELECTION) {
+      inner += '<div class="lesson-availability-legend" id="lessonAvailabilityLegend" hidden><span>선생님 수</span><span>적음</span>'
+        + ['low', 'medium', 'high'].map(level => '<span class="lesson-availability-swatch" data-availability="' + level + '" aria-hidden="true"></span>').join('')
+        + '<span>많음</span></div>';
+    }
+    inner += '</div>';
+    if (!DIRECTORY_SELECTION) {
+      inner += '<p class="lesson-availability-help" id="lessonAvailabilityHelp" hidden><strong>연한 시간대도 신청 가능해요.</strong><span>진한 시간대를 선택하면 더 적합한 선생님과 더 빠르게 매칭될 수 있어요.</span></p>'
+        + '<p id="lessonAvailabilityStatus" class="lesson-availability-status" role="status" aria-live="polite"></p>';
+    }
+    inner += '<input type="hidden" id="firstLessonTime"><div class="first-lesson-time-buttons lesson-time-grid"' + (DIRECTORY_SELECTION ? '' : ' data-availability-hints') + ' role="group" aria-labelledby="firstLessonTimeLabel">';
     for (let minutes = 540; minutes <= 1440 - (answers.duration?.index === 1 ? 120 : 60); minutes += 30) {
       const label = String(Math.floor(minutes / 60)).padStart(2, '0') + ':' + String(minutes % 60).padStart(2, '0');
       if (DIRECTORY_SELECTION) {
         const toMinutes = value => { const parts = value.split(':').map(Number); return parts[0] * 60 + parts[1]; };
         if (!directorySlots().some(slot=>minutes>=toMinutes(slot.start) && minutes+(answers.duration?.index===1?120:60)<=toMinutes(slot.end) && (!slot.preferredTime || slot.preferredTime===label))) continue;
       }
-      inner += '<button type="button" class="first-lesson-time" data-first-time="' + label + '" aria-pressed="false">' + label + '</button>';
+      inner += '<button type="button" class="first-lesson-time lesson-time-chip" data-first-time="' + label + '" aria-pressed="false">' + label + '</button>';
     }
     inner += '</div><p id="firstLessonError" role="status" aria-live="polite"></p>';
-    inner += '<p class="followup-schedule-note">이후 수업 일정은 선생님과 자유롭게 조율해요.</p>';
   } else if (step.type === 'gridtime'){
     const days = ['월','화','수','목','금','토','일'];
     const slots = [];
@@ -1583,6 +1593,61 @@ if (step.type === 'trialType'){
     const dateInput = document.getElementById('firstLessonDate');
     const timeButtons = [...qcardWrap.querySelectorAll('[data-first-time]')];
     let selectedTime = '';
+    let availabilityRequest = 0;
+    let displayedAvailabilityKey = '';
+
+    // Availability only changes the hint. The existing date/duration policy
+    // alone decides whether a general-application time can be selected.
+    const refreshAvailability = async () => {
+      if (DIRECTORY_SELECTION) return;
+      const request = ++availabilityRequest;
+      const context = firstLessonAvailabilityContext(dateInput.value);
+      const contextKey = JSON.stringify(context);
+      const legend = document.getElementById('lessonAvailabilityLegend');
+      const help = document.getElementById('lessonAvailabilityHelp');
+      const status = document.getElementById('lessonAvailabilityStatus');
+      const isCurrent = () => request === availabilityRequest
+        && document.getElementById('firstLessonDate') === dateInput
+        && JSON.stringify(firstLessonAvailabilityContext(dateInput.value)) === contextKey;
+      const clearAvailability = () => {
+        displayedAvailabilityKey = '';
+        legend.hidden = true;
+        help.hidden = true;
+        timeButtons.forEach(button => {
+          delete button.dataset.availability;
+          button.removeAttribute('aria-label');
+        });
+      };
+      if (displayedAvailabilityKey !== contextKey) {
+        clearAvailability();
+        status.textContent = '가능한 선생님 확인 중…';
+      }
+      try {
+        const rows = await loadFirstLessonDirectory(context.region);
+        if (!isCurrent()) return;
+        const availability = window.NADO_LESSON_AVAILABILITY;
+        const labels = { low: '적음', medium: '보통', high: '많음' };
+        timeButtons.forEach(button => {
+          if (button.disabled) {
+            delete button.dataset.availability;
+            button.removeAttribute('aria-label');
+            return;
+          }
+          const level = availability.density(availability.countTeachersAt(rows, context, button.dataset.firstTime));
+          if (!labels[level]) throw new Error('Invalid lesson availability');
+          button.dataset.availability = level;
+          button.setAttribute('aria-label', button.dataset.firstTime + ', 선생님 수 ' + labels[level] + ', 신청 가능');
+        });
+        displayedAvailabilityKey = contextKey;
+        legend.hidden = false;
+        help.hidden = false;
+        status.textContent = '';
+      } catch (_) {
+        if (!isCurrent()) return;
+        clearAvailability();
+        status.textContent = '선생님 일정 안내를 불러오지 못했어요. 시간 선택은 가능해요.';
+      }
+    };
 
     const paintTimes = (save=true) => {
       timeButtons.forEach(button => {
@@ -1603,7 +1668,7 @@ if (step.type === 'trialType'){
       syncFirstLessonOptions();
       setNextState(step);
       renderCalendar();
-      document.getElementById('firstLessonError').textContent = '선택한 시간이 자동으로 반영됩니다.';
+      document.getElementById('firstLessonError').textContent = '';
     };
 
     const loadDateTimes = () => {
@@ -1614,11 +1679,16 @@ if (step.type === 'trialType'){
       }
       timeButtons.forEach(button => {
         button.disabled = !validFirstLessonOption({ date: dateInput.value, time: button.dataset.firstTime });
+        if (button.disabled) {
+          delete button.dataset.availability;
+          button.removeAttribute('aria-label');
+        }
       });
       const currentOption = answers.firstLessonOptions?.[0];
       selectedTime = currentOption && currentOption.date === dateInput.value ? currentOption.time : '';
       paintTimes(false);
       setNextState(step);
+      refreshAvailability();
     };
 
     const calendar = document.getElementById('firstLessonCalendar');
@@ -1643,7 +1713,7 @@ if (step.type === 'trialType'){
           const date = visibleMonth+'-'+String(i+1).padStart(2,'0');
           return '<button type="button" data-calendar-date="'+date+'" aria-label="'+date+(chosenDate===date?' 시간 선택됨':'')+'" aria-pressed="'+(date===dateInput.value)+'" '+(date===today?'aria-current="date" ':'')+(canSelectDate(date)?'':'disabled')+' class="'+(chosenDate===date?'has-selected-times':'')+'">'+(i+1)+'</button>';
         }).join('')
-        + '</div><p class="lesson-calendar-note">한국 시간 기준</p>';
+        + '</div><p class="lesson-calendar-note">한국 시간 · 24시간 이후 선택 가능</p>';
     }
 
     calendar.addEventListener('click', event => {
@@ -1867,6 +1937,37 @@ function matchingLocation() {
   const region = isSeoul ? 'Seoul' : 'Incheon';
   const area = isSeoul ? (answers.areaCode || null) : null;
   return { region, area };
+}
+
+function firstLessonAvailabilityContext(date) {
+  const location = matchingLocation();
+  const chosenPlace = answers.placeType === '송도 할인 장소' ? answers.songdoPlace : answers.placeType;
+  const place = String(chosenPlace || '').toLowerCase().replace(/\s+/g, '');
+  const songdoPlace = place.includes('igc') || place.includes('인천글로벌캠퍼스')
+    ? 'IGC'
+    : (place.includes('트리플스트리트') || place.includes('triplestreet') ? 'Triple Street' : null);
+  return {
+    date,
+    duration: answers.duration?.index === 1 ? 120 : 60,
+    plan: PLAN_GROUP[answers.tier],
+    region: location.region === 'Seoul' ? 'Seoul' : 'Songdo',
+    areaCode: location.area,
+    areaLabel: location.area ? serviceAreaLabel(location.area) : null,
+    songdoPlace,
+    businessOnly: (answers.goals || []).includes('비즈니스')
+  };
+}
+
+function loadFirstLessonDirectory(region) {
+  const config = window.NADO_MEMBER_CONFIG || {};
+  if (!window.NADO_LESSON_AVAILABILITY || !window.supabase?.createClient || !config.SUPABASE_URL || !config.SUPABASE_ANON_KEY) {
+    return Promise.reject(new Error('Lesson availability is not ready'));
+  }
+  if (!matchingClient) matchingClient = window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
+  if (!firstLessonDirectoryLoader) {
+    firstLessonDirectoryLoader = window.NADO_LESSON_AVAILABILITY.createDirectoryLoader((name, args) => matchingClient.rpc(name, args));
+  }
+  return firstLessonDirectoryLoader.load(region);
 }
 
 function normalizeTeacher(row, overlapSlots) {
@@ -2532,3 +2633,4 @@ async function showSuccess(){
 }
 
 renderStep();
+
