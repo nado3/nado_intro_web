@@ -2272,7 +2272,7 @@ window.NADO_TEACHER_DIRECTORY_FALLBACK = [
       "economy",
       "standard"
     ],
-    "displayName": "조정화",
+    "displayName": "Jeonghwa Cho",
     "businessEnglish": false,
     "profilePhotoPath": "https://ouanvcvzrjbzbpefslgd.supabase.co/storage/v1/object/public/profile-photos/6db2dc04-b478-443d-bad2-e5748f005ea1/profile-1793170650426.jpg"
   }

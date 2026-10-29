@@ -122,7 +122,7 @@
     "ko": "어린이부터 대학생까지 다양한 연령대의 학생들에게 영어를 가르친 경험이 있습니다. 학생의 수준에 맞춰 수업을 진행하며, 편안한 분위기에서 자신감을 갖고 영어로 말할 수 있도록 돕겠습니다.",
     "en": "With experience teaching English to both children and college students, I adapt my lessons to different ages and learning levels. I focus on creating a supportive environment where students can build confidence and enjoy speaking English."
   },
-  {"name":"조정화","bio":"다양한 교육 경험을 바탕으로 학생들과 적극적으로 소통하며 즐겁고 효과적인 학습 환경을 만들어 가고자 합니다.","ko":"다양한 교육 경험을 바탕으로 학생들과 적극적으로 소통하며 즐겁고 효과적인 학습 환경을 만들어 가고자 합니다.","en":"Drawing on experience tutoring university students and supporting English-language camps and educational programs, I aim to create an engaging, supportive learning environment through clear communication and lessons adapted to each student."}
+  {"name":"Jeonghwa Cho","bio":"다양한 교육 경험을 바탕으로 학생들과 적극적으로 소통하며 즐겁고 효과적인 학습 환경을 만들어 가고자 합니다.","ko":"다양한 교육 경험을 바탕으로 학생들과 적극적으로 소통하며 즐겁고 효과적인 학습 환경을 만들어 가고자 합니다.","en":"Drawing on experience tutoring university students and supporting English-language camps and educational programs, I aim to create an engaging, supportive learning environment through clear communication and lessons adapted to each student."}
 ];
   const normalize = value => String(value || '').replace(/George Mason Uni(?:v)?ersity Korea/gi, 'George Mason University').replace(/Mason Korea(?: \(Songdo\))?/gi, 'George Mason University').replace(/\s+/g, ' ').trim();
   global.nadoTeacherBio = teacher => {
