@@ -241,7 +241,8 @@ window.NADO_TEACHER_PROFILE_CONFIG = {
     "teacherType": "native",
     "keywords": ["🇺🇸", "다양한 연령 지도", "맞춤형 수업", "영어 자신감 향상"],
     "languages": ["en"]
-  }
+  },
+  "img/jeonghwa.jpg": {"name":"조정화","keywords":["대학 튜터 경험","영어 교육 활동","맞춤형 학습"],"languages":["en"]}
 };
 window.nadoTeacherProfile = function(teacher) {
   const profiles = window.NADO_TEACHER_PROFILE_CONFIG;

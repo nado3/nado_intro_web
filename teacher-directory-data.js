@@ -2,7 +2,7 @@
 // Homepage cards use these profiles after checking eligibility in the live directory.
 // Every snapshot profile lists English because this is an English-conversation service;
 // no additional spoken language is inferred without an approved teacher profile value.
-window.NADO_TEACHER_DIRECTORY_FALLBACK_UPDATED_AT = '2026-10-22';
+window.NADO_TEACHER_DIRECTORY_FALLBACK_UPDATED_AT = '2026-10-29';
 window.NADO_TEACHER_DIRECTORY_FALLBACK = [
   {
     "id": "preview-abhinay",
@@ -2178,5 +2178,102 @@ window.NADO_TEACHER_DIRECTORY_FALLBACK = [
     "displayName": "Selena",
     "businessEnglish": false,
     "profilePhotoPath": "img/selena.jpg"
+  },
+  {
+    "id": "preview-jeonghwa",
+    "bio": "다양한 교육 경험을 바탕으로 학생들과 적극적으로 소통하며 즐겁고 효과적인 학습 환경을 만들어 가고자 합니다.",
+    "major": "Data Science",
+    "school": "George Mason University",
+    "regions": {
+      "Seoul": {
+        "areas": [
+          "강남",
+          "서초"
+        ],
+        "availability": [
+          {
+            "dayOfWeek": 0,
+            "startTime": "11:00",
+            "endTime": "21:00",
+            "areaCode": "Seocho",
+            "areaLabel": "서초"
+          },
+          {
+            "dayOfWeek": 0,
+            "startTime": "11:00",
+            "endTime": "21:30",
+            "areaCode": "Gangnam",
+            "areaLabel": "강남"
+          },
+          {
+            "dayOfWeek": 1,
+            "startTime": "18:30",
+            "endTime": "21:30",
+            "areaCode": "Gangnam",
+            "areaLabel": "강남"
+          },
+          {
+            "dayOfWeek": 1,
+            "startTime": "18:30",
+            "endTime": "21:30",
+            "areaCode": "Seocho",
+            "areaLabel": "서초"
+          },
+          {
+            "dayOfWeek": 5,
+            "startTime": "15:00",
+            "endTime": "21:00",
+            "areaCode": "Seocho",
+            "areaLabel": "서초"
+          },
+          {
+            "dayOfWeek": 5,
+            "startTime": "15:00",
+            "endTime": "21:30",
+            "areaCode": "Gangnam",
+            "areaLabel": "강남"
+          },
+          {
+            "dayOfWeek": 6,
+            "startTime": "11:00",
+            "endTime": "14:30",
+            "areaCode": "Gangnam",
+            "areaLabel": "강남"
+          },
+          {
+            "dayOfWeek": 6,
+            "startTime": "11:00",
+            "endTime": "14:30",
+            "areaCode": "Seocho",
+            "areaLabel": "서초"
+          },
+          {
+            "dayOfWeek": 6,
+            "startTime": "17:30",
+            "endTime": "21:00",
+            "areaCode": "Seocho",
+            "areaLabel": "서초"
+          },
+          {
+            "dayOfWeek": 6,
+            "startTime": "18:00",
+            "endTime": "21:30",
+            "areaCode": "Gangnam",
+            "areaLabel": "강남"
+          }
+        ]
+      }
+    },
+    "videoUrl": "",
+    "languages": [
+      "en"
+    ],
+    "planGroups": [
+      "economy",
+      "standard"
+    ],
+    "displayName": "조정화",
+    "businessEnglish": false,
+    "profilePhotoPath": "https://ouanvcvzrjbzbpefslgd.supabase.co/storage/v1/object/public/profile-photos/6db2dc04-b478-443d-bad2-e5748f005ea1/profile-1793170650426.jpg"
   }
 ];
