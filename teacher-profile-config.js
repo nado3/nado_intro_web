@@ -239,7 +239,7 @@ window.NADO_TEACHER_PROFILE_CONFIG = {
   "img/selena.jpg": {
     "name": "Selena",
     "teacherType": "native",
-    "keywords": ["🇺🇸", "다양한 연령 지도", "맞춤형 수업", "영어 자신감 향상"],
+    "keywords": ["🇺🇸", "초급/중급", "다양한 연령 지도", "맞춤형 수업", "영어 자신감 향상"],
     "languages": ["en"]
   },
   "img/jeonghwa.jpg": {"name":"Jeonghwa","teacherType":"korean","keywords":["🇰🇷","초급/중급","대학 튜터 경험","맞춤형 학습"],"languages":["en"]}
