@@ -75,7 +75,9 @@
 
   function density(count) {
     if (!Number.isInteger(count) || count < 0) return 'unknown';
-    return count >= 4 ? 'high' : count >= 2 ? 'medium' : 'low';
+    // Sparse schedules still need to distinguish a matchable interval from
+    // an empty one. Keep the higher-supply threshold stable across dates.
+    return count >= 4 ? 'high' : count >= 1 ? 'medium' : 'low';
   }
 
   function isMissingDirectoryV3Error(error) {

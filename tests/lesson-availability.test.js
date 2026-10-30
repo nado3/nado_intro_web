@@ -112,9 +112,28 @@ test('unknown data and invalid context are distinct from a verified empty result
 
 test('density exposes only the specified qualitative levels', () => {
   for (const count of [null, undefined, -1, NaN, 1.5, '4']) assert.equal(density(count), 'unknown');
-  for (const count of [0, 1]) assert.equal(density(count), 'low');
-  for (const count of [2, 3]) assert.equal(density(count), 'medium');
+  assert.equal(density(0), 'low');
+  for (const count of [1, 2, 3]) assert.equal(density(count), 'medium');
   for (const count of [4, 5, 100]) assert.equal(density(count), 'high');
+});
+
+test('one matching teacher produces a distinct hint, while an entirely empty day stays uniformly low', () => {
+  const rows = [teacher('evening-teacher', [slot({ start_time: '18:30', end_time: '21:30' })])];
+  const morningCount = countTeachersAt(rows, context, '09:00');
+  const eveningCount = countTeachersAt(rows, context, '18:30');
+  assert.equal(morningCount, 0);
+  assert.equal(eveningCount, 1);
+  assert.equal(density(morningCount), 'low');
+  assert.equal(density(eveningCount), 'medium');
+  assert.notEqual(density(morningCount), density(eveningCount));
+
+  const emptyDay = { ...context, date: '2026-11-03' };
+  for (let start = 540; start <= 1380; start += 30) {
+    const time = String(Math.floor(start / 60)).padStart(2, '0') + ':' + String(start % 60).padStart(2, '0');
+    const count = countTeachersAt(rows, emptyDay, time);
+    assert.equal(count, 0, time);
+    assert.equal(density(count), 'low', time);
+  }
 });
 
 test('the browser build exports the module without requiring a document or CommonJS', () => {
