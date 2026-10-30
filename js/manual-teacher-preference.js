@@ -6,6 +6,8 @@
   const originalShowSuccess = showSuccess;
   const originalSubmitToJotform = submitToJotform;
   let preferenceViewActive = false;
+  let returnToMatches = null;
+  let manualRecommendationRequested = false;
 
   const PREFERENCE_LABELS = {
     foreign: '외국인 선생님',
@@ -40,6 +42,30 @@
     const style = document.createElement('style');
     style.id = 'manualTeacherPreferenceStyles';
     style.textContent = `
+      .teacher-recommend-btn{
+        display:block;
+        width:100%;
+        min-height:56px;
+        margin-top:20px;
+        padding:14px 18px;
+        border:1.5px solid #8cb8ea;
+        border-radius:18px;
+        background:var(--accent-light);
+        color:var(--accent-deep);
+        font-family:inherit;
+        font-size:1.05rem;
+        font-weight:800;
+        line-height:1.4;
+        cursor:pointer;
+      }
+      .teacher-recommend-btn:hover{
+        border-color:var(--accent);
+        background:#e8f3ff;
+      }
+      .teacher-recommend-btn:focus-visible{
+        outline:3px solid var(--accent);
+        outline-offset:3px;
+      }
       .teacher-preference-card{
         padding:28px 22px 22px;
         border-radius:28px;
@@ -175,8 +201,9 @@
     historyEl.style.display = visible ? '' : 'none';
   }
 
-  function renderPreferenceStep() {
+  function renderPreferenceStep(onBack = null) {
     preferenceViewActive = true;
+    returnToMatches = onBack;
     matchingViewActive = true;
     matchingInProgress = false;
     progressFill.style.width = '100%';
@@ -187,7 +214,7 @@
     const selected = answers.teacher_preference || '';
     qcardWrap.innerHTML = ''
       + '<div class="qcard teacher-preference-card">'
-      + '<div class="qtitle">어떤 선생님을 원하세요?</div>'
+      + '<div class="qtitle" id="questionTitle" role="heading" aria-level="2" tabindex="-1">어떤 선생님을 원하세요?</div>'
       + '<div class="qsub">매칭에 참고할 선호 유형을 선택해주세요.</div>'
       + '<div class="opt-list teacher-preference-list">'
       + preferenceOption('foreign', '외국인 선생님', '영어로 회화 연습', selected)
@@ -216,6 +243,7 @@
     submitButton.addEventListener('click', async () => {
       if (!answers.teacher_preference || submissionInProgress) return;
       preferenceViewActive = false;
+      returnToMatches = null;
       matchingViewActive = false;
       setHistoryVisible(true);
       submitButton.disabled = true;
@@ -233,6 +261,62 @@
       + '<span class="teacher-preference-desc">' + description + '</span>'
       + '</div>'
       + '</button>';
+  }
+
+  if (typeof renderTeacherMatches === 'function') {
+    const originalRenderTeacherMatches = renderTeacherMatches;
+    renderTeacherMatches = function(teachers) {
+      originalRenderTeacherMatches(teachers);
+      const card = qcardWrap.querySelector('.teacher-matches-card');
+      if (!card || !teachers.length || answers.tier === '프리미엄' ||
+          (typeof DIRECTORY_SELECTION !== 'undefined' && DIRECTORY_SELECTION)) return;
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'teacher-recommend-btn';
+      button.textContent = '나도 추천 받기';
+      button.addEventListener('click', () => {
+        if (alreadySubmitted || submissionInProgress || preferenceViewActive) return;
+        if (!ensureFirstLessonSelection()) return;
+        manualRecommendationRequested = true;
+        matchingRequestId++;
+        answers.teacher_id = null;
+        answers.teacher_name = '';
+        answers.matching_type = 'manual';
+        delete nextBtn.dataset.submitted;
+        renderPreferenceStep(() => {
+          manualRecommendationRequested = false;
+          if (!ensureFirstLessonSelection()) return;
+          renderTeacherMatches(teachers);
+          qcardWrap.querySelector('.teacher-recommend-btn')?.focus();
+        });
+        centerCurrentQuestion();
+      });
+      card.appendChild(button);
+    };
+  }
+
+  if (typeof selectTeacher === 'function') {
+    const originalSelectTeacher = selectTeacher;
+    selectTeacher = async function(teacher) {
+      if (alreadySubmitted || submissionInProgress) return;
+      manualRecommendationRequested = false;
+      delete answers.teacher_preference;
+      returnToMatches = null;
+      return originalSelectTeacher(teacher);
+    };
+  }
+
+  if (typeof startTeacherMatching === 'function') {
+    const originalStartTeacherMatching = startTeacherMatching;
+    startTeacherMatching = async function() {
+      if (manualRecommendationRequested && answers.matching_type === 'manual' &&
+          answers.teacher_preference && document.getElementById('submitError')) {
+        return originalShowSuccess();
+      }
+      manualRecommendationRequested = false;
+      return originalStartTeacherMatching();
+    };
   }
 
   showSuccess = async function() {
@@ -273,5 +357,13 @@
     if (!back) return;
     preferenceViewActive = false;
     setHistoryVisible(true);
+    const returnToList = returnToMatches;
+    returnToMatches = null;
+    if (returnToList) {
+      event.preventDefault();
+      event.stopPropagation();
+      returnToList();
+    }
   }, true);
 })();
+
