@@ -79,8 +79,8 @@ function setup({ now = '2026-10-15T15:30:00+09:00', entries } = {}) {
   };
 }
 
-test('directory disables starts below 24 hours and accepts the exact 24-hour boundary', () => {
-  const ui = setup();
+test('directory disables starts below 72 hours and accepts the exact 72-hour boundary', () => {
+  const ui = setup({ now: '2026-10-13T15:30:00+09:00' });
   assert.match(ui.times.innerHTML, /data-timetable-entry="0"[^>]*disabled>15:00/);
   assert.match(ui.times.innerHTML, /data-timetable-entry="1"[^>]*aria-pressed="false" >15:30/);
   ui.clickTime(0);
@@ -96,7 +96,7 @@ test('directory disables starts below 24 hours and accepts the exact 24-hour bou
 
 test('directory date and cutoff are based on KST across the year boundary', () => {
   const ui = setup({
-    now: '2026-12-31T20:00:00+09:00',
+    now: '2026-12-29T20:00:00+09:00',
     entries: [
       { dayOfWeek: 4, time: '23:00', url: '?teacher_id=sample' },
       { dayOfWeek: 5, time: '19:30', url: '?teacher_id=sample' },
@@ -126,8 +126,8 @@ test('dates with no eligible teacher times are disabled and cannot be selected a
 });
 
 test('a stale time click never silently selects a different time when eligible slots shrink', () => {
-  const ui = setup();
-  ui.setTime('2026-10-15T15:31:00+09:00');
+  const ui = setup({ now: '2026-10-13T15:30:00+09:00' });
+  ui.setTime('2026-10-13T15:31:00+09:00');
   ui.clickTime(1);
   assert.equal(ui.apply.disabled, true);
   assert.equal(ui.summary.textContent, policy.message);
@@ -136,9 +136,9 @@ test('a stale time click never silently selects a different time when eligible s
 });
 
 test('application navigation rechecks a previously selected time against the current cutoff', () => {
-  const ui = setup();
+  const ui = setup({ now: '2026-10-13T15:30:00+09:00' });
   ui.clickTime(1);
-  ui.setTime('2026-10-15T15:30:00.001+09:00');
+  ui.setTime('2026-10-13T15:30:00.001+09:00');
   ui.apply.listeners.click();
   assert.equal(ui.destinations.length, 0);
   assert.equal(ui.apply.disabled, true);
@@ -146,14 +146,14 @@ test('application navigation rechecks a previously selected time against the cur
 });
 
 test('periodic and focus refresh remove stale selections and clean up detached timetables', () => {
-  const ui = setup();
+  const ui = setup({ now: '2026-10-13T15:30:00+09:00' });
   ui.clickTime(1);
-  ui.setTime('2026-10-15T15:30:00.001+09:00');
+  ui.setTime('2026-10-13T15:30:00.001+09:00');
   ui.tick();
   assert.equal(ui.apply.disabled, true);
   assert.equal(ui.summary.textContent, policy.message);
   ui.clickTime(2);
-  ui.setTime('2026-10-15T16:00:00.001+09:00');
+  ui.setTime('2026-10-13T16:00:00.001+09:00');
   ui.events.focus();
   assert.equal(ui.apply.disabled, true);
   ui.calendar.isConnected = false;

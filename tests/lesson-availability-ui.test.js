@@ -62,7 +62,7 @@ function directTeacherParams() {
   };
 }
 
-function createApplication({ direct = false, date = '2026-10-30', now = '2026-10-29T08:00:00+09:00' } = {}) {
+function createApplication({ direct = false, date = '2026-10-30', now = '2026-10-27T08:00:00+09:00' } = {}) {
   const clock = { now: Date.parse(now) };
   class ClockDate extends Date {
     constructor(...args) { super(...(args.length ? args : [clock.now])); }
@@ -219,8 +219,8 @@ test('a pending result is discarded if lesson duration changes before it resolve
   assert.ok(app.counted.every(call => call.filters.duration === 120));
 });
 
-test('directory errors preserve valid selections and never enable times rejected by the 24-hour policy', async () => {
-  const app = createApplication({ now: '2026-10-29T10:15:00+09:00' });
+test('directory errors preserve valid selections and never enable times rejected by the 72-hour policy', async () => {
+  const app = createApplication({ now: '2026-10-27T10:15:00+09:00' });
   assert.equal(app.button('09:00').disabled, true);
   assert.equal(app.button('18:00').disabled, false);
   app.clickTime('18:00');

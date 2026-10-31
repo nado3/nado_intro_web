@@ -1713,7 +1713,7 @@ if (step.type === 'trialType'){
           const date = visibleMonth+'-'+String(i+1).padStart(2,'0');
           return '<button type="button" data-calendar-date="'+date+'" aria-label="'+date+(chosenDate===date?' 시간 선택됨':'')+'" aria-pressed="'+(date===dateInput.value)+'" '+(date===today?'aria-current="date" ':'')+(canSelectDate(date)?'':'disabled')+' class="'+(chosenDate===date?'has-selected-times':'')+'">'+(i+1)+'</button>';
         }).join('')
-        + '</div><p class="lesson-calendar-note">한국 시간 · 24시간 이후 선택 가능</p>';
+        + '</div><p class="lesson-calendar-note">한국 시간 · 3일(72시간) 이후 선택 가능</p>';
     }
 
     calendar.addEventListener('click', event => {

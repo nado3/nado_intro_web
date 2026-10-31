@@ -171,7 +171,7 @@ function createApplication({ direct = false, premium = false, failFirstSubmissio
     + '<div id="bottombar"><button id="nextBtn">다음</button></div>'
     + '<div id="successWrap"><h2 class="success-title"></h2><p class="success-text"></p><div class="next-process-steps"></div></div>';
   const qcardWrap = document.getElementById('qcardWrap');
-  const clock = { now: Date.parse('2026-11-01T18:00:00+09:00') };
+  const clock = { now: Date.parse('2026-10-30T18:00:00+09:00') };
   class ClockDate extends Date {
     constructor(...args) { super(...(args.length ? args : [clock.now])); }
     static now() { return clock.now; }
@@ -402,7 +402,7 @@ test('an expired schedule redirects to schedule selection at entry, completion, 
     assert.deepEqual(app.answers().firstLessonOptions, [], action);
     assert.equal(app.finish(), null, action);
     assert.equal(app.recommend(), null, action);
-    assert.match(app.document.getElementById('firstLessonError').textContent, /24시간/, action);
+    assert.match(app.document.getElementById('firstLessonError').textContent, /72시간/, action);
   }
 });
 

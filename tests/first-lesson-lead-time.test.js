@@ -83,31 +83,33 @@ function directoryParams({ preferredDate, preferredTime = '15:00', end = '18:00'
   };
 }
 
-test('the shared policy rejects same-day and under-24-hour starts, and includes the exact boundary', () => {
+test('the shared policy rejects same-day and under-72-hour starts, and includes the exact boundary', () => {
   const now = Date.parse(NOW);
   assert.equal(policy.isAllowed('2026-10-15', '23:59', now), false);
-  assert.equal(policy.isAllowed('2026-10-16', '13:59', now), false);
-  assert.equal(policy.isAllowed('2026-10-16', '14:00', now), true);
-  assert.equal(policy.isAllowed('2026-10-16', '14:01', now), true);
-  // The same start has 24 hours + 1 ms, exactly 24 hours, or 24 hours - 1 ms of notice.
-  assert.equal(policy.isAllowed('2026-10-16', '14:00', now - 1), true);
-  assert.equal(policy.isAllowed('2026-10-16', '14:00', now + 1), false);
+  assert.equal(policy.isAllowed('2026-10-16', '14:00', now), false);
+  assert.equal(policy.isAllowed('2026-10-18', '13:59', now), false);
+  assert.equal(policy.isAllowed('2026-10-18', '14:00', now), true);
+  assert.equal(policy.isAllowed('2026-10-18', '14:01', now), true);
+  // The same start has 72 hours + 1 ms, exactly 72 hours, or 72 hours - 1 ms of notice.
+  assert.equal(policy.isAllowed('2026-10-18', '14:00', now - 1), true);
+  assert.equal(policy.isAllowed('2026-10-18', '14:00', now + 1), false);
 });
 
-test('the 24-hour cutoff keeps the current clock time across Korea calendar dates', () => {
+test('the 72-hour cutoff keeps the current clock time across Korea calendar dates', () => {
   const now = Date.parse('2026-10-16T23:30:00+09:00');
   assert.equal(policy.today(now), '2026-10-16');
   assert.equal(policy.today(Date.parse('2026-10-16T15:00:00Z')), '2026-10-17');
   assert.equal(policy.isAllowed('2026-10-16', '23:59', now), false);
   assert.equal(policy.isAllowed('2026-10-17', '00:00', now), false);
-  assert.equal(policy.isAllowed('2026-10-17', '23:29', now), false);
-  assert.equal(policy.isAllowed('2026-10-17', '23:30', now), true);
-  assert.equal(policy.isAllowed('2026-10-17', '23:31', now), true);
+  assert.equal(policy.isAllowed('2026-10-19', '23:29', now), false);
+  assert.equal(policy.isAllowed('2026-10-19', '23:30', now), true);
+  assert.equal(policy.isAllowed('2026-10-19', '23:31', now), true);
   const app = createApplication({ now: '2026-10-16T15:00:00Z' });
   assert.equal(app.run('availableFirstLessonDates()[0]'), '2026-10-17');
   assert.equal(app.valid('2026-10-16', '23:00'), false);
   assert.equal(app.valid('2026-10-17', '09:00'), false);
-  assert.equal(app.valid('2026-10-18', '09:00'), true);
+  assert.equal(app.valid('2026-10-19', '09:00'), false);
+  assert.equal(app.valid('2026-10-20', '09:00'), true);
 });
 
 test('invalid calendar dates, malformed times, and invalid clocks are rejected', () => {
@@ -122,47 +124,50 @@ test('invalid calendar dates, malformed times, and invalid clocks are rejected',
   assert.equal(policy.isAllowed('2028-02-29', '15:00', now), true);
 });
 
-test('both application modes combine the lead time with half-hour and operating-hour limits', () => {
+test('both application modes combine the 72-hour lead time with half-hour and operating-hour limits', () => {
   for (const trial of [false, true]) {
     const app = createApplication({ trial });
     assert.equal(app.valid('2026-10-15', '23:00'), false);
-    assert.equal(app.valid('2026-10-16', '13:30'), false);
-    assert.equal(app.valid('2026-10-16', '14:00'), true);
-    assert.equal(app.valid('2026-10-16', '14:01'), false);
-    assert.equal(app.valid('2026-10-16', '14:30'), true);
-    assert.equal(app.valid('2026-10-17', '08:30'), false);
-    assert.equal(app.valid('2026-10-17', '09:00'), true);
-    assert.equal(app.valid('2026-10-17', '23:00'), true);
-    assert.equal(app.valid('2026-10-17', '23:30'), false);
+    assert.equal(app.valid('2026-10-16', '14:00'), false);
+    assert.equal(app.valid('2026-10-18', '13:30'), false);
+    assert.equal(app.valid('2026-10-18', '14:00'), true);
+    assert.equal(app.valid('2026-10-18', '14:01'), false);
+    assert.equal(app.valid('2026-10-18', '14:30'), true);
+    assert.equal(app.valid('2026-10-19', '08:30'), false);
+    assert.equal(app.valid('2026-10-19', '09:00'), true);
+    assert.equal(app.valid('2026-10-19', '23:00'), true);
+    assert.equal(app.valid('2026-10-19', '23:30'), false);
   }
 });
 
 test('lesson duration must fit before midnight and inside a selected teacher window', () => {
   const app = createApplication();
   app.run('answers.duration.index = 1');
-  assert.equal(app.valid('2026-10-16', '22:00'), true);
-  assert.equal(app.valid('2026-10-16', '22:30'), false);
+  assert.equal(app.valid('2026-10-18', '22:00'), true);
+  assert.equal(app.valid('2026-10-18', '22:30'), false);
 
   const directory = createApplication({ params: directoryParams({ end: '16:00' }) });
-  assert.equal(directory.valid('2026-10-16', '15:00'), true);
-  directory.run('answers.duration.index = 1');
-  assert.equal(directory.valid('2026-10-16', '14:30'), false);
   assert.equal(directory.valid('2026-10-16', '15:00'), false);
+  assert.equal(directory.valid('2026-10-23', '15:00'), true);
+  directory.run('answers.duration.index = 1');
+  assert.equal(directory.valid('2026-10-23', '14:30'), false);
+  assert.equal(directory.valid('2026-10-23', '15:00'), false);
   assert.equal(directory.valid('2026-10-23', '14:00'), true);
 });
 
 test('teacher-selected applications still enforce weekday, time window, and chosen start time', () => {
   const app = createApplication({ params: directoryParams() });
-  assert.equal(app.valid('2026-10-16', '15:00'), true);
+  assert.equal(app.valid('2026-10-16', '15:00'), false);
+  assert.equal(app.valid('2026-10-23', '15:00'), true);
   assert.equal(app.valid('2026-10-17', '15:00'), false);
   assert.equal(app.valid('2026-10-23', '12:30'), false);
   assert.equal(app.valid('2026-10-23', '17:30'), false);
-  const fixed = createApplication({ params: directoryParams({ preferredDate: '2026-10-16' }) });
-  assert.equal(fixed.valid('2026-10-16', '15:00'), true);
-  assert.equal(fixed.valid('2026-10-16', '15:30'), false);
+  const fixed = createApplication({ params: directoryParams({ preferredDate: '2026-10-23' }) });
+  assert.equal(fixed.valid('2026-10-23', '15:00'), true);
+  assert.equal(fixed.valid('2026-10-23', '15:30'), false);
 });
 
-test('preferred-date URLs retain the schedule question below 24 hours and accept the exact cutoff', () => {
+test('preferred-date URLs retain the schedule question below 72 hours and accept the exact cutoff', () => {
   for (const trial of [false, true]) {
     for (const [preferredDate, preferredTime] of [
       ['2026-10-09', '15:00'], ['2026-10-16', '13:00'], ['2026-10-16', '13:30']
@@ -172,8 +177,8 @@ test('preferred-date URLs retain the schedule question below 24 hours and accept
       assert.equal(app.run("activeSteps.some(step => step.key === 'schedule')"), true);
     }
     for (const preferredTime of ['14:00', '15:00']) {
-      const valid = createApplication({ trial, params: directoryParams({ preferredDate: '2026-10-16', preferredTime, trial }) });
-      assert.equal(valid.run('DIRECTORY_PREFERRED_DATE'), '2026-10-16');
+      const valid = createApplication({ trial, params: directoryParams({ preferredDate: '2026-10-23', preferredTime, trial }) });
+      assert.equal(valid.run('DIRECTORY_PREFERRED_DATE'), '2026-10-23');
       assert.equal(valid.run("activeSteps.some(step => step.key === 'schedule')"), false);
       assert.equal(valid.run('answers.firstLessonOptions.every(validFirstLessonOption)'), true);
     }
@@ -183,7 +188,7 @@ test('preferred-date URLs retain the schedule question below 24 hours and accept
 test('a selected time is revalidated as time passes and returns to schedule selection on expiry', () => {
   const app = createApplication();
   app.run(`
-    answers.firstLessonOptions = [{ date: '2026-10-16', time: '15:00' }];
+    answers.firstLessonOptions = [{ date: '2026-10-18', time: '15:00' }];
     syncFirstLessonOptions();
     answers.payment = true;
     nextBtn.dataset.submitted = '1';
@@ -202,13 +207,13 @@ test('a selected time is revalidated as time passes and returns to schedule sele
   assert.equal(app.run('matchingViewActive || matchingInProgress'), false);
   assert.equal(app.run('nextBtn.dataset.submitted'), undefined);
   assert.equal(app.elements.get('bottombar').style.display, 'block');
-  assert.match(app.elements.get('firstLessonError').textContent, /24시간/);
+  assert.match(app.elements.get('firstLessonError').textContent, /72시간/);
 });
 
 test('an expiring preferred URL restores the previously skipped schedule question', () => {
-  const app = createApplication({ params: directoryParams({ preferredDate: '2026-10-16' }) });
+  const app = createApplication({ params: directoryParams({ preferredDate: '2026-10-23' }) });
   assert.equal(app.run("activeSteps.some(step => step.key === 'schedule')"), false);
-  app.clock.now = Date.parse('2026-10-15T15:00:00.001+09:00');
+  app.clock.now = Date.parse('2026-10-20T15:00:00.001+09:00');
   assert.equal(app.run('ensureFirstLessonSelection()'), false);
   assert.equal(app.run('activeSteps[current].key'), 'schedule');
   assert.equal(app.run("buildActiveSteps().some(step => step.key === 'schedule')"), true);
@@ -218,7 +223,7 @@ test('an expiring preferred URL restores the previously skipped schedule questio
 test('matching and final submission stop before external work when a selected time has expired', async () => {
   for (const method of ['startTeacherMatching', 'showSuccess']) {
     const app = createApplication();
-    app.run(`answers.firstLessonOptions = [{ date: '2026-10-16', time: '14:00' }];`);
+    app.run(`answers.firstLessonOptions = [{ date: '2026-10-18', time: '14:00' }];`);
     assert.equal(app.run('answers.firstLessonOptions.every(validFirstLessonOption)'), true);
     app.clock.now += 1;
     await app.run(method + '()');
