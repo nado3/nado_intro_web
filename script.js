@@ -1237,6 +1237,9 @@ if (step.type === 'trialType'){
       inner += '<p class="lesson-availability-help" id="lessonAvailabilityHelp" hidden><strong>연한 시간대도 신청 가능해요.</strong><span>진한 시간대를 선택하면 더 적합한 선생님과 더 빠르게 매칭될 수 있어요.</span></p>'
         + '<p id="lessonAvailabilityStatus" class="lesson-availability-status" role="status" aria-live="polite"></p>';
     }
+    if (!DIRECTORY_SELECTION) {
+      inner += '<p id="lessonMorningNotice" class="lesson-morning-notice" role="note" hidden>월~목 오전(09:00~11:30)은 선생님 일정이 대부분 차 있어 매칭까지 시간이 조금 더 걸릴 수 있어요.</p>';
+    }
     inner += '<input type="hidden" id="firstLessonTime"><div class="first-lesson-time-buttons lesson-time-grid"' + (DIRECTORY_SELECTION ? '' : ' data-availability-hints') + ' role="group" aria-labelledby="firstLessonTimeLabel">';
     for (let minutes = 540; minutes <= 1440 - (answers.duration?.index === 1 ? 120 : 60); minutes += 30) {
       const label = String(Math.floor(minutes / 60)).padStart(2, '0') + ':' + String(minutes % 60).padStart(2, '0');
@@ -1636,7 +1639,7 @@ if (step.type === 'trialType'){
           const level = availability.density(availability.countTeachersAt(rows, context, button.dataset.firstTime));
           if (!labels[level]) throw new Error('Invalid lesson availability');
           button.dataset.availability = level;
-          button.setAttribute('aria-label', button.dataset.firstTime + ', 선생님 수 ' + labels[level] + ', 신청 가능');
+          button.setAttribute('aria-label', button.dataset.firstTime + ', 선생님 수 ' + labels[level] + (button.classList.contains('is-busy-morning') ? ', 매칭이 지연될 수 있음' : '') + ', 신청 가능');
         });
         displayedAvailabilityKey = contextKey;
         legend.hidden = false;
@@ -1672,12 +1675,20 @@ if (step.type === 'trialType'){
     };
 
     const loadDateTimes = () => {
+      // The red warning is advisory; keep the original 72-hour selection policy.
+      const date = dateInput.value;
+      const weekday = /^\d{4}-\d{2}-\d{2}$/.test(date) ? new Date(date + 'T12:00:00Z').getUTCDay() : -1;
+      const isBusyMorningDate = !DIRECTORY_SELECTION && weekday >= 1 && weekday <= 4;
+      const morningNotice = document.getElementById('lessonMorningNotice');
+      if (morningNotice) morningNotice.hidden = !isBusyMorningDate;
       if (answers.firstLessonOptions?.some(option => !validFirstLessonOption(option))) {
         answers.firstLessonOptions = [];
         syncFirstLessonOptions();
         document.getElementById('firstLessonError').textContent = '선택한 시간이 만료됐어요. ' + window.NADO_LESSON_TIME_POLICY.message;
       }
       timeButtons.forEach(button => {
+        const [hour, minute] = button.dataset.firstTime.split(':').map(Number);
+        button.classList.toggle('is-busy-morning', isBusyMorningDate && hour * 60 + minute >= 540 && hour * 60 + minute <= 690);
         button.disabled = !validFirstLessonOption({ date: dateInput.value, time: button.dataset.firstTime });
         if (button.disabled) {
           delete button.dataset.availability;

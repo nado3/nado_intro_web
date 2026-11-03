@@ -163,3 +163,22 @@ body.form-page .lesson-time-header .field-label {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* Monday–Thursday morning demand warning, independent of teacher-count heatmap. */
+.lesson-morning-notice {
+  margin: 0 0 12px;
+  color: #c62834;
+  font-size: .88rem;
+  font-weight: 700;
+  line-height: 1.55;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+.lesson-morning-notice[hidden] {
+  display: none !important;
+}
+.lesson-time-grid .lesson-time-chip.is-busy-morning:not(:disabled) {
+  background: #fff0f1;
+  border-color: #e45560;
+  color: #b8202c;
+}
