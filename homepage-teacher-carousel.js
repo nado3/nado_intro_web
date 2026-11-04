@@ -59,11 +59,11 @@
     })) };
     const path = String(row.profile_photo_path || '').trim();
     if (path && !teacher.profilePhotoPath) {
-      const bucket = String(config.PROFILE_PHOTO_BUCKET || 'profile-photos').replace(/^\\/+|\\/+$/g, '');
-      const cleanPath = path.replace(/^\\/+/, '');
+      const bucket = String(config.PROFILE_PHOTO_BUCKET || 'profile-photos').replace(/^[/]+|[/]+$/g, '');
+      const cleanPath = path.replace(/^[/]+/, '');
       const storagePath = cleanPath.startsWith(bucket + '/') ? cleanPath.slice(bucket.length + 1) : cleanPath;
       const encodedPath = storagePath.split('/').filter(Boolean).map(encodeURIComponent).join('/');
-      teacher.profilePhotoPath = config.SUPABASE_URL.replace(/\\/$/, '') +
+      teacher.profilePhotoPath = config.SUPABASE_URL.replace(/[/]$/, '') +
         '/storage/v1/object/public/' + encodeURIComponent(bucket) + '/' + encodedPath;
     }
   });
