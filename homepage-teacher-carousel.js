@@ -91,7 +91,7 @@
   deck.innerHTML = orderedTeachers.map((teacher, index) => {
     const isFlag=label=>/^[\u{1F1E6}-\u{1F1FF}]{2}$/u.test(label);
     const keywords=(window.nadoTeacherProfile?.(teacher).keywords || teacher.tags || []).filter(label=>label&&!isFlag(label));
-    const isLevel=label=>/초급|중급|고급/.test(label);
+    const isLevel=label=>/초보|초급|중급|고급/.test(label);
     const badge=label=>`<span class="tag">${escapeHtml(label)}</span>`;
     const badges='<div class="teacher-keyword-meta">'+keywords.filter(isLevel).map(badge).join('')+'</div>'
       +'<div class="teacher-keyword-strengths">'+keywords.filter(label=>!isLevel(label)).slice(0,2).map(badge).join('')+'</div>';
