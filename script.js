@@ -1981,11 +1981,21 @@ function loadFirstLessonDirectory(region) {
   return firstLessonDirectoryLoader.load(region);
 }
 
+const CONFIRMED_TEACHER_PROFILE_IDS = new Set([
+  '02493d0d-d33e-47cf-92bb-a15f3c58aad9', // Jimin
+  '8269aeda-cccd-4347-8f0e-dc36f7fe0b7e', // Catherine Min
+  'd578f9ff-948d-43e7-8fb0-5fa25ed96e09'  // Dario
+]);
+
 function normalizeTeacher(row, overlapSlots) {
   const source = Object.assign({}, row && row.teacher ? row.teacher : {}, row || {});
   const teacherId = source.teacher_id || source.id || source.teacher_uuid || source.teacher_user_id || source.profile_id || '';
   const teacherName = source.teacher_name || source.display_name || source.full_name || source.name || source.english_name || '선생님';
-  const tags = source.tags || source.specialties || source.strengths || source.keywords || [];
+  const confirmedTags = CONFIRMED_TEACHER_PROFILE_IDS.has(String(teacherId))
+    ? window.nadoTeacherProfile?.({ name: teacherName, profilePhotoPath: source.profile_photo_path || '' })?.keywords
+    : null;
+  const tags = (Array.isArray(confirmedTags) && confirmedTags.length)
+    ? confirmedTags : (source.tags || source.specialties || source.strengths || source.keywords || []);
   return {
     id: String(teacherId),
     name: String(teacherName),
