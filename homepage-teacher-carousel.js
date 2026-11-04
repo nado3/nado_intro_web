@@ -22,10 +22,55 @@
     if (result.error) throw result.error;
     return result.data || [];
   }));
-  const liveNames = new Set(results.flat().map(row => String(row.display_name || '').trim().toLocaleLowerCase()));
-  const source = (Array.isArray(window.NADO_TEACHER_DIRECTORY_FALLBACK)
-    ? window.NADO_TEACHER_DIRECTORY_FALLBACK : [])
-    .filter(teacher => liveNames.has(String(teacher.displayName || '').trim().toLocaleLowerCase()));
+  const liveRows = results.flat();
+  const liveNames = new Set(liveRows.map(row => String(row.display_name || '').trim().toLocaleLowerCase()));
+  const snapshot = Array.isArray(window.NADO_TEACHER_DIRECTORY_FALLBACK)
+    ? window.NADO_TEACHER_DIRECTORY_FALLBACK : [];
+  const source = snapshot.filter(teacher => (
+    liveNames.has(String(teacher.displayName || '').trim().toLocaleLowerCase())
+    && String(teacher.displayName || '').trim().toLocaleLowerCase() !== 'jina'
+  ));
+  // New teachers should not require editing the old 2026-09 snapshot. Build
+  // their cards from the same live, bookable records as the teacher directory.
+  const featuredIds = new Set([
+    '8269aeda-cccd-4347-8f0e-dc36f7fe0b7e', // Catherine Min
+    'd578f9ff-948d-43e7-8fb0-5fa25ed96e09'  // Dario
+  ]);
+  const liveFeatured = new Map();
+  liveRows.forEach(row => {
+    const id = String(row.teacher_id || '').trim();
+    if (!featuredIds.has(id)) return;
+    if (!liveFeatured.has(id)) {
+      liveFeatured.set(id, {
+        id,
+        displayName: row.display_name,
+        school: row.school || '',
+        major: row.major || '',
+        profilePhotoPath: '',
+        regions: {},
+        tags: []
+      });
+    }
+    const teacher = liveFeatured.get(id);
+    const region = results[0].includes(row) ? 'Songdo' : 'Seoul';
+    teacher.regions[region] = { availability: (row.availability || []).map(slot => ({
+      startTime: slot.start_time,
+      endTime: slot.end_time
+    })) };
+    const path = String(row.profile_photo_path || '').trim();
+    if (path && !teacher.profilePhotoPath) {
+      const bucket = String(config.PROFILE_PHOTO_BUCKET || 'profile-photos').replace(/^\\/+|\\/+$/g, '');
+      const cleanPath = path.replace(/^\\/+/, '');
+      const storagePath = cleanPath.startsWith(bucket + '/') ? cleanPath.slice(bucket.length + 1) : cleanPath;
+      const encodedPath = storagePath.split('/').filter(Boolean).map(encodeURIComponent).join('/');
+      teacher.profilePhotoPath = config.SUPABASE_URL.replace(/\\/$/, '') +
+        '/storage/v1/object/public/' + encodeURIComponent(bucket) + '/' + encodedPath;
+    }
+  });
+  const existingNames = new Set(source.map(teacher => String(teacher.displayName || '').trim().toLocaleLowerCase()));
+  liveFeatured.forEach(teacher => {
+    if (!existingNames.has(String(teacher.displayName || '').trim().toLocaleLowerCase())) source.push(teacher);
+  });
   function timeToMinutes(value) {
     const match = String(value || '').match(/^(\d{1,2}):(\d{2})$/);
     if (!match) return null;
@@ -87,7 +132,11 @@
     return ({ economy: 'Economy', standard: 'Standard', premium: 'Premium' })[value] || '';
   }
 
-  const orderedTeachers = shuffled(teachers);
+  // Keep both newly added teachers visibly near the start of the rotating deck.
+  const orderedTeachers = [
+    ...teachers.filter(teacher => featuredIds.has(String(teacher.id || ''))),
+    ...shuffled(teachers.filter(teacher => !featuredIds.has(String(teacher.id || ''))))
+  ];
   deck.innerHTML = orderedTeachers.map((teacher, index) => {
     const isFlag=label=>/^[\u{1F1E6}-\u{1F1FF}]{2}$/u.test(label);
     const keywords=(window.nadoTeacherProfile?.(teacher).keywords || teacher.tags || []).filter(label=>label&&!isFlag(label));
