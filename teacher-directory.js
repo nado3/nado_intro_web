@@ -506,6 +506,10 @@
       || key.includes('트리플스트리트');
   }
 
+  // Jimin is selectable only after a student has chosen a time in the matching flow.
+  // The browseable directory must not advertise this matching-only teacher.
+  const MATCHING_ONLY_TEACHER_ID = '02493d0d-d33e-47cf-92bb-a15f3c58aad9';
+
   function teachersForView(teachers, options) {
     const settings = options || {};
     const mode = normalizeDirectoryMode(settings.mode);
@@ -514,7 +518,8 @@
     const effectivePlan = mode === 'trial' && trialType === 'free' ? 'economy' : requestedPlan;
 
     return (Array.isArray(teachers) ? teachers : []).reduce((result, teacher) => {
-      if (!teacher || (effectivePlan && !teacherPlanGroups(teacher).includes(effectivePlan))) return result;
+      if (!teacher || String(teacher.id || '') === MATCHING_ONLY_TEACHER_ID) return result;
+      if (effectivePlan && !teacherPlanGroups(teacher).includes(effectivePlan)) return result;
       if (mode !== 'trial' || trialType === 'paid') {
         if (bookableAvailabilityCount(teacher) < 1) return result;
         result.push(teacher);
