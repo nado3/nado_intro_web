@@ -244,7 +244,7 @@ window.NADO_TEACHER_PROFILE_CONFIG = {
   },
   "img/jeonghwa.jpg": {"name":"Jeonghwa","teacherType":"korean","keywords":["🇰🇷","초급/중급","대학 튜터 경험","맞춤형 학습"],"languages":["en"]},
   "teacher:jimin": {
-    "name": "Jimin",
+    "name": "Jina",
     "teacherType": "korean",
     "keywords": ["🇰🇷", "초보", "해외 유학 경험", "즐거운 영어 수업", "학습 동기부여"]
   },
