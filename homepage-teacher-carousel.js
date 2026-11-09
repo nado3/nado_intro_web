@@ -28,7 +28,7 @@
     ? window.NADO_TEACHER_DIRECTORY_FALLBACK : [];
   const source = snapshot.filter(teacher => (
     liveNames.has(String(teacher.displayName || '').trim().toLocaleLowerCase())
-    && String(teacher.displayName || '').trim().toLocaleLowerCase() !== 'jina'
+    && !['jina', 'doyeon', 'doyeon kim'].includes(String(teacher.displayName || '').trim().toLocaleLowerCase())
   ));
   // New teachers should not require editing the old 2026-09 snapshot. Build
   // their cards from the same live, bookable records as the teacher directory.
