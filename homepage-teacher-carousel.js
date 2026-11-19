@@ -34,7 +34,9 @@
   // their cards from the same live, bookable records as the teacher directory.
   const featuredIds = new Set([
     '8269aeda-cccd-4347-8f0e-dc36f7fe0b7e', // Catherine Min
-    'd578f9ff-948d-43e7-8fb0-5fa25ed96e09'  // Dario
+    'd578f9ff-948d-43e7-8fb0-5fa25ed96e09', // Dario
+    '84e54e5e-f7c6-472c-be7b-3a214c835262', // Taylor
+    '10260edb-7eeb-480b-9de4-c0b165b1fb19'  // Shamika
   ]);
   const liveFeatured = new Map();
   liveRows.forEach(row => {
