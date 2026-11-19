@@ -256,13 +256,13 @@ window.NADO_TEACHER_PROFILE_CONFIG = {
   "teacher:taylor": {
     "name": "Taylor",
     "teacherType": "native",
-    "keywords": ["🇺🇸", "영어 지도 경험", "언어 학습 이해", "실용 영어 회화"],
+    "keywords": ["🇺🇸", "중급/고급", "영어 지도 경험", "언어 학습 이해", "실용 영어 회화"],
     "languages": ["en"]
   },
   "teacher:shamika": {
     "name": "Shamika",
     "teacherType": "native",
-    "keywords": ["🇺🇸", "편안한 영어 대화", "경청 중심 소통", "친근한 수업 분위기"],
+    "keywords": ["🇺🇸", "중급/고급", "편안한 영어 대화", "경청 중심 소통", "친근한 수업 분위기"],
     "languages": ["en"]
   },
   "teacher:dario": {
